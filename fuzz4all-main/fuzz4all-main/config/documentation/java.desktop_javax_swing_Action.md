@@ -1,0 +1,8262 @@
+# Interface Action
+
+**Source:** `java.desktop\javax\swing\Action.html`
+
+### Class Description
+
+```java
+public interface
+Action
+
+extends
+ActionListener
+```
+
+The
+
+Action
+
+interface provides a useful extension to the
+
+ActionListener
+
+interface in cases where the same functionality may be accessed by
+several controls.
+
+In addition to the
+
+actionPerformed
+
+method defined by the
+
+ActionListener
+
+interface, this interface allows the
+application to define, in a single place:
+
+- One or more text strings that describe the function. These strings
+can be used, for example, to display the flyover text for a button
+or to set the text in a menu item.
+
+One or more icons that depict the function. These icons can be used
+for the images in a menu control, or for composite entries in a more
+sophisticated user interface.
+
+The enabled/disabled state of the functionality. Instead of having
+to separately disable the menu item and the toolbar button, the
+application can disable the function that implements this interface.
+All components which are registered as listeners for the state change
+then know to disable event generation for that item and to modify the
+display accordingly.
+
+This interface can be added to an existing class or used to create an
+adapter (typically, by subclassing
+
+AbstractAction
+
+).
+The
+
+Action
+
+object
+can then be added to multiple
+
+Action
+
+-aware containers
+and connected to
+
+Action
+
+-capable
+components. The GUI controls can then be activated or
+deactivated all at once by invoking the
+
+Action
+
+object's
+
+setEnabled
+
+method.
+
+Note that
+
+Action
+
+implementations tend to be more expensive
+in terms of storage than a typical
+
+ActionListener
+
+,
+which does not offer the benefits of centralized control of
+functionality and broadcast of property changes. For this reason,
+you should take care to only use
+
+Action
+
+s where their benefits
+are desired, and use simple
+
+ActionListener
+
+s elsewhere.
+
+Swing Components Supporting
+
+Action
+
+Many of Swing's components have an
+
+Action
+
+property. When
+an
+
+Action
+
+is set on a component, the following things
+happen:
+
+- The
+
+Action
+
+is added as an
+
+ActionListener
+
+to
+the component.
+
+The component configures some of its properties to match the
+
+Action
+
+.
+
+The component installs a
+
+PropertyChangeListener
+
+on the
+
+Action
+
+so that the component can change its properties
+to reflect changes in the
+
+Action
+
+'s properties.
+
+The following table describes the properties used by
+
+Swing
+
+components that support
+
+Actions
+
+.
+In the table,
+
+button
+
+refers to any
+
+AbstractButton
+
+subclass, which includes not only
+
+JButton
+
+but also classes such as
+
+JMenuItem
+
+. Unless otherwise stated, a
+
+null
+
+property value in an
+
+Action
+
+(or a
+
+Action
+
+that is
+
+null
+
+) results in the
+button's corresponding property being set to
+
+null
+
+.
+
+Supported Action properties
+
+Component Property
+
+Components
+
+Action Key
+
+Notes
+
+enabled
+
+All
+
+The
+
+isEnabled
+
+method
+
+toolTipText
+
+All
+
+SHORT_DESCRIPTION
+
+actionCommand
+
+All
+
+ACTION_COMMAND_KEY
+
+mnemonic
+
+All buttons
+
+MNEMONIC_KEY
+
+A
+
+null
+
+value or
+
+Action
+
+results in the button's
+
+mnemonic
+
+property being set to
+
+'\0'
+
+.
+
+text
+
+All buttons
+
+NAME
+
+If you do not want the text of the button to mirror that of the
+
+Action
+
+, set the property
+
+hideActionText
+
+to
+
+true
+
+.
+If
+
+hideActionText
+
+is
+
+true
+
+, setting the
+
+Action
+
+changes the text of the button to
+
+null
+
+and any changes to
+
+NAME
+
+are ignored.
+
+hideActionText
+
+is useful for tool bar
+buttons that typically only show an
+
+Icon
+
+.
+
+JToolBar.add(Action)
+
+sets the property to
+
+true
+
+if the
+
+Action
+
+has a non-
+
+null
+
+value for
+
+LARGE_ICON_KEY
+
+or
+
+SMALL_ICON
+
+.
+
+displayedMnemonicIndex
+
+All buttons
+
+DISPLAYED_MNEMONIC_INDEX_KEY
+
+If the value of
+
+DISPLAYED_MNEMONIC_INDEX_KEY
+
+is beyond the
+bounds of the text, it is ignored. When
+
+setAction
+
+is called, if
+the value from the
+
+Action
+
+is
+
+null
+
+, the displayed mnemonic
+index is not updated. In any subsequent changes to
+
+DISPLAYED_MNEMONIC_INDEX_KEY
+
+,
+
+null
+
+is treated as -1.
+
+icon
+
+All buttons except of
+
+JCheckBox
+
+,
+
+JToggleButton
+
+and
+
+JRadioButton
+
+.
+
+either
+
+LARGE_ICON_KEY
+
+or
+
+SMALL_ICON
+
+The
+
+JMenuItem
+
+subclasses only use
+
+SMALL_ICON
+
+. All
+other buttons will use
+
+LARGE_ICON_KEY
+
+; if the value is
+
+null
+
+they use
+
+SMALL_ICON
+
+.
+
+accelerator
+
+All
+
+JMenuItem
+
+subclasses, with the exception of
+
+JMenu
+
+.
+
+ACCELERATOR_KEY
+
+selected
+
+JToggleButton
+
+,
+
+JCheckBox
+
+,
+
+JRadioButton
+
+,
+
+JCheckBoxMenuItem
+
+and
+
+JRadioButtonMenuItem
+
+SELECTED_KEY
+
+Components that honor this property only use the value if it is
+
+non-null
+
+. For example, if you set an
+
+Action
+
+that has a
+
+null
+
+value for
+
+SELECTED_KEY
+
+on a
+
+JToggleButton
+
+,
+the
+
+JToggleButton
+
+will not update it's selected state in any way.
+Similarly, any time the
+
+JToggleButton
+
+'s selected state changes it
+will only set the value back on the
+
+Action
+
+if the
+
+Action
+
+has a
+
+non-null
+
+value for
+
+SELECTED_KEY
+
+.
+
+Components that honor this property keep their selected state in sync with
+this property. When the same
+
+Action
+
+is used with multiple
+components, all the components keep their selected state in sync with this
+property. Mutually exclusive buttons, such as
+
+JToggleButton
+
+s in a
+
+ButtonGroup
+
+, force only one of the buttons to be selected. As
+such, do not use the same
+
+Action
+
+that defines a value for the
+
+SELECTED_KEY
+
+property with multiple mutually exclusive buttons.
+
+JPopupMenu
+
+,
+
+JToolBar
+
+and
+
+JMenu
+
+all provide convenience methods for creating a component and setting the
+
+Action
+
+on the corresponding component. Refer to each of
+these classes for more information.
+
+Action
+
+uses
+
+PropertyChangeListener
+
+to
+inform listeners the
+
+Action
+
+has changed. The beans
+specification indicates that a
+
+null
+
+property name can
+be used to indicate multiple values have changed. By default Swing
+components that take an
+
+Action
+
+do not handle such a
+change. To indicate that Swing should treat
+
+null
+
+according to the beans specification set the system property
+
+swing.actions.reconfigureOnNull
+
+to the
+
+String
+
+value
+
+true
+
+.
+
+**All Superinterfaces:** ActionListener
+
+,
+
+EventListener
+
+---
+
+### Field Details
+
+#### static final
+String
+DEFAULT
+
+Not currently used.
+
+**See Also:**
+- Constant Field Values
+
+---
+
+#### static final
+String
+NAME
+
+The key used for storing the
+
+String
+
+name
+for the action, used for a menu or button.
+
+**See Also:**
+- Constant Field Values
+
+---
+
+#### static final
+String
+SHORT_DESCRIPTION
+
+The key used for storing a short
+
+String
+
+description for the action, used for tooltip text.
+
+**See Also:**
+- Constant Field Values
+
+---
+
+#### static final
+String
+LONG_DESCRIPTION
+
+The key used for storing a longer
+
+String
+
+description for the action, could be used for context-sensitive help.
+
+**See Also:**
+- Constant Field Values
+
+---
+
+#### static final
+String
+SMALL_ICON
+
+The key used for storing a small
+
+Icon
+
+, such
+as
+
+ImageIcon
+
+. This is typically used with
+menus such as
+
+JMenuItem
+
+.
+
+If the same
+
+Action
+
+is used with menus and buttons you'll
+typically specify both a
+
+SMALL_ICON
+
+and a
+
+LARGE_ICON_KEY
+
+. The menu will use the
+
+SMALL_ICON
+
+and the button will use the
+
+LARGE_ICON_KEY
+
+.
+
+**See Also:**
+- Constant Field Values
+
+---
+
+#### static final
+String
+ACTION_COMMAND_KEY
+
+The key used to determine the command
+
+String
+
+for the
+
+ActionEvent
+
+that will be created when an
+
+Action
+
+is going to be notified as the result of
+residing in a
+
+Keymap
+
+associated with a
+
+JComponent
+
+.
+
+**See Also:**
+- Constant Field Values
+
+---
+
+#### static final
+String
+ACCELERATOR_KEY
+
+The key used for storing a
+
+KeyStroke
+
+to be used as the
+accelerator for the action.
+
+**See Also:**
+- Constant Field Values
+
+**Since:**
+- 1.3
+
+---
+
+#### static final
+String
+MNEMONIC_KEY
+
+The key used for storing an
+
+Integer
+
+that corresponds to
+one of the
+
+KeyEvent
+
+key codes. The value is
+commonly used to specify a mnemonic. For example:
+
+myAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_A)
+
+sets the mnemonic of
+
+myAction
+
+to 'a', while
+
+myAction.putValue(Action.MNEMONIC_KEY, KeyEvent.getExtendedKeyCodeForChar('ф'))
+
+sets the mnemonic of
+
+myAction
+
+to Cyrillic letter "Ef".
+
+**See Also:**
+- Constant Field Values
+
+**Since:**
+- 1.3
+
+---
+
+#### static final
+String
+SELECTED_KEY
+
+The key used for storing a
+
+Boolean
+
+that corresponds
+to the selected state. This is typically used only for components
+that have a meaningful selection state. For example,
+
+JRadioButton
+
+and
+
+JCheckBox
+
+make use of
+this but instances of
+
+JMenu
+
+don't.
+
+This property differs from the others in that it is both read
+by the component and set by the component. For example,
+if an
+
+Action
+
+is attached to a
+
+JCheckBox
+
+the selected state of the
+
+JCheckBox
+
+will be set from
+that of the
+
+Action
+
+. If the user clicks on the
+
+JCheckBox
+
+the selected state of the
+
+JCheckBox
+
+and
+
+the
+
+Action
+
+will
+
+both
+
+be updated.
+
+Note: the value of this field is prefixed with 'Swing' to
+avoid possible collisions with existing
+
+Actions
+
+.
+
+**See Also:**
+- Constant Field Values
+
+**Since:**
+- 1.6
+
+---
+
+#### static final
+String
+DISPLAYED_MNEMONIC_INDEX_KEY
+
+The key used for storing an
+
+Integer
+
+that corresponds
+to the index in the text (identified by the
+
+NAME
+
+property) that the decoration for a mnemonic should be rendered at. If
+the value of this property is greater than or equal to the length of
+the text, it will treated as -1.
+
+Note: the value of this field is prefixed with 'Swing' to
+avoid possible collisions with existing
+
+Actions
+
+.
+
+**See Also:**
+- AbstractButton.setDisplayedMnemonicIndex(int)
+
+,
+
+Constant Field Values
+
+**Since:**
+- 1.6
+
+---
+
+#### static final
+String
+LARGE_ICON_KEY
+
+The key used for storing an
+
+Icon
+
+. This is typically
+used by buttons, such as
+
+JButton
+
+and
+
+JToggleButton
+
+.
+
+If the same
+
+Action
+
+is used with menus and buttons you'll
+typically specify both a
+
+SMALL_ICON
+
+and a
+
+LARGE_ICON_KEY
+
+. The menu will use the
+
+SMALL_ICON
+
+and the button the
+
+LARGE_ICON_KEY
+
+.
+
+Note: the value of this field is prefixed with 'Swing' to
+avoid possible collisions with existing
+
+Actions
+
+.
+
+**See Also:**
+- Constant Field Values
+
+**Since:**
+- 1.6
+
+---
+
+### Constructor Details
+
+*No entries found.*
+
+### Method Details
+
+#### Object
+getValue​(
+String
+key)
+
+Gets one of this object's properties
+using the associated key.
+
+**Parameters:**
+- key
+
+- a
+
+String
+
+containing the key
+
+**Returns:**
+- the
+
+Object
+
+value
+
+**See Also:**
+- putValue(java.lang.String, java.lang.Object)
+
+---
+
+#### void putValue​(
+String
+key,
+
+Object
+value)
+
+Sets one of this object's properties
+using the associated key. If the value has
+changed, a
+
+PropertyChangeEvent
+
+is sent
+to listeners.
+
+**Parameters:**
+- key
+
+- a
+
+String
+
+containing the key
+- value
+
+- an
+
+Object
+
+value
+
+---
+
+#### void setEnabled​(boolean b)
+
+Sets the enabled state of the
+
+Action
+
+. When enabled,
+any component associated with this object is active and
+able to fire this object's
+
+actionPerformed
+
+method.
+If the value has changed, a
+
+PropertyChangeEvent
+
+is sent
+to listeners.
+
+**Parameters:**
+- b
+
+- true to enable this
+
+Action
+
+, false to disable it
+
+**See Also:**
+- accept(java.lang.Object)
+
+---
+
+#### boolean isEnabled()
+
+Returns the enabled state of the
+
+Action
+
+. When enabled,
+any component associated with this object is active and
+able to fire this object's
+
+actionPerformed
+
+method.
+
+**Returns:**
+- true if this
+
+Action
+
+is enabled
+
+**See Also:**
+- accept(java.lang.Object)
+
+---
+
+#### default boolean accept​(
+Object
+sender)
+
+Determines whether the action should be performed with the specified
+sender object. The
+
+sender
+
+can be
+
+null
+
+.
+The method must return false if the action is disabled.
+
+**Parameters:**
+- sender
+
+- the object to check, can be null
+
+**Returns:**
+- true
+
+if the action should be performed with the sender
+object, must be false if the action is disabled.
+
+**See Also:**
+- isEnabled()
+
+,
+
+setEnabled(boolean)
+
+---
+
+#### void addPropertyChangeListener​(
+PropertyChangeListener
+listener)
+
+Adds a
+
+PropertyChange
+
+listener. Containers and attached
+components use these methods to register interest in this
+
+Action
+
+object. When its enabled state or other property
+changes, the registered listeners are informed of the change.
+
+**Parameters:**
+- listener
+
+- a
+
+PropertyChangeListener
+
+object
+
+---
+
+#### void removePropertyChangeListener​(
+PropertyChangeListener
+listener)
+
+Removes a
+
+PropertyChange
+
+listener.
+
+**Parameters:**
+- listener
+
+- a
+
+PropertyChangeListener
+
+object
+
+**See Also:**
+- addPropertyChangeListener(java.beans.PropertyChangeListener)
+
+---
+
+### Additional Sections
+
+#### Interface Action
+
+**All Superinterfaces:** ActionListener
+
+,
+
+EventListener
+
+**All Known Implementing Classes:** AbstractAction
+
+,
+
+BasicDesktopPaneUI.CloseAction
+
+,
+
+BasicDesktopPaneUI.MaximizeAction
+
+,
+
+BasicDesktopPaneUI.MinimizeAction
+
+,
+
+BasicDesktopPaneUI.NavigateAction
+
+,
+
+BasicDesktopPaneUI.OpenAction
+
+,
+
+BasicFileChooserUI.ApproveSelectionAction
+
+,
+
+BasicFileChooserUI.CancelSelectionAction
+
+,
+
+BasicFileChooserUI.ChangeToParentDirectoryAction
+
+,
+
+BasicFileChooserUI.GoHomeAction
+
+,
+
+BasicFileChooserUI.NewFolderAction
+
+,
+
+BasicFileChooserUI.UpdateAction
+
+,
+
+BasicInternalFrameTitlePane.CloseAction
+
+,
+
+BasicInternalFrameTitlePane.IconifyAction
+
+,
+
+BasicInternalFrameTitlePane.MaximizeAction
+
+,
+
+BasicInternalFrameTitlePane.MoveAction
+
+,
+
+BasicInternalFrameTitlePane.RestoreAction
+
+,
+
+BasicInternalFrameTitlePane.SizeAction
+
+,
+
+BasicSliderUI.ActionScroller
+
+,
+
+BasicTreeUI.TreeCancelEditingAction
+
+,
+
+BasicTreeUI.TreeHomeAction
+
+,
+
+BasicTreeUI.TreeIncrementAction
+
+,
+
+BasicTreeUI.TreePageAction
+
+,
+
+BasicTreeUI.TreeToggleAction
+
+,
+
+BasicTreeUI.TreeTraverseAction
+
+,
+
+DefaultEditorKit.BeepAction
+
+,
+
+DefaultEditorKit.CopyAction
+
+,
+
+DefaultEditorKit.CutAction
+
+,
+
+DefaultEditorKit.DefaultKeyTypedAction
+
+,
+
+DefaultEditorKit.InsertBreakAction
+
+,
+
+DefaultEditorKit.InsertContentAction
+
+,
+
+DefaultEditorKit.InsertTabAction
+
+,
+
+DefaultEditorKit.PasteAction
+
+,
+
+HTMLEditorKit.HTMLTextAction
+
+,
+
+HTMLEditorKit.InsertHTMLTextAction
+
+,
+
+MetalFileChooserUI.DirectoryComboBoxAction
+
+,
+
+StyledEditorKit.AlignmentAction
+
+,
+
+StyledEditorKit.BoldAction
+
+,
+
+StyledEditorKit.FontFamilyAction
+
+,
+
+StyledEditorKit.FontSizeAction
+
+,
+
+StyledEditorKit.ForegroundAction
+
+,
+
+StyledEditorKit.ItalicAction
+
+,
+
+StyledEditorKit.StyledTextAction
+
+,
+
+StyledEditorKit.UnderlineAction
+
+,
+
+TextAction
+
+```java
+public interface
+Action
+
+extends
+ActionListener
+```
+
+The
+
+Action
+
+interface provides a useful extension to the
+
+ActionListener
+
+interface in cases where the same functionality may be accessed by
+several controls.
+
+In addition to the
+
+actionPerformed
+
+method defined by the
+
+ActionListener
+
+interface, this interface allows the
+application to define, in a single place:
+
+- One or more text strings that describe the function. These strings
+can be used, for example, to display the flyover text for a button
+or to set the text in a menu item.
+
+One or more icons that depict the function. These icons can be used
+for the images in a menu control, or for composite entries in a more
+sophisticated user interface.
+
+The enabled/disabled state of the functionality. Instead of having
+to separately disable the menu item and the toolbar button, the
+application can disable the function that implements this interface.
+All components which are registered as listeners for the state change
+then know to disable event generation for that item and to modify the
+display accordingly.
+
+This interface can be added to an existing class or used to create an
+adapter (typically, by subclassing
+
+AbstractAction
+
+).
+The
+
+Action
+
+object
+can then be added to multiple
+
+Action
+
+-aware containers
+and connected to
+
+Action
+
+-capable
+components. The GUI controls can then be activated or
+deactivated all at once by invoking the
+
+Action
+
+object's
+
+setEnabled
+
+method.
+
+Note that
+
+Action
+
+implementations tend to be more expensive
+in terms of storage than a typical
+
+ActionListener
+
+,
+which does not offer the benefits of centralized control of
+functionality and broadcast of property changes. For this reason,
+you should take care to only use
+
+Action
+
+s where their benefits
+are desired, and use simple
+
+ActionListener
+
+s elsewhere.
+
+Swing Components Supporting
+
+Action
+
+Many of Swing's components have an
+
+Action
+
+property. When
+an
+
+Action
+
+is set on a component, the following things
+happen:
+
+- The
+
+Action
+
+is added as an
+
+ActionListener
+
+to
+the component.
+
+The component configures some of its properties to match the
+
+Action
+
+.
+
+The component installs a
+
+PropertyChangeListener
+
+on the
+
+Action
+
+so that the component can change its properties
+to reflect changes in the
+
+Action
+
+'s properties.
+
+The following table describes the properties used by
+
+Swing
+
+components that support
+
+Actions
+
+.
+In the table,
+
+button
+
+refers to any
+
+AbstractButton
+
+subclass, which includes not only
+
+JButton
+
+but also classes such as
+
+JMenuItem
+
+. Unless otherwise stated, a
+
+null
+
+property value in an
+
+Action
+
+(or a
+
+Action
+
+that is
+
+null
+
+) results in the
+button's corresponding property being set to
+
+null
+
+.
+
+Supported Action properties
+
+Component Property
+
+Components
+
+Action Key
+
+Notes
+
+enabled
+
+All
+
+The
+
+isEnabled
+
+method
+
+toolTipText
+
+All
+
+SHORT_DESCRIPTION
+
+actionCommand
+
+All
+
+ACTION_COMMAND_KEY
+
+mnemonic
+
+All buttons
+
+MNEMONIC_KEY
+
+A
+
+null
+
+value or
+
+Action
+
+results in the button's
+
+mnemonic
+
+property being set to
+
+'\0'
+
+.
+
+text
+
+All buttons
+
+NAME
+
+If you do not want the text of the button to mirror that of the
+
+Action
+
+, set the property
+
+hideActionText
+
+to
+
+true
+
+.
+If
+
+hideActionText
+
+is
+
+true
+
+, setting the
+
+Action
+
+changes the text of the button to
+
+null
+
+and any changes to
+
+NAME
+
+are ignored.
+
+hideActionText
+
+is useful for tool bar
+buttons that typically only show an
+
+Icon
+
+.
+
+JToolBar.add(Action)
+
+sets the property to
+
+true
+
+if the
+
+Action
+
+has a non-
+
+null
+
+value for
+
+LARGE_ICON_KEY
+
+or
+
+SMALL_ICON
+
+.
+
+displayedMnemonicIndex
+
+All buttons
+
+DISPLAYED_MNEMONIC_INDEX_KEY
+
+If the value of
+
+DISPLAYED_MNEMONIC_INDEX_KEY
+
+is beyond the
+bounds of the text, it is ignored. When
+
+setAction
+
+is called, if
+the value from the
+
+Action
+
+is
+
+null
+
+, the displayed mnemonic
+index is not updated. In any subsequent changes to
+
+DISPLAYED_MNEMONIC_INDEX_KEY
+
+,
+
+null
+
+is treated as -1.
+
+icon
+
+All buttons except of
+
+JCheckBox
+
+,
+
+JToggleButton
+
+and
+
+JRadioButton
+
+.
+
+either
+
+LARGE_ICON_KEY
+
+or
+
+SMALL_ICON
+
+The
+
+JMenuItem
+
+subclasses only use
+
+SMALL_ICON
+
+. All
+other buttons will use
+
+LARGE_ICON_KEY
+
+; if the value is
+
+null
+
+they use
+
+SMALL_ICON
+
+.
+
+accelerator
+
+All
+
+JMenuItem
+
+subclasses, with the exception of
+
+JMenu
+
+.
+
+ACCELERATOR_KEY
+
+selected
+
+JToggleButton
+
+,
+
+JCheckBox
+
+,
+
+JRadioButton
+
+,
+
+JCheckBoxMenuItem
+
+and
+
+JRadioButtonMenuItem
+
+SELECTED_KEY
+
+Components that honor this property only use the value if it is
+
+non-null
+
+. For example, if you set an
+
+Action
+
+that has a
+
+null
+
+value for
+
+SELECTED_KEY
+
+on a
+
+JToggleButton
+
+,
+the
+
+JToggleButton
+
+will not update it's selected state in any way.
+Similarly, any time the
+
+JToggleButton
+
+'s selected state changes it
+will only set the value back on the
+
+Action
+
+if the
+
+Action
+
+has a
+
+non-null
+
+value for
+
+SELECTED_KEY
+
+.
+
+Components that honor this property keep their selected state in sync with
+this property. When the same
+
+Action
+
+is used with multiple
+components, all the components keep their selected state in sync with this
+property. Mutually exclusive buttons, such as
+
+JToggleButton
+
+s in a
+
+ButtonGroup
+
+, force only one of the buttons to be selected. As
+such, do not use the same
+
+Action
+
+that defines a value for the
+
+SELECTED_KEY
+
+property with multiple mutually exclusive buttons.
+
+JPopupMenu
+
+,
+
+JToolBar
+
+and
+
+JMenu
+
+all provide convenience methods for creating a component and setting the
+
+Action
+
+on the corresponding component. Refer to each of
+these classes for more information.
+
+Action
+
+uses
+
+PropertyChangeListener
+
+to
+inform listeners the
+
+Action
+
+has changed. The beans
+specification indicates that a
+
+null
+
+property name can
+be used to indicate multiple values have changed. By default Swing
+components that take an
+
+Action
+
+do not handle such a
+change. To indicate that Swing should treat
+
+null
+
+according to the beans specification set the system property
+
+swing.actions.reconfigureOnNull
+
+to the
+
+String
+
+value
+
+true
+
+.
+
+**Since:** 1.2
+**See Also:** AbstractAction
+
+public interface
+
+Action
+
+extends
+
+ActionListener
+
+The
+
+Action
+
+interface provides a useful extension to the
+
+ActionListener
+
+interface in cases where the same functionality may be accessed by
+several controls.
+
+In addition to the
+
+actionPerformed
+
+method defined by the
+
+ActionListener
+
+interface, this interface allows the
+application to define, in a single place:
+
+- One or more text strings that describe the function. These strings
+can be used, for example, to display the flyover text for a button
+or to set the text in a menu item.
+
+One or more icons that depict the function. These icons can be used
+for the images in a menu control, or for composite entries in a more
+sophisticated user interface.
+
+The enabled/disabled state of the functionality. Instead of having
+to separately disable the menu item and the toolbar button, the
+application can disable the function that implements this interface.
+All components which are registered as listeners for the state change
+then know to disable event generation for that item and to modify the
+display accordingly.
+
+This interface can be added to an existing class or used to create an
+adapter (typically, by subclassing
+
+AbstractAction
+
+).
+The
+
+Action
+
+object
+can then be added to multiple
+
+Action
+
+-aware containers
+and connected to
+
+Action
+
+-capable
+components. The GUI controls can then be activated or
+deactivated all at once by invoking the
+
+Action
+
+object's
+
+setEnabled
+
+method.
+
+Note that
+
+Action
+
+implementations tend to be more expensive
+in terms of storage than a typical
+
+ActionListener
+
+,
+which does not offer the benefits of centralized control of
+functionality and broadcast of property changes. For this reason,
+you should take care to only use
+
+Action
+
+s where their benefits
+are desired, and use simple
+
+ActionListener
+
+s elsewhere.
+
+Swing Components Supporting
+
+Action
+
+Many of Swing's components have an
+
+Action
+
+property. When
+an
+
+Action
+
+is set on a component, the following things
+happen:
+
+- The
+
+Action
+
+is added as an
+
+ActionListener
+
+to
+the component.
+
+The component configures some of its properties to match the
+
+Action
+
+.
+
+The component installs a
+
+PropertyChangeListener
+
+on the
+
+Action
+
+so that the component can change its properties
+to reflect changes in the
+
+Action
+
+'s properties.
+
+The following table describes the properties used by
+
+Swing
+
+components that support
+
+Actions
+
+.
+In the table,
+
+button
+
+refers to any
+
+AbstractButton
+
+subclass, which includes not only
+
+JButton
+
+but also classes such as
+
+JMenuItem
+
+. Unless otherwise stated, a
+
+null
+
+property value in an
+
+Action
+
+(or a
+
+Action
+
+that is
+
+null
+
+) results in the
+button's corresponding property being set to
+
+null
+
+.
+
+Supported Action properties
+
+Component Property
+
+Components
+
+Action Key
+
+Notes
+
+enabled
+
+All
+
+The
+
+isEnabled
+
+method
+
+toolTipText
+
+All
+
+SHORT_DESCRIPTION
+
+actionCommand
+
+All
+
+ACTION_COMMAND_KEY
+
+mnemonic
+
+All buttons
+
+MNEMONIC_KEY
+
+A
+
+null
+
+value or
+
+Action
+
+results in the button's
+
+mnemonic
+
+property being set to
+
+'\0'
+
+.
+
+text
+
+All buttons
+
+NAME
+
+If you do not want the text of the button to mirror that of the
+
+Action
+
+, set the property
+
+hideActionText
+
+to
+
+true
+
+.
+If
+
+hideActionText
+
+is
+
+true
+
+, setting the
+
+Action
+
+changes the text of the button to
+
+null
+
+and any changes to
+
+NAME
+
+are ignored.
+
+hideActionText
+
+is useful for tool bar
+buttons that typically only show an
+
+Icon
+
+.
+
+JToolBar.add(Action)
+
+sets the property to
+
+true
+
+if the
+
+Action
+
+has a non-
+
+null
+
+value for
+
+LARGE_ICON_KEY
+
+or
+
+SMALL_ICON
+
+.
+
+displayedMnemonicIndex
+
+All buttons
+
+DISPLAYED_MNEMONIC_INDEX_KEY
+
+If the value of
+
+DISPLAYED_MNEMONIC_INDEX_KEY
+
+is beyond the
+bounds of the text, it is ignored. When
+
+setAction
+
+is called, if
+the value from the
+
+Action
+
+is
+
+null
+
+, the displayed mnemonic
+index is not updated. In any subsequent changes to
+
+DISPLAYED_MNEMONIC_INDEX_KEY
+
+,
+
+null
+
+is treated as -1.
+
+icon
+
+All buttons except of
+
+JCheckBox
+
+,
+
+JToggleButton
+
+and
+
+JRadioButton
+
+.
+
+either
+
+LARGE_ICON_KEY
+
+or
+
+SMALL_ICON
+
+The
+
+JMenuItem
+
+subclasses only use
+
+SMALL_ICON
+
+. All
+other buttons will use
+
+LARGE_ICON_KEY
+
+; if the value is
+
+null
+
+they use
+
+SMALL_ICON
+
+.
+
+accelerator
+
+All
+
+JMenuItem
+
+subclasses, with the exception of
+
+JMenu
+
+.
+
+ACCELERATOR_KEY
+
+selected
+
+JToggleButton
+
+,
+
+JCheckBox
+
+,
+
+JRadioButton
+
+,
+
+JCheckBoxMenuItem
+
+and
+
+JRadioButtonMenuItem
+
+SELECTED_KEY
+
+Components that honor this property only use the value if it is
+
+non-null
+
+. For example, if you set an
+
+Action
+
+that has a
+
+null
+
+value for
+
+SELECTED_KEY
+
+on a
+
+JToggleButton
+
+,
+the
+
+JToggleButton
+
+will not update it's selected state in any way.
+Similarly, any time the
+
+JToggleButton
+
+'s selected state changes it
+will only set the value back on the
+
+Action
+
+if the
+
+Action
+
+has a
+
+non-null
+
+value for
+
+SELECTED_KEY
+
+.
+
+Components that honor this property keep their selected state in sync with
+this property. When the same
+
+Action
+
+is used with multiple
+components, all the components keep their selected state in sync with this
+property. Mutually exclusive buttons, such as
+
+JToggleButton
+
+s in a
+
+ButtonGroup
+
+, force only one of the buttons to be selected. As
+such, do not use the same
+
+Action
+
+that defines a value for the
+
+SELECTED_KEY
+
+property with multiple mutually exclusive buttons.
+
+JPopupMenu
+
+,
+
+JToolBar
+
+and
+
+JMenu
+
+all provide convenience methods for creating a component and setting the
+
+Action
+
+on the corresponding component. Refer to each of
+these classes for more information.
+
+Action
+
+uses
+
+PropertyChangeListener
+
+to
+inform listeners the
+
+Action
+
+has changed. The beans
+specification indicates that a
+
+null
+
+property name can
+be used to indicate multiple values have changed. By default Swing
+components that take an
+
+Action
+
+do not handle such a
+change. To indicate that Swing should treat
+
+null
+
+according to the beans specification set the system property
+
+swing.actions.reconfigureOnNull
+
+to the
+
+String
+
+value
+
+true
+
+.
+
+In addition to the
+
+actionPerformed
+
+method defined by the
+
+ActionListener
+
+interface, this interface allows the
+application to define, in a single place:
+
+- One or more text strings that describe the function. These strings
+can be used, for example, to display the flyover text for a button
+or to set the text in a menu item.
+
+One or more icons that depict the function. These icons can be used
+for the images in a menu control, or for composite entries in a more
+sophisticated user interface.
+
+The enabled/disabled state of the functionality. Instead of having
+to separately disable the menu item and the toolbar button, the
+application can disable the function that implements this interface.
+All components which are registered as listeners for the state change
+then know to disable event generation for that item and to modify the
+display accordingly.
+
+This interface can be added to an existing class or used to create an
+adapter (typically, by subclassing
+
+AbstractAction
+
+).
+The
+
+Action
+
+object
+can then be added to multiple
+
+Action
+
+-aware containers
+and connected to
+
+Action
+
+-capable
+components. The GUI controls can then be activated or
+deactivated all at once by invoking the
+
+Action
+
+object's
+
+setEnabled
+
+method.
+
+Note that
+
+Action
+
+implementations tend to be more expensive
+in terms of storage than a typical
+
+ActionListener
+
+,
+which does not offer the benefits of centralized control of
+functionality and broadcast of property changes. For this reason,
+you should take care to only use
+
+Action
+
+s where their benefits
+are desired, and use simple
+
+ActionListener
+
+s elsewhere.
+
+Swing Components Supporting
+
+Action
+
+Many of Swing's components have an
+
+Action
+
+property. When
+an
+
+Action
+
+is set on a component, the following things
+happen:
+
+- The
+
+Action
+
+is added as an
+
+ActionListener
+
+to
+the component.
+
+The component configures some of its properties to match the
+
+Action
+
+.
+
+The component installs a
+
+PropertyChangeListener
+
+on the
+
+Action
+
+so that the component can change its properties
+to reflect changes in the
+
+Action
+
+'s properties.
+
+The following table describes the properties used by
+
+Swing
+
+components that support
+
+Actions
+
+.
+In the table,
+
+button
+
+refers to any
+
+AbstractButton
+
+subclass, which includes not only
+
+JButton
+
+but also classes such as
+
+JMenuItem
+
+. Unless otherwise stated, a
+
+null
+
+property value in an
+
+Action
+
+(or a
+
+Action
+
+that is
+
+null
+
+) results in the
+button's corresponding property being set to
+
+null
+
+.
+
+Supported Action properties
+
+Component Property
+
+Components
+
+Action Key
+
+Notes
+
+enabled
+
+All
+
+The
+
+isEnabled
+
+method
+
+toolTipText
+
+All
+
+SHORT_DESCRIPTION
+
+actionCommand
+
+All
+
+ACTION_COMMAND_KEY
+
+mnemonic
+
+All buttons
+
+MNEMONIC_KEY
+
+A
+
+null
+
+value or
+
+Action
+
+results in the button's
+
+mnemonic
+
+property being set to
+
+'\0'
+
+.
+
+text
+
+All buttons
+
+NAME
+
+If you do not want the text of the button to mirror that of the
+
+Action
+
+, set the property
+
+hideActionText
+
+to
+
+true
+
+.
+If
+
+hideActionText
+
+is
+
+true
+
+, setting the
+
+Action
+
+changes the text of the button to
+
+null
+
+and any changes to
+
+NAME
+
+are ignored.
+
+hideActionText
+
+is useful for tool bar
+buttons that typically only show an
+
+Icon
+
+.
+
+JToolBar.add(Action)
+
+sets the property to
+
+true
+
+if the
+
+Action
+
+has a non-
+
+null
+
+value for
+
+LARGE_ICON_KEY
+
+or
+
+SMALL_ICON
+
+.
+
+displayedMnemonicIndex
+
+All buttons
+
+DISPLAYED_MNEMONIC_INDEX_KEY
+
+If the value of
+
+DISPLAYED_MNEMONIC_INDEX_KEY
+
+is beyond the
+bounds of the text, it is ignored. When
+
+setAction
+
+is called, if
+the value from the
+
+Action
+
+is
+
+null
+
+, the displayed mnemonic
+index is not updated. In any subsequent changes to
+
+DISPLAYED_MNEMONIC_INDEX_KEY
+
+,
+
+null
+
+is treated as -1.
+
+icon
+
+All buttons except of
+
+JCheckBox
+
+,
+
+JToggleButton
+
+and
+
+JRadioButton
+
+.
+
+either
+
+LARGE_ICON_KEY
+
+or
+
+SMALL_ICON
+
+The
+
+JMenuItem
+
+subclasses only use
+
+SMALL_ICON
+
+. All
+other buttons will use
+
+LARGE_ICON_KEY
+
+; if the value is
+
+null
+
+they use
+
+SMALL_ICON
+
+.
+
+accelerator
+
+All
+
+JMenuItem
+
+subclasses, with the exception of
+
+JMenu
+
+.
+
+ACCELERATOR_KEY
+
+selected
+
+JToggleButton
+
+,
+
+JCheckBox
+
+,
+
+JRadioButton
+
+,
+
+JCheckBoxMenuItem
+
+and
+
+JRadioButtonMenuItem
+
+SELECTED_KEY
+
+Components that honor this property only use the value if it is
+
+non-null
+
+. For example, if you set an
+
+Action
+
+that has a
+
+null
+
+value for
+
+SELECTED_KEY
+
+on a
+
+JToggleButton
+
+,
+the
+
+JToggleButton
+
+will not update it's selected state in any way.
+Similarly, any time the
+
+JToggleButton
+
+'s selected state changes it
+will only set the value back on the
+
+Action
+
+if the
+
+Action
+
+has a
+
+non-null
+
+value for
+
+SELECTED_KEY
+
+.
+
+Components that honor this property keep their selected state in sync with
+this property. When the same
+
+Action
+
+is used with multiple
+components, all the components keep their selected state in sync with this
+property. Mutually exclusive buttons, such as
+
+JToggleButton
+
+s in a
+
+ButtonGroup
+
+, force only one of the buttons to be selected. As
+such, do not use the same
+
+Action
+
+that defines a value for the
+
+SELECTED_KEY
+
+property with multiple mutually exclusive buttons.
+
+JPopupMenu
+
+,
+
+JToolBar
+
+and
+
+JMenu
+
+all provide convenience methods for creating a component and setting the
+
+Action
+
+on the corresponding component. Refer to each of
+these classes for more information.
+
+Action
+
+uses
+
+PropertyChangeListener
+
+to
+inform listeners the
+
+Action
+
+has changed. The beans
+specification indicates that a
+
+null
+
+property name can
+be used to indicate multiple values have changed. By default Swing
+components that take an
+
+Action
+
+do not handle such a
+change. To indicate that Swing should treat
+
+null
+
+according to the beans specification set the system property
+
+swing.actions.reconfigureOnNull
+
+to the
+
+String
+
+value
+
+true
+
+.
+
+One or more text strings that describe the function. These strings
+can be used, for example, to display the flyover text for a button
+or to set the text in a menu item.
+
+One or more icons that depict the function. These icons can be used
+for the images in a menu control, or for composite entries in a more
+sophisticated user interface.
+
+The enabled/disabled state of the functionality. Instead of having
+to separately disable the menu item and the toolbar button, the
+application can disable the function that implements this interface.
+All components which are registered as listeners for the state change
+then know to disable event generation for that item and to modify the
+display accordingly.
+
+This interface can be added to an existing class or used to create an
+adapter (typically, by subclassing
+
+AbstractAction
+
+).
+The
+
+Action
+
+object
+can then be added to multiple
+
+Action
+
+-aware containers
+and connected to
+
+Action
+
+-capable
+components. The GUI controls can then be activated or
+deactivated all at once by invoking the
+
+Action
+
+object's
+
+setEnabled
+
+method.
+
+Note that
+
+Action
+
+implementations tend to be more expensive
+in terms of storage than a typical
+
+ActionListener
+
+,
+which does not offer the benefits of centralized control of
+functionality and broadcast of property changes. For this reason,
+you should take care to only use
+
+Action
+
+s where their benefits
+are desired, and use simple
+
+ActionListener
+
+s elsewhere.
+
+Swing Components Supporting
+
+Action
+
+Many of Swing's components have an
+
+Action
+
+property. When
+an
+
+Action
+
+is set on a component, the following things
+happen:
+
+- The
+
+Action
+
+is added as an
+
+ActionListener
+
+to
+the component.
+
+The component configures some of its properties to match the
+
+Action
+
+.
+
+The component installs a
+
+PropertyChangeListener
+
+on the
+
+Action
+
+so that the component can change its properties
+to reflect changes in the
+
+Action
+
+'s properties.
+
+The following table describes the properties used by
+
+Swing
+
+components that support
+
+Actions
+
+.
+In the table,
+
+button
+
+refers to any
+
+AbstractButton
+
+subclass, which includes not only
+
+JButton
+
+but also classes such as
+
+JMenuItem
+
+. Unless otherwise stated, a
+
+null
+
+property value in an
+
+Action
+
+(or a
+
+Action
+
+that is
+
+null
+
+) results in the
+button's corresponding property being set to
+
+null
+
+.
+
+Supported Action properties
+
+Component Property
+
+Components
+
+Action Key
+
+Notes
+
+enabled
+
+All
+
+The
+
+isEnabled
+
+method
+
+toolTipText
+
+All
+
+SHORT_DESCRIPTION
+
+actionCommand
+
+All
+
+ACTION_COMMAND_KEY
+
+mnemonic
+
+All buttons
+
+MNEMONIC_KEY
+
+A
+
+null
+
+value or
+
+Action
+
+results in the button's
+
+mnemonic
+
+property being set to
+
+'\0'
+
+.
+
+text
+
+All buttons
+
+NAME
+
+If you do not want the text of the button to mirror that of the
+
+Action
+
+, set the property
+
+hideActionText
+
+to
+
+true
+
+.
+If
+
+hideActionText
+
+is
+
+true
+
+, setting the
+
+Action
+
+changes the text of the button to
+
+null
+
+and any changes to
+
+NAME
+
+are ignored.
+
+hideActionText
+
+is useful for tool bar
+buttons that typically only show an
+
+Icon
+
+.
+
+JToolBar.add(Action)
+
+sets the property to
+
+true
+
+if the
+
+Action
+
+has a non-
+
+null
+
+value for
+
+LARGE_ICON_KEY
+
+or
+
+SMALL_ICON
+
+.
+
+displayedMnemonicIndex
+
+All buttons
+
+DISPLAYED_MNEMONIC_INDEX_KEY
+
+If the value of
+
+DISPLAYED_MNEMONIC_INDEX_KEY
+
+is beyond the
+bounds of the text, it is ignored. When
+
+setAction
+
+is called, if
+the value from the
+
+Action
+
+is
+
+null
+
+, the displayed mnemonic
+index is not updated. In any subsequent changes to
+
+DISPLAYED_MNEMONIC_INDEX_KEY
+
+,
+
+null
+
+is treated as -1.
+
+icon
+
+All buttons except of
+
+JCheckBox
+
+,
+
+JToggleButton
+
+and
+
+JRadioButton
+
+.
+
+either
+
+LARGE_ICON_KEY
+
+or
+
+SMALL_ICON
+
+The
+
+JMenuItem
+
+subclasses only use
+
+SMALL_ICON
+
+. All
+other buttons will use
+
+LARGE_ICON_KEY
+
+; if the value is
+
+null
+
+they use
+
+SMALL_ICON
+
+.
+
+accelerator
+
+All
+
+JMenuItem
+
+subclasses, with the exception of
+
+JMenu
+
+.
+
+ACCELERATOR_KEY
+
+selected
+
+JToggleButton
+
+,
+
+JCheckBox
+
+,
+
+JRadioButton
+
+,
+
+JCheckBoxMenuItem
+
+and
+
+JRadioButtonMenuItem
+
+SELECTED_KEY
+
+Components that honor this property only use the value if it is
+
+non-null
+
+. For example, if you set an
+
+Action
+
+that has a
+
+null
+
+value for
+
+SELECTED_KEY
+
+on a
+
+JToggleButton
+
+,
+the
+
+JToggleButton
+
+will not update it's selected state in any way.
+Similarly, any time the
+
+JToggleButton
+
+'s selected state changes it
+will only set the value back on the
+
+Action
+
+if the
+
+Action
+
+has a
+
+non-null
+
+value for
+
+SELECTED_KEY
+
+.
+
+Components that honor this property keep their selected state in sync with
+this property. When the same
+
+Action
+
+is used with multiple
+components, all the components keep their selected state in sync with this
+property. Mutually exclusive buttons, such as
+
+JToggleButton
+
+s in a
+
+ButtonGroup
+
+, force only one of the buttons to be selected. As
+such, do not use the same
+
+Action
+
+that defines a value for the
+
+SELECTED_KEY
+
+property with multiple mutually exclusive buttons.
+
+JPopupMenu
+
+,
+
+JToolBar
+
+and
+
+JMenu
+
+all provide convenience methods for creating a component and setting the
+
+Action
+
+on the corresponding component. Refer to each of
+these classes for more information.
+
+Action
+
+uses
+
+PropertyChangeListener
+
+to
+inform listeners the
+
+Action
+
+has changed. The beans
+specification indicates that a
+
+null
+
+property name can
+be used to indicate multiple values have changed. By default Swing
+components that take an
+
+Action
+
+do not handle such a
+change. To indicate that Swing should treat
+
+null
+
+according to the beans specification set the system property
+
+swing.actions.reconfigureOnNull
+
+to the
+
+String
+
+value
+
+true
+
+.
+
+Note that
+
+Action
+
+implementations tend to be more expensive
+in terms of storage than a typical
+
+ActionListener
+
+,
+which does not offer the benefits of centralized control of
+functionality and broadcast of property changes. For this reason,
+you should take care to only use
+
+Action
+
+s where their benefits
+are desired, and use simple
+
+ActionListener
+
+s elsewhere.
+
+Swing Components Supporting
+
+Action
+
+Many of Swing's components have an
+
+Action
+
+property. When
+an
+
+Action
+
+is set on a component, the following things
+happen:
+
+- The
+
+Action
+
+is added as an
+
+ActionListener
+
+to
+the component.
+
+The component configures some of its properties to match the
+
+Action
+
+.
+
+The component installs a
+
+PropertyChangeListener
+
+on the
+
+Action
+
+so that the component can change its properties
+to reflect changes in the
+
+Action
+
+'s properties.
+
+The following table describes the properties used by
+
+Swing
+
+components that support
+
+Actions
+
+.
+In the table,
+
+button
+
+refers to any
+
+AbstractButton
+
+subclass, which includes not only
+
+JButton
+
+but also classes such as
+
+JMenuItem
+
+. Unless otherwise stated, a
+
+null
+
+property value in an
+
+Action
+
+(or a
+
+Action
+
+that is
+
+null
+
+) results in the
+button's corresponding property being set to
+
+null
+
+.
+
+Supported Action properties
+
+Component Property
+
+Components
+
+Action Key
+
+Notes
+
+enabled
+
+All
+
+The
+
+isEnabled
+
+method
+
+toolTipText
+
+All
+
+SHORT_DESCRIPTION
+
+actionCommand
+
+All
+
+ACTION_COMMAND_KEY
+
+mnemonic
+
+All buttons
+
+MNEMONIC_KEY
+
+A
+
+null
+
+value or
+
+Action
+
+results in the button's
+
+mnemonic
+
+property being set to
+
+'\0'
+
+.
+
+text
+
+All buttons
+
+NAME
+
+If you do not want the text of the button to mirror that of the
+
+Action
+
+, set the property
+
+hideActionText
+
+to
+
+true
+
+.
+If
+
+hideActionText
+
+is
+
+true
+
+, setting the
+
+Action
+
+changes the text of the button to
+
+null
+
+and any changes to
+
+NAME
+
+are ignored.
+
+hideActionText
+
+is useful for tool bar
+buttons that typically only show an
+
+Icon
+
+.
+
+JToolBar.add(Action)
+
+sets the property to
+
+true
+
+if the
+
+Action
+
+has a non-
+
+null
+
+value for
+
+LARGE_ICON_KEY
+
+or
+
+SMALL_ICON
+
+.
+
+displayedMnemonicIndex
+
+All buttons
+
+DISPLAYED_MNEMONIC_INDEX_KEY
+
+If the value of
+
+DISPLAYED_MNEMONIC_INDEX_KEY
+
+is beyond the
+bounds of the text, it is ignored. When
+
+setAction
+
+is called, if
+the value from the
+
+Action
+
+is
+
+null
+
+, the displayed mnemonic
+index is not updated. In any subsequent changes to
+
+DISPLAYED_MNEMONIC_INDEX_KEY
+
+,
+
+null
+
+is treated as -1.
+
+icon
+
+All buttons except of
+
+JCheckBox
+
+,
+
+JToggleButton
+
+and
+
+JRadioButton
+
+.
+
+either
+
+LARGE_ICON_KEY
+
+or
+
+SMALL_ICON
+
+The
+
+JMenuItem
+
+subclasses only use
+
+SMALL_ICON
+
+. All
+other buttons will use
+
+LARGE_ICON_KEY
+
+; if the value is
+
+null
+
+they use
+
+SMALL_ICON
+
+.
+
+accelerator
+
+All
+
+JMenuItem
+
+subclasses, with the exception of
+
+JMenu
+
+.
+
+ACCELERATOR_KEY
+
+selected
+
+JToggleButton
+
+,
+
+JCheckBox
+
+,
+
+JRadioButton
+
+,
+
+JCheckBoxMenuItem
+
+and
+
+JRadioButtonMenuItem
+
+SELECTED_KEY
+
+Components that honor this property only use the value if it is
+
+non-null
+
+. For example, if you set an
+
+Action
+
+that has a
+
+null
+
+value for
+
+SELECTED_KEY
+
+on a
+
+JToggleButton
+
+,
+the
+
+JToggleButton
+
+will not update it's selected state in any way.
+Similarly, any time the
+
+JToggleButton
+
+'s selected state changes it
+will only set the value back on the
+
+Action
+
+if the
+
+Action
+
+has a
+
+non-null
+
+value for
+
+SELECTED_KEY
+
+.
+
+Components that honor this property keep their selected state in sync with
+this property. When the same
+
+Action
+
+is used with multiple
+components, all the components keep their selected state in sync with this
+property. Mutually exclusive buttons, such as
+
+JToggleButton
+
+s in a
+
+ButtonGroup
+
+, force only one of the buttons to be selected. As
+such, do not use the same
+
+Action
+
+that defines a value for the
+
+SELECTED_KEY
+
+property with multiple mutually exclusive buttons.
+
+JPopupMenu
+
+,
+
+JToolBar
+
+and
+
+JMenu
+
+all provide convenience methods for creating a component and setting the
+
+Action
+
+on the corresponding component. Refer to each of
+these classes for more information.
+
+Action
+
+uses
+
+PropertyChangeListener
+
+to
+inform listeners the
+
+Action
+
+has changed. The beans
+specification indicates that a
+
+null
+
+property name can
+be used to indicate multiple values have changed. By default Swing
+components that take an
+
+Action
+
+do not handle such a
+change. To indicate that Swing should treat
+
+null
+
+according to the beans specification set the system property
+
+swing.actions.reconfigureOnNull
+
+to the
+
+String
+
+value
+
+true
+
+.
+
+---
+
+#### Swing Components Supporting Action
+
+Many of Swing's components have an
+
+Action
+
+property. When
+an
+
+Action
+
+is set on a component, the following things
+happen:
+
+- The
+
+Action
+
+is added as an
+
+ActionListener
+
+to
+the component.
+
+The component configures some of its properties to match the
+
+Action
+
+.
+
+The component installs a
+
+PropertyChangeListener
+
+on the
+
+Action
+
+so that the component can change its properties
+to reflect changes in the
+
+Action
+
+'s properties.
+
+The following table describes the properties used by
+
+Swing
+
+components that support
+
+Actions
+
+.
+In the table,
+
+button
+
+refers to any
+
+AbstractButton
+
+subclass, which includes not only
+
+JButton
+
+but also classes such as
+
+JMenuItem
+
+. Unless otherwise stated, a
+
+null
+
+property value in an
+
+Action
+
+(or a
+
+Action
+
+that is
+
+null
+
+) results in the
+button's corresponding property being set to
+
+null
+
+.
+
+Supported Action properties
+
+Component Property
+
+Components
+
+Action Key
+
+Notes
+
+enabled
+
+All
+
+The
+
+isEnabled
+
+method
+
+toolTipText
+
+All
+
+SHORT_DESCRIPTION
+
+actionCommand
+
+All
+
+ACTION_COMMAND_KEY
+
+mnemonic
+
+All buttons
+
+MNEMONIC_KEY
+
+A
+
+null
+
+value or
+
+Action
+
+results in the button's
+
+mnemonic
+
+property being set to
+
+'\0'
+
+.
+
+text
+
+All buttons
+
+NAME
+
+If you do not want the text of the button to mirror that of the
+
+Action
+
+, set the property
+
+hideActionText
+
+to
+
+true
+
+.
+If
+
+hideActionText
+
+is
+
+true
+
+, setting the
+
+Action
+
+changes the text of the button to
+
+null
+
+and any changes to
+
+NAME
+
+are ignored.
+
+hideActionText
+
+is useful for tool bar
+buttons that typically only show an
+
+Icon
+
+.
+
+JToolBar.add(Action)
+
+sets the property to
+
+true
+
+if the
+
+Action
+
+has a non-
+
+null
+
+value for
+
+LARGE_ICON_KEY
+
+or
+
+SMALL_ICON
+
+.
+
+displayedMnemonicIndex
+
+All buttons
+
+DISPLAYED_MNEMONIC_INDEX_KEY
+
+If the value of
+
+DISPLAYED_MNEMONIC_INDEX_KEY
+
+is beyond the
+bounds of the text, it is ignored. When
+
+setAction
+
+is called, if
+the value from the
+
+Action
+
+is
+
+null
+
+, the displayed mnemonic
+index is not updated. In any subsequent changes to
+
+DISPLAYED_MNEMONIC_INDEX_KEY
+
+,
+
+null
+
+is treated as -1.
+
+icon
+
+All buttons except of
+
+JCheckBox
+
+,
+
+JToggleButton
+
+and
+
+JRadioButton
+
+.
+
+either
+
+LARGE_ICON_KEY
+
+or
+
+SMALL_ICON
+
+The
+
+JMenuItem
+
+subclasses only use
+
+SMALL_ICON
+
+. All
+other buttons will use
+
+LARGE_ICON_KEY
+
+; if the value is
+
+null
+
+they use
+
+SMALL_ICON
+
+.
+
+accelerator
+
+All
+
+JMenuItem
+
+subclasses, with the exception of
+
+JMenu
+
+.
+
+ACCELERATOR_KEY
+
+selected
+
+JToggleButton
+
+,
+
+JCheckBox
+
+,
+
+JRadioButton
+
+,
+
+JCheckBoxMenuItem
+
+and
+
+JRadioButtonMenuItem
+
+SELECTED_KEY
+
+Components that honor this property only use the value if it is
+
+non-null
+
+. For example, if you set an
+
+Action
+
+that has a
+
+null
+
+value for
+
+SELECTED_KEY
+
+on a
+
+JToggleButton
+
+,
+the
+
+JToggleButton
+
+will not update it's selected state in any way.
+Similarly, any time the
+
+JToggleButton
+
+'s selected state changes it
+will only set the value back on the
+
+Action
+
+if the
+
+Action
+
+has a
+
+non-null
+
+value for
+
+SELECTED_KEY
+
+.
+
+Components that honor this property keep their selected state in sync with
+this property. When the same
+
+Action
+
+is used with multiple
+components, all the components keep their selected state in sync with this
+property. Mutually exclusive buttons, such as
+
+JToggleButton
+
+s in a
+
+ButtonGroup
+
+, force only one of the buttons to be selected. As
+such, do not use the same
+
+Action
+
+that defines a value for the
+
+SELECTED_KEY
+
+property with multiple mutually exclusive buttons.
+
+JPopupMenu
+
+,
+
+JToolBar
+
+and
+
+JMenu
+
+all provide convenience methods for creating a component and setting the
+
+Action
+
+on the corresponding component. Refer to each of
+these classes for more information.
+
+Action
+
+uses
+
+PropertyChangeListener
+
+to
+inform listeners the
+
+Action
+
+has changed. The beans
+specification indicates that a
+
+null
+
+property name can
+be used to indicate multiple values have changed. By default Swing
+components that take an
+
+Action
+
+do not handle such a
+change. To indicate that Swing should treat
+
+null
+
+according to the beans specification set the system property
+
+swing.actions.reconfigureOnNull
+
+to the
+
+String
+
+value
+
+true
+
+.
+
+The
+
+Action
+
+is added as an
+
+ActionListener
+
+to
+the component.
+
+The component configures some of its properties to match the
+
+Action
+
+.
+
+The component installs a
+
+PropertyChangeListener
+
+on the
+
+Action
+
+so that the component can change its properties
+to reflect changes in the
+
+Action
+
+'s properties.
+
+The following table describes the properties used by
+
+Swing
+
+components that support
+
+Actions
+
+.
+In the table,
+
+button
+
+refers to any
+
+AbstractButton
+
+subclass, which includes not only
+
+JButton
+
+but also classes such as
+
+JMenuItem
+
+. Unless otherwise stated, a
+
+null
+
+property value in an
+
+Action
+
+(or a
+
+Action
+
+that is
+
+null
+
+) results in the
+button's corresponding property being set to
+
+null
+
+.
+
+Supported Action properties
+
+Component Property
+
+Components
+
+Action Key
+
+Notes
+
+enabled
+
+All
+
+The
+
+isEnabled
+
+method
+
+toolTipText
+
+All
+
+SHORT_DESCRIPTION
+
+actionCommand
+
+All
+
+ACTION_COMMAND_KEY
+
+mnemonic
+
+All buttons
+
+MNEMONIC_KEY
+
+A
+
+null
+
+value or
+
+Action
+
+results in the button's
+
+mnemonic
+
+property being set to
+
+'\0'
+
+.
+
+text
+
+All buttons
+
+NAME
+
+If you do not want the text of the button to mirror that of the
+
+Action
+
+, set the property
+
+hideActionText
+
+to
+
+true
+
+.
+If
+
+hideActionText
+
+is
+
+true
+
+, setting the
+
+Action
+
+changes the text of the button to
+
+null
+
+and any changes to
+
+NAME
+
+are ignored.
+
+hideActionText
+
+is useful for tool bar
+buttons that typically only show an
+
+Icon
+
+.
+
+JToolBar.add(Action)
+
+sets the property to
+
+true
+
+if the
+
+Action
+
+has a non-
+
+null
+
+value for
+
+LARGE_ICON_KEY
+
+or
+
+SMALL_ICON
+
+.
+
+displayedMnemonicIndex
+
+All buttons
+
+DISPLAYED_MNEMONIC_INDEX_KEY
+
+If the value of
+
+DISPLAYED_MNEMONIC_INDEX_KEY
+
+is beyond the
+bounds of the text, it is ignored. When
+
+setAction
+
+is called, if
+the value from the
+
+Action
+
+is
+
+null
+
+, the displayed mnemonic
+index is not updated. In any subsequent changes to
+
+DISPLAYED_MNEMONIC_INDEX_KEY
+
+,
+
+null
+
+is treated as -1.
+
+icon
+
+All buttons except of
+
+JCheckBox
+
+,
+
+JToggleButton
+
+and
+
+JRadioButton
+
+.
+
+either
+
+LARGE_ICON_KEY
+
+or
+
+SMALL_ICON
+
+The
+
+JMenuItem
+
+subclasses only use
+
+SMALL_ICON
+
+. All
+other buttons will use
+
+LARGE_ICON_KEY
+
+; if the value is
+
+null
+
+they use
+
+SMALL_ICON
+
+.
+
+accelerator
+
+All
+
+JMenuItem
+
+subclasses, with the exception of
+
+JMenu
+
+.
+
+ACCELERATOR_KEY
+
+selected
+
+JToggleButton
+
+,
+
+JCheckBox
+
+,
+
+JRadioButton
+
+,
+
+JCheckBoxMenuItem
+
+and
+
+JRadioButtonMenuItem
+
+SELECTED_KEY
+
+Components that honor this property only use the value if it is
+
+non-null
+
+. For example, if you set an
+
+Action
+
+that has a
+
+null
+
+value for
+
+SELECTED_KEY
+
+on a
+
+JToggleButton
+
+,
+the
+
+JToggleButton
+
+will not update it's selected state in any way.
+Similarly, any time the
+
+JToggleButton
+
+'s selected state changes it
+will only set the value back on the
+
+Action
+
+if the
+
+Action
+
+has a
+
+non-null
+
+value for
+
+SELECTED_KEY
+
+.
+
+Components that honor this property keep their selected state in sync with
+this property. When the same
+
+Action
+
+is used with multiple
+components, all the components keep their selected state in sync with this
+property. Mutually exclusive buttons, such as
+
+JToggleButton
+
+s in a
+
+ButtonGroup
+
+, force only one of the buttons to be selected. As
+such, do not use the same
+
+Action
+
+that defines a value for the
+
+SELECTED_KEY
+
+property with multiple mutually exclusive buttons.
+
+JPopupMenu
+
+,
+
+JToolBar
+
+and
+
+JMenu
+
+all provide convenience methods for creating a component and setting the
+
+Action
+
+on the corresponding component. Refer to each of
+these classes for more information.
+
+Action
+
+uses
+
+PropertyChangeListener
+
+to
+inform listeners the
+
+Action
+
+has changed. The beans
+specification indicates that a
+
+null
+
+property name can
+be used to indicate multiple values have changed. By default Swing
+components that take an
+
+Action
+
+do not handle such a
+change. To indicate that Swing should treat
+
+null
+
+according to the beans specification set the system property
+
+swing.actions.reconfigureOnNull
+
+to the
+
+String
+
+value
+
+true
+
+.
+
+JPopupMenu
+
+,
+
+JToolBar
+
+and
+
+JMenu
+
+all provide convenience methods for creating a component and setting the
+
+Action
+
+on the corresponding component. Refer to each of
+these classes for more information.
+
+Action
+
+uses
+
+PropertyChangeListener
+
+to
+inform listeners the
+
+Action
+
+has changed. The beans
+specification indicates that a
+
+null
+
+property name can
+be used to indicate multiple values have changed. By default Swing
+components that take an
+
+Action
+
+do not handle such a
+change. To indicate that Swing should treat
+
+null
+
+according to the beans specification set the system property
+
+swing.actions.reconfigureOnNull
+
+to the
+
+String
+
+value
+
+true
+
+.
+
+Action
+
+uses
+
+PropertyChangeListener
+
+to
+inform listeners the
+
+Action
+
+has changed. The beans
+specification indicates that a
+
+null
+
+property name can
+be used to indicate multiple values have changed. By default Swing
+components that take an
+
+Action
+
+do not handle such a
+change. To indicate that Swing should treat
+
+null
+
+according to the beans specification set the system property
+
+swing.actions.reconfigureOnNull
+
+to the
+
+String
+
+value
+
+true
+
+.
+
+=========== FIELD SUMMARY ===========
+
+- Field Summary
+
+Fields
+
+Modifier and Type
+
+Field
+
+Description
+
+static
+
+String
+
+ACCELERATOR_KEY
+
+The key used for storing a
+
+KeyStroke
+
+to be used as the
+accelerator for the action.
+
+static
+
+String
+
+ACTION_COMMAND_KEY
+
+The key used to determine the command
+
+String
+
+for the
+
+ActionEvent
+
+that will be created when an
+
+Action
+
+is going to be notified as the result of
+residing in a
+
+Keymap
+
+associated with a
+
+JComponent
+
+.
+
+static
+
+String
+
+DEFAULT
+
+Not currently used.
+
+static
+
+String
+
+DISPLAYED_MNEMONIC_INDEX_KEY
+
+The key used for storing an
+
+Integer
+
+that corresponds
+to the index in the text (identified by the
+
+NAME
+
+property) that the decoration for a mnemonic should be rendered at.
+
+static
+
+String
+
+LARGE_ICON_KEY
+
+The key used for storing an
+
+Icon
+
+.
+
+static
+
+String
+
+LONG_DESCRIPTION
+
+The key used for storing a longer
+
+String
+
+description for the action, could be used for context-sensitive help.
+
+static
+
+String
+
+MNEMONIC_KEY
+
+The key used for storing an
+
+Integer
+
+that corresponds to
+one of the
+
+KeyEvent
+
+key codes.
+
+static
+
+String
+
+NAME
+
+The key used for storing the
+
+String
+
+name
+for the action, used for a menu or button.
+
+static
+
+String
+
+SELECTED_KEY
+
+The key used for storing a
+
+Boolean
+
+that corresponds
+to the selected state.
+
+static
+
+String
+
+SHORT_DESCRIPTION
+
+The key used for storing a short
+
+String
+
+description for the action, used for tooltip text.
+
+static
+
+String
+
+SMALL_ICON
+
+The key used for storing a small
+
+Icon
+
+, such
+as
+
+ImageIcon
+
+.
+
+========== METHOD SUMMARY ===========
+
+- Method Summary
+
+All Methods
+
+Instance Methods
+
+Abstract Methods
+
+Default Methods
+
+Modifier and Type
+
+Method
+
+Description
+
+default boolean
+
+accept
+
+​(
+
+Object
+
+sender)
+
+Determines whether the action should be performed with the specified
+sender object.
+
+void
+
+addPropertyChangeListener
+
+​(
+
+PropertyChangeListener
+
+listener)
+
+Adds a
+
+PropertyChange
+
+listener.
+
+Object
+
+getValue
+
+​(
+
+String
+
+key)
+
+Gets one of this object's properties
+using the associated key.
+
+boolean
+
+isEnabled
+
+()
+
+Returns the enabled state of the
+
+Action
+
+.
+
+void
+
+putValue
+
+​(
+
+String
+
+key,
+
+Object
+
+value)
+
+Sets one of this object's properties
+using the associated key.
+
+void
+
+removePropertyChangeListener
+
+​(
+
+PropertyChangeListener
+
+listener)
+
+Removes a
+
+PropertyChange
+
+listener.
+
+void
+
+setEnabled
+
+​(boolean b)
+
+Sets the enabled state of the
+
+Action
+
+.
+
+- Methods declared in interface java.awt.event.
+
+ActionListener
+
+actionPerformed
+
+Field Summary
+
+Fields
+
+Modifier and Type
+
+Field
+
+Description
+
+static
+
+String
+
+ACCELERATOR_KEY
+
+The key used for storing a
+
+KeyStroke
+
+to be used as the
+accelerator for the action.
+
+static
+
+String
+
+ACTION_COMMAND_KEY
+
+The key used to determine the command
+
+String
+
+for the
+
+ActionEvent
+
+that will be created when an
+
+Action
+
+is going to be notified as the result of
+residing in a
+
+Keymap
+
+associated with a
+
+JComponent
+
+.
+
+static
+
+String
+
+DEFAULT
+
+Not currently used.
+
+static
+
+String
+
+DISPLAYED_MNEMONIC_INDEX_KEY
+
+The key used for storing an
+
+Integer
+
+that corresponds
+to the index in the text (identified by the
+
+NAME
+
+property) that the decoration for a mnemonic should be rendered at.
+
+static
+
+String
+
+LARGE_ICON_KEY
+
+The key used for storing an
+
+Icon
+
+.
+
+static
+
+String
+
+LONG_DESCRIPTION
+
+The key used for storing a longer
+
+String
+
+description for the action, could be used for context-sensitive help.
+
+static
+
+String
+
+MNEMONIC_KEY
+
+The key used for storing an
+
+Integer
+
+that corresponds to
+one of the
+
+KeyEvent
+
+key codes.
+
+static
+
+String
+
+NAME
+
+The key used for storing the
+
+String
+
+name
+for the action, used for a menu or button.
+
+static
+
+String
+
+SELECTED_KEY
+
+The key used for storing a
+
+Boolean
+
+that corresponds
+to the selected state.
+
+static
+
+String
+
+SHORT_DESCRIPTION
+
+The key used for storing a short
+
+String
+
+description for the action, used for tooltip text.
+
+static
+
+String
+
+SMALL_ICON
+
+The key used for storing a small
+
+Icon
+
+, such
+as
+
+ImageIcon
+
+.
+
+---
+
+#### Field Summary
+
+The key used for storing a
+
+KeyStroke
+
+to be used as the
+accelerator for the action.
+
+The key used to determine the command
+
+String
+
+for the
+
+ActionEvent
+
+that will be created when an
+
+Action
+
+is going to be notified as the result of
+residing in a
+
+Keymap
+
+associated with a
+
+JComponent
+
+.
+
+Not currently used.
+
+The key used for storing an
+
+Integer
+
+that corresponds
+to the index in the text (identified by the
+
+NAME
+
+property) that the decoration for a mnemonic should be rendered at.
+
+The key used for storing an
+
+Icon
+
+.
+
+The key used for storing a longer
+
+String
+
+description for the action, could be used for context-sensitive help.
+
+The key used for storing an
+
+Integer
+
+that corresponds to
+one of the
+
+KeyEvent
+
+key codes.
+
+The key used for storing the
+
+String
+
+name
+for the action, used for a menu or button.
+
+The key used for storing a
+
+Boolean
+
+that corresponds
+to the selected state.
+
+The key used for storing a short
+
+String
+
+description for the action, used for tooltip text.
+
+The key used for storing a small
+
+Icon
+
+, such
+as
+
+ImageIcon
+
+.
+
+Method Summary
+
+All Methods
+
+Instance Methods
+
+Abstract Methods
+
+Default Methods
+
+Modifier and Type
+
+Method
+
+Description
+
+default boolean
+
+accept
+
+​(
+
+Object
+
+sender)
+
+Determines whether the action should be performed with the specified
+sender object.
+
+void
+
+addPropertyChangeListener
+
+​(
+
+PropertyChangeListener
+
+listener)
+
+Adds a
+
+PropertyChange
+
+listener.
+
+Object
+
+getValue
+
+​(
+
+String
+
+key)
+
+Gets one of this object's properties
+using the associated key.
+
+boolean
+
+isEnabled
+
+()
+
+Returns the enabled state of the
+
+Action
+
+.
+
+void
+
+putValue
+
+​(
+
+String
+
+key,
+
+Object
+
+value)
+
+Sets one of this object's properties
+using the associated key.
+
+void
+
+removePropertyChangeListener
+
+​(
+
+PropertyChangeListener
+
+listener)
+
+Removes a
+
+PropertyChange
+
+listener.
+
+void
+
+setEnabled
+
+​(boolean b)
+
+Sets the enabled state of the
+
+Action
+
+.
+
+- Methods declared in interface java.awt.event.
+
+ActionListener
+
+actionPerformed
+
+---
+
+#### Method Summary
+
+Determines whether the action should be performed with the specified
+sender object.
+
+Adds a
+
+PropertyChange
+
+listener.
+
+Gets one of this object's properties
+using the associated key.
+
+Returns the enabled state of the
+
+Action
+
+.
+
+Sets one of this object's properties
+using the associated key.
+
+Removes a
+
+PropertyChange
+
+listener.
+
+Sets the enabled state of the
+
+Action
+
+.
+
+Methods declared in interface java.awt.event.
+
+ActionListener
+
+actionPerformed
+
+---
+
+#### Methods declared in interface java.awt.event. ActionListener
+
+============ FIELD DETAIL ===========
+
+- Field Detail
+
+- DEFAULT
+
+```java
+static final
+String
+DEFAULT
+```
+
+Not currently used.
+
+**See Also:** Constant Field Values
+
+- NAME
+
+```java
+static final
+String
+NAME
+```
+
+The key used for storing the
+
+String
+
+name
+for the action, used for a menu or button.
+
+**See Also:** Constant Field Values
+
+- SHORT_DESCRIPTION
+
+```java
+static final
+String
+SHORT_DESCRIPTION
+```
+
+The key used for storing a short
+
+String
+
+description for the action, used for tooltip text.
+
+**See Also:** Constant Field Values
+
+- LONG_DESCRIPTION
+
+```java
+static final
+String
+LONG_DESCRIPTION
+```
+
+The key used for storing a longer
+
+String
+
+description for the action, could be used for context-sensitive help.
+
+**See Also:** Constant Field Values
+
+- SMALL_ICON
+
+```java
+static final
+String
+SMALL_ICON
+```
+
+The key used for storing a small
+
+Icon
+
+, such
+as
+
+ImageIcon
+
+. This is typically used with
+menus such as
+
+JMenuItem
+
+.
+
+If the same
+
+Action
+
+is used with menus and buttons you'll
+typically specify both a
+
+SMALL_ICON
+
+and a
+
+LARGE_ICON_KEY
+
+. The menu will use the
+
+SMALL_ICON
+
+and the button will use the
+
+LARGE_ICON_KEY
+
+.
+
+**See Also:** Constant Field Values
+
+- ACTION_COMMAND_KEY
+
+```java
+static final
+String
+ACTION_COMMAND_KEY
+```
+
+The key used to determine the command
+
+String
+
+for the
+
+ActionEvent
+
+that will be created when an
+
+Action
+
+is going to be notified as the result of
+residing in a
+
+Keymap
+
+associated with a
+
+JComponent
+
+.
+
+**See Also:** Constant Field Values
+
+- ACCELERATOR_KEY
+
+```java
+static final
+String
+ACCELERATOR_KEY
+```
+
+The key used for storing a
+
+KeyStroke
+
+to be used as the
+accelerator for the action.
+
+**Since:** 1.3
+**See Also:** Constant Field Values
+
+- MNEMONIC_KEY
+
+```java
+static final
+String
+MNEMONIC_KEY
+```
+
+The key used for storing an
+
+Integer
+
+that corresponds to
+one of the
+
+KeyEvent
+
+key codes. The value is
+commonly used to specify a mnemonic. For example:
+
+myAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_A)
+
+sets the mnemonic of
+
+myAction
+
+to 'a', while
+
+myAction.putValue(Action.MNEMONIC_KEY, KeyEvent.getExtendedKeyCodeForChar('ф'))
+
+sets the mnemonic of
+
+myAction
+
+to Cyrillic letter "Ef".
+
+**Since:** 1.3
+**See Also:** Constant Field Values
+
+- SELECTED_KEY
+
+```java
+static final
+String
+SELECTED_KEY
+```
+
+The key used for storing a
+
+Boolean
+
+that corresponds
+to the selected state. This is typically used only for components
+that have a meaningful selection state. For example,
+
+JRadioButton
+
+and
+
+JCheckBox
+
+make use of
+this but instances of
+
+JMenu
+
+don't.
+
+This property differs from the others in that it is both read
+by the component and set by the component. For example,
+if an
+
+Action
+
+is attached to a
+
+JCheckBox
+
+the selected state of the
+
+JCheckBox
+
+will be set from
+that of the
+
+Action
+
+. If the user clicks on the
+
+JCheckBox
+
+the selected state of the
+
+JCheckBox
+
+and
+
+the
+
+Action
+
+will
+
+both
+
+be updated.
+
+Note: the value of this field is prefixed with 'Swing' to
+avoid possible collisions with existing
+
+Actions
+
+.
+
+**Since:** 1.6
+**See Also:** Constant Field Values
+
+- DISPLAYED_MNEMONIC_INDEX_KEY
+
+```java
+static final
+String
+DISPLAYED_MNEMONIC_INDEX_KEY
+```
+
+The key used for storing an
+
+Integer
+
+that corresponds
+to the index in the text (identified by the
+
+NAME
+
+property) that the decoration for a mnemonic should be rendered at. If
+the value of this property is greater than or equal to the length of
+the text, it will treated as -1.
+
+Note: the value of this field is prefixed with 'Swing' to
+avoid possible collisions with existing
+
+Actions
+
+.
+
+**Since:** 1.6
+**See Also:** AbstractButton.setDisplayedMnemonicIndex(int)
+
+,
+
+Constant Field Values
+
+- LARGE_ICON_KEY
+
+```java
+static final
+String
+LARGE_ICON_KEY
+```
+
+The key used for storing an
+
+Icon
+
+. This is typically
+used by buttons, such as
+
+JButton
+
+and
+
+JToggleButton
+
+.
+
+If the same
+
+Action
+
+is used with menus and buttons you'll
+typically specify both a
+
+SMALL_ICON
+
+and a
+
+LARGE_ICON_KEY
+
+. The menu will use the
+
+SMALL_ICON
+
+and the button the
+
+LARGE_ICON_KEY
+
+.
+
+Note: the value of this field is prefixed with 'Swing' to
+avoid possible collisions with existing
+
+Actions
+
+.
+
+**Since:** 1.6
+**See Also:** Constant Field Values
+
+============ METHOD DETAIL ==========
+
+- Method Detail
+
+- getValue
+
+```java
+Object
+getValue​(
+String
+key)
+```
+
+Gets one of this object's properties
+using the associated key.
+
+**Parameters:** key
+
+- a
+
+String
+
+containing the key
+**Returns:** the
+
+Object
+
+value
+**See Also:** putValue(java.lang.String, java.lang.Object)
+
+- putValue
+
+```java
+void putValue​(
+String
+key,
+
+Object
+value)
+```
+
+Sets one of this object's properties
+using the associated key. If the value has
+changed, a
+
+PropertyChangeEvent
+
+is sent
+to listeners.
+
+**Parameters:** key
+
+- a
+
+String
+
+containing the key
+**Parameters:** value
+
+- an
+
+Object
+
+value
+
+- setEnabled
+
+```java
+void setEnabled​(boolean b)
+```
+
+Sets the enabled state of the
+
+Action
+
+. When enabled,
+any component associated with this object is active and
+able to fire this object's
+
+actionPerformed
+
+method.
+If the value has changed, a
+
+PropertyChangeEvent
+
+is sent
+to listeners.
+
+**Parameters:** b
+
+- true to enable this
+
+Action
+
+, false to disable it
+**See Also:** accept(java.lang.Object)
+
+- isEnabled
+
+```java
+boolean isEnabled()
+```
+
+Returns the enabled state of the
+
+Action
+
+. When enabled,
+any component associated with this object is active and
+able to fire this object's
+
+actionPerformed
+
+method.
+
+**Returns:** true if this
+
+Action
+
+is enabled
+**See Also:** accept(java.lang.Object)
+
+- accept
+
+```java
+default boolean accept​(
+Object
+sender)
+```
+
+Determines whether the action should be performed with the specified
+sender object. The
+
+sender
+
+can be
+
+null
+
+.
+The method must return false if the action is disabled.
+
+**Parameters:** sender
+
+- the object to check, can be null
+**Returns:** true
+
+if the action should be performed with the sender
+object, must be false if the action is disabled.
+**See Also:** isEnabled()
+
+,
+
+setEnabled(boolean)
+
+- addPropertyChangeListener
+
+```java
+void addPropertyChangeListener​(
+PropertyChangeListener
+listener)
+```
+
+Adds a
+
+PropertyChange
+
+listener. Containers and attached
+components use these methods to register interest in this
+
+Action
+
+object. When its enabled state or other property
+changes, the registered listeners are informed of the change.
+
+**Parameters:** listener
+
+- a
+
+PropertyChangeListener
+
+object
+
+- removePropertyChangeListener
+
+```java
+void removePropertyChangeListener​(
+PropertyChangeListener
+listener)
+```
+
+Removes a
+
+PropertyChange
+
+listener.
+
+**Parameters:** listener
+
+- a
+
+PropertyChangeListener
+
+object
+**See Also:** addPropertyChangeListener(java.beans.PropertyChangeListener)
+
+Field Detail
+
+- DEFAULT
+
+```java
+static final
+String
+DEFAULT
+```
+
+Not currently used.
+
+**See Also:** Constant Field Values
+
+- NAME
+
+```java
+static final
+String
+NAME
+```
+
+The key used for storing the
+
+String
+
+name
+for the action, used for a menu or button.
+
+**See Also:** Constant Field Values
+
+- SHORT_DESCRIPTION
+
+```java
+static final
+String
+SHORT_DESCRIPTION
+```
+
+The key used for storing a short
+
+String
+
+description for the action, used for tooltip text.
+
+**See Also:** Constant Field Values
+
+- LONG_DESCRIPTION
+
+```java
+static final
+String
+LONG_DESCRIPTION
+```
+
+The key used for storing a longer
+
+String
+
+description for the action, could be used for context-sensitive help.
+
+**See Also:** Constant Field Values
+
+- SMALL_ICON
+
+```java
+static final
+String
+SMALL_ICON
+```
+
+The key used for storing a small
+
+Icon
+
+, such
+as
+
+ImageIcon
+
+. This is typically used with
+menus such as
+
+JMenuItem
+
+.
+
+If the same
+
+Action
+
+is used with menus and buttons you'll
+typically specify both a
+
+SMALL_ICON
+
+and a
+
+LARGE_ICON_KEY
+
+. The menu will use the
+
+SMALL_ICON
+
+and the button will use the
+
+LARGE_ICON_KEY
+
+.
+
+**See Also:** Constant Field Values
+
+- ACTION_COMMAND_KEY
+
+```java
+static final
+String
+ACTION_COMMAND_KEY
+```
+
+The key used to determine the command
+
+String
+
+for the
+
+ActionEvent
+
+that will be created when an
+
+Action
+
+is going to be notified as the result of
+residing in a
+
+Keymap
+
+associated with a
+
+JComponent
+
+.
+
+**See Also:** Constant Field Values
+
+- ACCELERATOR_KEY
+
+```java
+static final
+String
+ACCELERATOR_KEY
+```
+
+The key used for storing a
+
+KeyStroke
+
+to be used as the
+accelerator for the action.
+
+**Since:** 1.3
+**See Also:** Constant Field Values
+
+- MNEMONIC_KEY
+
+```java
+static final
+String
+MNEMONIC_KEY
+```
+
+The key used for storing an
+
+Integer
+
+that corresponds to
+one of the
+
+KeyEvent
+
+key codes. The value is
+commonly used to specify a mnemonic. For example:
+
+myAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_A)
+
+sets the mnemonic of
+
+myAction
+
+to 'a', while
+
+myAction.putValue(Action.MNEMONIC_KEY, KeyEvent.getExtendedKeyCodeForChar('ф'))
+
+sets the mnemonic of
+
+myAction
+
+to Cyrillic letter "Ef".
+
+**Since:** 1.3
+**See Also:** Constant Field Values
+
+- SELECTED_KEY
+
+```java
+static final
+String
+SELECTED_KEY
+```
+
+The key used for storing a
+
+Boolean
+
+that corresponds
+to the selected state. This is typically used only for components
+that have a meaningful selection state. For example,
+
+JRadioButton
+
+and
+
+JCheckBox
+
+make use of
+this but instances of
+
+JMenu
+
+don't.
+
+This property differs from the others in that it is both read
+by the component and set by the component. For example,
+if an
+
+Action
+
+is attached to a
+
+JCheckBox
+
+the selected state of the
+
+JCheckBox
+
+will be set from
+that of the
+
+Action
+
+. If the user clicks on the
+
+JCheckBox
+
+the selected state of the
+
+JCheckBox
+
+and
+
+the
+
+Action
+
+will
+
+both
+
+be updated.
+
+Note: the value of this field is prefixed with 'Swing' to
+avoid possible collisions with existing
+
+Actions
+
+.
+
+**Since:** 1.6
+**See Also:** Constant Field Values
+
+- DISPLAYED_MNEMONIC_INDEX_KEY
+
+```java
+static final
+String
+DISPLAYED_MNEMONIC_INDEX_KEY
+```
+
+The key used for storing an
+
+Integer
+
+that corresponds
+to the index in the text (identified by the
+
+NAME
+
+property) that the decoration for a mnemonic should be rendered at. If
+the value of this property is greater than or equal to the length of
+the text, it will treated as -1.
+
+Note: the value of this field is prefixed with 'Swing' to
+avoid possible collisions with existing
+
+Actions
+
+.
+
+**Since:** 1.6
+**See Also:** AbstractButton.setDisplayedMnemonicIndex(int)
+
+,
+
+Constant Field Values
+
+- LARGE_ICON_KEY
+
+```java
+static final
+String
+LARGE_ICON_KEY
+```
+
+The key used for storing an
+
+Icon
+
+. This is typically
+used by buttons, such as
+
+JButton
+
+and
+
+JToggleButton
+
+.
+
+If the same
+
+Action
+
+is used with menus and buttons you'll
+typically specify both a
+
+SMALL_ICON
+
+and a
+
+LARGE_ICON_KEY
+
+. The menu will use the
+
+SMALL_ICON
+
+and the button the
+
+LARGE_ICON_KEY
+
+.
+
+Note: the value of this field is prefixed with 'Swing' to
+avoid possible collisions with existing
+
+Actions
+
+.
+
+**Since:** 1.6
+**See Also:** Constant Field Values
+
+---
+
+#### Field Detail
+
+DEFAULT
+
+```java
+static final
+String
+DEFAULT
+```
+
+Not currently used.
+
+**See Also:** Constant Field Values
+
+---
+
+#### DEFAULT
+
+static final
+
+String
+
+DEFAULT
+
+Not currently used.
+
+NAME
+
+```java
+static final
+String
+NAME
+```
+
+The key used for storing the
+
+String
+
+name
+for the action, used for a menu or button.
+
+**See Also:** Constant Field Values
+
+---
+
+#### NAME
+
+static final
+
+String
+
+NAME
+
+The key used for storing the
+
+String
+
+name
+for the action, used for a menu or button.
+
+SHORT_DESCRIPTION
+
+```java
+static final
+String
+SHORT_DESCRIPTION
+```
+
+The key used for storing a short
+
+String
+
+description for the action, used for tooltip text.
+
+**See Also:** Constant Field Values
+
+---
+
+#### SHORT_DESCRIPTION
+
+static final
+
+String
+
+SHORT_DESCRIPTION
+
+The key used for storing a short
+
+String
+
+description for the action, used for tooltip text.
+
+LONG_DESCRIPTION
+
+```java
+static final
+String
+LONG_DESCRIPTION
+```
+
+The key used for storing a longer
+
+String
+
+description for the action, could be used for context-sensitive help.
+
+**See Also:** Constant Field Values
+
+---
+
+#### LONG_DESCRIPTION
+
+static final
+
+String
+
+LONG_DESCRIPTION
+
+The key used for storing a longer
+
+String
+
+description for the action, could be used for context-sensitive help.
+
+SMALL_ICON
+
+```java
+static final
+String
+SMALL_ICON
+```
+
+The key used for storing a small
+
+Icon
+
+, such
+as
+
+ImageIcon
+
+. This is typically used with
+menus such as
+
+JMenuItem
+
+.
+
+If the same
+
+Action
+
+is used with menus and buttons you'll
+typically specify both a
+
+SMALL_ICON
+
+and a
+
+LARGE_ICON_KEY
+
+. The menu will use the
+
+SMALL_ICON
+
+and the button will use the
+
+LARGE_ICON_KEY
+
+.
+
+**See Also:** Constant Field Values
+
+---
+
+#### SMALL_ICON
+
+static final
+
+String
+
+SMALL_ICON
+
+The key used for storing a small
+
+Icon
+
+, such
+as
+
+ImageIcon
+
+. This is typically used with
+menus such as
+
+JMenuItem
+
+.
+
+If the same
+
+Action
+
+is used with menus and buttons you'll
+typically specify both a
+
+SMALL_ICON
+
+and a
+
+LARGE_ICON_KEY
+
+. The menu will use the
+
+SMALL_ICON
+
+and the button will use the
+
+LARGE_ICON_KEY
+
+.
+
+If the same
+
+Action
+
+is used with menus and buttons you'll
+typically specify both a
+
+SMALL_ICON
+
+and a
+
+LARGE_ICON_KEY
+
+. The menu will use the
+
+SMALL_ICON
+
+and the button will use the
+
+LARGE_ICON_KEY
+
+.
+
+ACTION_COMMAND_KEY
+
+```java
+static final
+String
+ACTION_COMMAND_KEY
+```
+
+The key used to determine the command
+
+String
+
+for the
+
+ActionEvent
+
+that will be created when an
+
+Action
+
+is going to be notified as the result of
+residing in a
+
+Keymap
+
+associated with a
+
+JComponent
+
+.
+
+**See Also:** Constant Field Values
+
+---
+
+#### ACTION_COMMAND_KEY
+
+static final
+
+String
+
+ACTION_COMMAND_KEY
+
+The key used to determine the command
+
+String
+
+for the
+
+ActionEvent
+
+that will be created when an
+
+Action
+
+is going to be notified as the result of
+residing in a
+
+Keymap
+
+associated with a
+
+JComponent
+
+.
+
+ACCELERATOR_KEY
+
+```java
+static final
+String
+ACCELERATOR_KEY
+```
+
+The key used for storing a
+
+KeyStroke
+
+to be used as the
+accelerator for the action.
+
+**Since:** 1.3
+**See Also:** Constant Field Values
+
+---
+
+#### ACCELERATOR_KEY
+
+static final
+
+String
+
+ACCELERATOR_KEY
+
+The key used for storing a
+
+KeyStroke
+
+to be used as the
+accelerator for the action.
+
+MNEMONIC_KEY
+
+```java
+static final
+String
+MNEMONIC_KEY
+```
+
+The key used for storing an
+
+Integer
+
+that corresponds to
+one of the
+
+KeyEvent
+
+key codes. The value is
+commonly used to specify a mnemonic. For example:
+
+myAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_A)
+
+sets the mnemonic of
+
+myAction
+
+to 'a', while
+
+myAction.putValue(Action.MNEMONIC_KEY, KeyEvent.getExtendedKeyCodeForChar('ф'))
+
+sets the mnemonic of
+
+myAction
+
+to Cyrillic letter "Ef".
+
+**Since:** 1.3
+**See Also:** Constant Field Values
+
+---
+
+#### MNEMONIC_KEY
+
+static final
+
+String
+
+MNEMONIC_KEY
+
+The key used for storing an
+
+Integer
+
+that corresponds to
+one of the
+
+KeyEvent
+
+key codes. The value is
+commonly used to specify a mnemonic. For example:
+
+myAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_A)
+
+sets the mnemonic of
+
+myAction
+
+to 'a', while
+
+myAction.putValue(Action.MNEMONIC_KEY, KeyEvent.getExtendedKeyCodeForChar('ф'))
+
+sets the mnemonic of
+
+myAction
+
+to Cyrillic letter "Ef".
+
+SELECTED_KEY
+
+```java
+static final
+String
+SELECTED_KEY
+```
+
+The key used for storing a
+
+Boolean
+
+that corresponds
+to the selected state. This is typically used only for components
+that have a meaningful selection state. For example,
+
+JRadioButton
+
+and
+
+JCheckBox
+
+make use of
+this but instances of
+
+JMenu
+
+don't.
+
+This property differs from the others in that it is both read
+by the component and set by the component. For example,
+if an
+
+Action
+
+is attached to a
+
+JCheckBox
+
+the selected state of the
+
+JCheckBox
+
+will be set from
+that of the
+
+Action
+
+. If the user clicks on the
+
+JCheckBox
+
+the selected state of the
+
+JCheckBox
+
+and
+
+the
+
+Action
+
+will
+
+both
+
+be updated.
+
+Note: the value of this field is prefixed with 'Swing' to
+avoid possible collisions with existing
+
+Actions
+
+.
+
+**Since:** 1.6
+**See Also:** Constant Field Values
+
+---
+
+#### SELECTED_KEY
+
+static final
+
+String
+
+SELECTED_KEY
+
+The key used for storing a
+
+Boolean
+
+that corresponds
+to the selected state. This is typically used only for components
+that have a meaningful selection state. For example,
+
+JRadioButton
+
+and
+
+JCheckBox
+
+make use of
+this but instances of
+
+JMenu
+
+don't.
+
+This property differs from the others in that it is both read
+by the component and set by the component. For example,
+if an
+
+Action
+
+is attached to a
+
+JCheckBox
+
+the selected state of the
+
+JCheckBox
+
+will be set from
+that of the
+
+Action
+
+. If the user clicks on the
+
+JCheckBox
+
+the selected state of the
+
+JCheckBox
+
+and
+
+the
+
+Action
+
+will
+
+both
+
+be updated.
+
+Note: the value of this field is prefixed with 'Swing' to
+avoid possible collisions with existing
+
+Actions
+
+.
+
+This property differs from the others in that it is both read
+by the component and set by the component. For example,
+if an
+
+Action
+
+is attached to a
+
+JCheckBox
+
+the selected state of the
+
+JCheckBox
+
+will be set from
+that of the
+
+Action
+
+. If the user clicks on the
+
+JCheckBox
+
+the selected state of the
+
+JCheckBox
+
+and
+
+the
+
+Action
+
+will
+
+both
+
+be updated.
+
+Note: the value of this field is prefixed with 'Swing' to
+avoid possible collisions with existing
+
+Actions
+
+.
+
+Note: the value of this field is prefixed with 'Swing' to
+avoid possible collisions with existing
+
+Actions
+
+.
+
+DISPLAYED_MNEMONIC_INDEX_KEY
+
+```java
+static final
+String
+DISPLAYED_MNEMONIC_INDEX_KEY
+```
+
+The key used for storing an
+
+Integer
+
+that corresponds
+to the index in the text (identified by the
+
+NAME
+
+property) that the decoration for a mnemonic should be rendered at. If
+the value of this property is greater than or equal to the length of
+the text, it will treated as -1.
+
+Note: the value of this field is prefixed with 'Swing' to
+avoid possible collisions with existing
+
+Actions
+
+.
+
+**Since:** 1.6
+**See Also:** AbstractButton.setDisplayedMnemonicIndex(int)
+
+,
+
+Constant Field Values
+
+---
+
+#### DISPLAYED_MNEMONIC_INDEX_KEY
+
+static final
+
+String
+
+DISPLAYED_MNEMONIC_INDEX_KEY
+
+The key used for storing an
+
+Integer
+
+that corresponds
+to the index in the text (identified by the
+
+NAME
+
+property) that the decoration for a mnemonic should be rendered at. If
+the value of this property is greater than or equal to the length of
+the text, it will treated as -1.
+
+Note: the value of this field is prefixed with 'Swing' to
+avoid possible collisions with existing
+
+Actions
+
+.
+
+Note: the value of this field is prefixed with 'Swing' to
+avoid possible collisions with existing
+
+Actions
+
+.
+
+LARGE_ICON_KEY
+
+```java
+static final
+String
+LARGE_ICON_KEY
+```
+
+The key used for storing an
+
+Icon
+
+. This is typically
+used by buttons, such as
+
+JButton
+
+and
+
+JToggleButton
+
+.
+
+If the same
+
+Action
+
+is used with menus and buttons you'll
+typically specify both a
+
+SMALL_ICON
+
+and a
+
+LARGE_ICON_KEY
+
+. The menu will use the
+
+SMALL_ICON
+
+and the button the
+
+LARGE_ICON_KEY
+
+.
+
+Note: the value of this field is prefixed with 'Swing' to
+avoid possible collisions with existing
+
+Actions
+
+.
+
+**Since:** 1.6
+**See Also:** Constant Field Values
+
+---
+
+#### LARGE_ICON_KEY
+
+static final
+
+String
+
+LARGE_ICON_KEY
+
+The key used for storing an
+
+Icon
+
+. This is typically
+used by buttons, such as
+
+JButton
+
+and
+
+JToggleButton
+
+.
+
+If the same
+
+Action
+
+is used with menus and buttons you'll
+typically specify both a
+
+SMALL_ICON
+
+and a
+
+LARGE_ICON_KEY
+
+. The menu will use the
+
+SMALL_ICON
+
+and the button the
+
+LARGE_ICON_KEY
+
+.
+
+Note: the value of this field is prefixed with 'Swing' to
+avoid possible collisions with existing
+
+Actions
+
+.
+
+If the same
+
+Action
+
+is used with menus and buttons you'll
+typically specify both a
+
+SMALL_ICON
+
+and a
+
+LARGE_ICON_KEY
+
+. The menu will use the
+
+SMALL_ICON
+
+and the button the
+
+LARGE_ICON_KEY
+
+.
+
+Note: the value of this field is prefixed with 'Swing' to
+avoid possible collisions with existing
+
+Actions
+
+.
+
+Note: the value of this field is prefixed with 'Swing' to
+avoid possible collisions with existing
+
+Actions
+
+.
+
+Method Detail
+
+- getValue
+
+```java
+Object
+getValue​(
+String
+key)
+```
+
+Gets one of this object's properties
+using the associated key.
+
+**Parameters:** key
+
+- a
+
+String
+
+containing the key
+**Returns:** the
+
+Object
+
+value
+**See Also:** putValue(java.lang.String, java.lang.Object)
+
+- putValue
+
+```java
+void putValue​(
+String
+key,
+
+Object
+value)
+```
+
+Sets one of this object's properties
+using the associated key. If the value has
+changed, a
+
+PropertyChangeEvent
+
+is sent
+to listeners.
+
+**Parameters:** key
+
+- a
+
+String
+
+containing the key
+**Parameters:** value
+
+- an
+
+Object
+
+value
+
+- setEnabled
+
+```java
+void setEnabled​(boolean b)
+```
+
+Sets the enabled state of the
+
+Action
+
+. When enabled,
+any component associated with this object is active and
+able to fire this object's
+
+actionPerformed
+
+method.
+If the value has changed, a
+
+PropertyChangeEvent
+
+is sent
+to listeners.
+
+**Parameters:** b
+
+- true to enable this
+
+Action
+
+, false to disable it
+**See Also:** accept(java.lang.Object)
+
+- isEnabled
+
+```java
+boolean isEnabled()
+```
+
+Returns the enabled state of the
+
+Action
+
+. When enabled,
+any component associated with this object is active and
+able to fire this object's
+
+actionPerformed
+
+method.
+
+**Returns:** true if this
+
+Action
+
+is enabled
+**See Also:** accept(java.lang.Object)
+
+- accept
+
+```java
+default boolean accept​(
+Object
+sender)
+```
+
+Determines whether the action should be performed with the specified
+sender object. The
+
+sender
+
+can be
+
+null
+
+.
+The method must return false if the action is disabled.
+
+**Parameters:** sender
+
+- the object to check, can be null
+**Returns:** true
+
+if the action should be performed with the sender
+object, must be false if the action is disabled.
+**See Also:** isEnabled()
+
+,
+
+setEnabled(boolean)
+
+- addPropertyChangeListener
+
+```java
+void addPropertyChangeListener​(
+PropertyChangeListener
+listener)
+```
+
+Adds a
+
+PropertyChange
+
+listener. Containers and attached
+components use these methods to register interest in this
+
+Action
+
+object. When its enabled state or other property
+changes, the registered listeners are informed of the change.
+
+**Parameters:** listener
+
+- a
+
+PropertyChangeListener
+
+object
+
+- removePropertyChangeListener
+
+```java
+void removePropertyChangeListener​(
+PropertyChangeListener
+listener)
+```
+
+Removes a
+
+PropertyChange
+
+listener.
+
+**Parameters:** listener
+
+- a
+
+PropertyChangeListener
+
+object
+**See Also:** addPropertyChangeListener(java.beans.PropertyChangeListener)
+
+---
+
+#### Method Detail
+
+getValue
+
+```java
+Object
+getValue​(
+String
+key)
+```
+
+Gets one of this object's properties
+using the associated key.
+
+**Parameters:** key
+
+- a
+
+String
+
+containing the key
+**Returns:** the
+
+Object
+
+value
+**See Also:** putValue(java.lang.String, java.lang.Object)
+
+---
+
+#### getValue
+
+Object
+
+getValue​(
+
+String
+
+key)
+
+Gets one of this object's properties
+using the associated key.
+
+putValue
+
+```java
+void putValue​(
+String
+key,
+
+Object
+value)
+```
+
+Sets one of this object's properties
+using the associated key. If the value has
+changed, a
+
+PropertyChangeEvent
+
+is sent
+to listeners.
+
+**Parameters:** key
+
+- a
+
+String
+
+containing the key
+**Parameters:** value
+
+- an
+
+Object
+
+value
+
+---
+
+#### putValue
+
+void putValue​(
+
+String
+
+key,
+
+Object
+
+value)
+
+Sets one of this object's properties
+using the associated key. If the value has
+changed, a
+
+PropertyChangeEvent
+
+is sent
+to listeners.
+
+setEnabled
+
+```java
+void setEnabled​(boolean b)
+```
+
+Sets the enabled state of the
+
+Action
+
+. When enabled,
+any component associated with this object is active and
+able to fire this object's
+
+actionPerformed
+
+method.
+If the value has changed, a
+
+PropertyChangeEvent
+
+is sent
+to listeners.
+
+**Parameters:** b
+
+- true to enable this
+
+Action
+
+, false to disable it
+**See Also:** accept(java.lang.Object)
+
+---
+
+#### setEnabled
+
+void setEnabled​(boolean b)
+
+Sets the enabled state of the
+
+Action
+
+. When enabled,
+any component associated with this object is active and
+able to fire this object's
+
+actionPerformed
+
+method.
+If the value has changed, a
+
+PropertyChangeEvent
+
+is sent
+to listeners.
+
+isEnabled
+
+```java
+boolean isEnabled()
+```
+
+Returns the enabled state of the
+
+Action
+
+. When enabled,
+any component associated with this object is active and
+able to fire this object's
+
+actionPerformed
+
+method.
+
+**Returns:** true if this
+
+Action
+
+is enabled
+**See Also:** accept(java.lang.Object)
+
+---
+
+#### isEnabled
+
+boolean isEnabled()
+
+Returns the enabled state of the
+
+Action
+
+. When enabled,
+any component associated with this object is active and
+able to fire this object's
+
+actionPerformed
+
+method.
+
+accept
+
+```java
+default boolean accept​(
+Object
+sender)
+```
+
+Determines whether the action should be performed with the specified
+sender object. The
+
+sender
+
+can be
+
+null
+
+.
+The method must return false if the action is disabled.
+
+**Parameters:** sender
+
+- the object to check, can be null
+**Returns:** true
+
+if the action should be performed with the sender
+object, must be false if the action is disabled.
+**See Also:** isEnabled()
+
+,
+
+setEnabled(boolean)
+
+---
+
+#### accept
+
+default boolean accept​(
+
+Object
+
+sender)
+
+Determines whether the action should be performed with the specified
+sender object. The
+
+sender
+
+can be
+
+null
+
+.
+The method must return false if the action is disabled.
+
+addPropertyChangeListener
+
+```java
+void addPropertyChangeListener​(
+PropertyChangeListener
+listener)
+```
+
+Adds a
+
+PropertyChange
+
+listener. Containers and attached
+components use these methods to register interest in this
+
+Action
+
+object. When its enabled state or other property
+changes, the registered listeners are informed of the change.
+
+**Parameters:** listener
+
+- a
+
+PropertyChangeListener
+
+object
+
+---
+
+#### addPropertyChangeListener
+
+void addPropertyChangeListener​(
+
+PropertyChangeListener
+
+listener)
+
+Adds a
+
+PropertyChange
+
+listener. Containers and attached
+components use these methods to register interest in this
+
+Action
+
+object. When its enabled state or other property
+changes, the registered listeners are informed of the change.
+
+removePropertyChangeListener
+
+```java
+void removePropertyChangeListener​(
+PropertyChangeListener
+listener)
+```
+
+Removes a
+
+PropertyChange
+
+listener.
+
+**Parameters:** listener
+
+- a
+
+PropertyChangeListener
+
+object
+**See Also:** addPropertyChangeListener(java.beans.PropertyChangeListener)
+
+---
+
+#### removePropertyChangeListener
+
+void removePropertyChangeListener​(
+
+PropertyChangeListener
+
+listener)
+
+Removes a
+
+PropertyChange
+
+listener.
+
+---
+

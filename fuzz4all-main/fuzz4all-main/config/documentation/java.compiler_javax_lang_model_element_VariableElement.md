@@ -1,0 +1,921 @@
+# Interface VariableElement
+
+**Source:** `java.compiler\javax\lang\model\element\VariableElement.html`
+
+### Class Description
+
+```java
+public interface
+VariableElement
+
+extends
+Element
+```
+
+Represents a field,
+
+enum
+
+constant, method or constructor
+parameter, local variable, resource variable, or exception
+parameter.
+
+**All Superinterfaces:** AnnotatedConstruct
+
+,
+
+Element
+
+---
+
+### Field Details
+
+*No entries found.*
+
+### Constructor Details
+
+*No entries found.*
+
+### Method Details
+
+#### Object
+getConstantValue()
+
+Returns the value of this variable if this is a
+
+final
+
+field initialized to a compile-time constant. Returns
+
+null
+
+otherwise. The value will be of a primitive type or a
+
+String
+
+. If the value is of a primitive type, it is
+wrapped in the appropriate wrapper class (such as
+
+Integer
+
+).
+
+Note that not all
+
+final
+
+fields will have
+constant values. In particular,
+
+enum
+
+constants are
+
+not
+
+considered to be compile-time constants. To have a
+constant value, a field's type must be either a primitive type
+or
+
+String
+
+.
+
+**Returns:**
+- the value of this variable if this is a
+
+final
+
+field initialized to a compile-time constant, or
+
+null
+
+otherwise
+
+**See Also:**
+- Elements.getConstantExpression(Object)
+
+**See The Java™ Language Specification :**
+- 15.28 Constant Expression, 4.12.4 final Variables
+
+---
+
+#### Name
+getSimpleName()
+
+Returns the simple name of this variable element.
+
+For method and constructor parameters, the name of each
+parameter must be distinct from the names of all other
+parameters of the same executable. If the original source
+names are not available, an implementation may synthesize names
+subject to the distinctness requirement above.
+
+**Specified by:**
+- getSimpleName
+
+in interface
+
+Element
+
+**Returns:**
+- the simple name of this variable element
+
+**See Also:**
+- PackageElement.getSimpleName()
+
+,
+
+ExecutableElement.getSimpleName()
+
+,
+
+TypeElement.getSimpleName()
+
+,
+
+getSimpleName()
+
+,
+
+ModuleElement.getSimpleName()
+
+---
+
+#### Element
+getEnclosingElement()
+
+Returns the enclosing element of this variable.
+
+The enclosing element of a method or constructor parameter is
+the executable declaring the parameter.
+
+**Specified by:**
+- getEnclosingElement
+
+in interface
+
+Element
+
+**Returns:**
+- the enclosing element of this variable
+
+**See Also:**
+- Elements.getPackageOf(javax.lang.model.element.Element)
+
+---
+
+### Additional Sections
+
+#### Interface VariableElement
+
+**All Superinterfaces:** AnnotatedConstruct
+
+,
+
+Element
+
+```java
+public interface
+VariableElement
+
+extends
+Element
+```
+
+Represents a field,
+
+enum
+
+constant, method or constructor
+parameter, local variable, resource variable, or exception
+parameter.
+
+**Since:** 1.6
+
+public interface
+
+VariableElement
+
+extends
+
+Element
+
+Represents a field,
+
+enum
+
+constant, method or constructor
+parameter, local variable, resource variable, or exception
+parameter.
+
+========== METHOD SUMMARY ===========
+
+- Method Summary
+
+All Methods
+
+Instance Methods
+
+Abstract Methods
+
+Modifier and Type
+
+Method
+
+Description
+
+Object
+
+getConstantValue
+
+()
+
+Returns the value of this variable if this is a
+
+final
+
+field initialized to a compile-time constant.
+
+Element
+
+getEnclosingElement
+
+()
+
+Returns the enclosing element of this variable.
+
+Name
+
+getSimpleName
+
+()
+
+Returns the simple name of this variable element.
+
+- Methods declared in interface javax.lang.model.
+
+AnnotatedConstruct
+
+getAnnotationsByType
+
+- Methods declared in interface javax.lang.model.element.
+
+Element
+
+accept
+
+,
+
+asType
+
+,
+
+equals
+
+,
+
+getAnnotation
+
+,
+
+getAnnotationMirrors
+
+,
+
+getEnclosedElements
+
+,
+
+getKind
+
+,
+
+getModifiers
+
+,
+
+hashCode
+
+Method Summary
+
+All Methods
+
+Instance Methods
+
+Abstract Methods
+
+Modifier and Type
+
+Method
+
+Description
+
+Object
+
+getConstantValue
+
+()
+
+Returns the value of this variable if this is a
+
+final
+
+field initialized to a compile-time constant.
+
+Element
+
+getEnclosingElement
+
+()
+
+Returns the enclosing element of this variable.
+
+Name
+
+getSimpleName
+
+()
+
+Returns the simple name of this variable element.
+
+- Methods declared in interface javax.lang.model.
+
+AnnotatedConstruct
+
+getAnnotationsByType
+
+- Methods declared in interface javax.lang.model.element.
+
+Element
+
+accept
+
+,
+
+asType
+
+,
+
+equals
+
+,
+
+getAnnotation
+
+,
+
+getAnnotationMirrors
+
+,
+
+getEnclosedElements
+
+,
+
+getKind
+
+,
+
+getModifiers
+
+,
+
+hashCode
+
+---
+
+#### Method Summary
+
+Returns the value of this variable if this is a
+
+final
+
+field initialized to a compile-time constant.
+
+Returns the enclosing element of this variable.
+
+Returns the simple name of this variable element.
+
+Methods declared in interface javax.lang.model.
+
+AnnotatedConstruct
+
+getAnnotationsByType
+
+---
+
+#### Methods declared in interface javax.lang.model. AnnotatedConstruct
+
+Methods declared in interface javax.lang.model.element.
+
+Element
+
+accept
+
+,
+
+asType
+
+,
+
+equals
+
+,
+
+getAnnotation
+
+,
+
+getAnnotationMirrors
+
+,
+
+getEnclosedElements
+
+,
+
+getKind
+
+,
+
+getModifiers
+
+,
+
+hashCode
+
+---
+
+#### Methods declared in interface javax.lang.model.element. Element
+
+============ METHOD DETAIL ==========
+
+- Method Detail
+
+- getConstantValue
+
+```java
+Object
+getConstantValue()
+```
+
+Returns the value of this variable if this is a
+
+final
+
+field initialized to a compile-time constant. Returns
+
+null
+
+otherwise. The value will be of a primitive type or a
+
+String
+
+. If the value is of a primitive type, it is
+wrapped in the appropriate wrapper class (such as
+
+Integer
+
+).
+
+Note that not all
+
+final
+
+fields will have
+constant values. In particular,
+
+enum
+
+constants are
+
+not
+
+considered to be compile-time constants. To have a
+constant value, a field's type must be either a primitive type
+or
+
+String
+
+.
+
+**Returns:** the value of this variable if this is a
+
+final
+
+field initialized to a compile-time constant, or
+
+null
+
+otherwise
+**See Also:** Elements.getConstantExpression(Object)
+**See The Java™ Language Specification :** 15.28 Constant Expression, 4.12.4 final Variables
+
+- getSimpleName
+
+```java
+Name
+getSimpleName()
+```
+
+Returns the simple name of this variable element.
+
+For method and constructor parameters, the name of each
+parameter must be distinct from the names of all other
+parameters of the same executable. If the original source
+names are not available, an implementation may synthesize names
+subject to the distinctness requirement above.
+
+**Specified by:** getSimpleName
+
+in interface
+
+Element
+**Returns:** the simple name of this variable element
+**See Also:** PackageElement.getSimpleName()
+
+,
+
+ExecutableElement.getSimpleName()
+
+,
+
+TypeElement.getSimpleName()
+
+,
+
+getSimpleName()
+
+,
+
+ModuleElement.getSimpleName()
+
+- getEnclosingElement
+
+```java
+Element
+getEnclosingElement()
+```
+
+Returns the enclosing element of this variable.
+
+The enclosing element of a method or constructor parameter is
+the executable declaring the parameter.
+
+**Specified by:** getEnclosingElement
+
+in interface
+
+Element
+**Returns:** the enclosing element of this variable
+**See Also:** Elements.getPackageOf(javax.lang.model.element.Element)
+
+Method Detail
+
+- getConstantValue
+
+```java
+Object
+getConstantValue()
+```
+
+Returns the value of this variable if this is a
+
+final
+
+field initialized to a compile-time constant. Returns
+
+null
+
+otherwise. The value will be of a primitive type or a
+
+String
+
+. If the value is of a primitive type, it is
+wrapped in the appropriate wrapper class (such as
+
+Integer
+
+).
+
+Note that not all
+
+final
+
+fields will have
+constant values. In particular,
+
+enum
+
+constants are
+
+not
+
+considered to be compile-time constants. To have a
+constant value, a field's type must be either a primitive type
+or
+
+String
+
+.
+
+**Returns:** the value of this variable if this is a
+
+final
+
+field initialized to a compile-time constant, or
+
+null
+
+otherwise
+**See Also:** Elements.getConstantExpression(Object)
+**See The Java™ Language Specification :** 15.28 Constant Expression, 4.12.4 final Variables
+
+- getSimpleName
+
+```java
+Name
+getSimpleName()
+```
+
+Returns the simple name of this variable element.
+
+For method and constructor parameters, the name of each
+parameter must be distinct from the names of all other
+parameters of the same executable. If the original source
+names are not available, an implementation may synthesize names
+subject to the distinctness requirement above.
+
+**Specified by:** getSimpleName
+
+in interface
+
+Element
+**Returns:** the simple name of this variable element
+**See Also:** PackageElement.getSimpleName()
+
+,
+
+ExecutableElement.getSimpleName()
+
+,
+
+TypeElement.getSimpleName()
+
+,
+
+getSimpleName()
+
+,
+
+ModuleElement.getSimpleName()
+
+- getEnclosingElement
+
+```java
+Element
+getEnclosingElement()
+```
+
+Returns the enclosing element of this variable.
+
+The enclosing element of a method or constructor parameter is
+the executable declaring the parameter.
+
+**Specified by:** getEnclosingElement
+
+in interface
+
+Element
+**Returns:** the enclosing element of this variable
+**See Also:** Elements.getPackageOf(javax.lang.model.element.Element)
+
+---
+
+#### Method Detail
+
+getConstantValue
+
+```java
+Object
+getConstantValue()
+```
+
+Returns the value of this variable if this is a
+
+final
+
+field initialized to a compile-time constant. Returns
+
+null
+
+otherwise. The value will be of a primitive type or a
+
+String
+
+. If the value is of a primitive type, it is
+wrapped in the appropriate wrapper class (such as
+
+Integer
+
+).
+
+Note that not all
+
+final
+
+fields will have
+constant values. In particular,
+
+enum
+
+constants are
+
+not
+
+considered to be compile-time constants. To have a
+constant value, a field's type must be either a primitive type
+or
+
+String
+
+.
+
+**Returns:** the value of this variable if this is a
+
+final
+
+field initialized to a compile-time constant, or
+
+null
+
+otherwise
+**See Also:** Elements.getConstantExpression(Object)
+**See The Java™ Language Specification :** 15.28 Constant Expression, 4.12.4 final Variables
+
+---
+
+#### getConstantValue
+
+Object
+
+getConstantValue()
+
+Returns the value of this variable if this is a
+
+final
+
+field initialized to a compile-time constant. Returns
+
+null
+
+otherwise. The value will be of a primitive type or a
+
+String
+
+. If the value is of a primitive type, it is
+wrapped in the appropriate wrapper class (such as
+
+Integer
+
+).
+
+Note that not all
+
+final
+
+fields will have
+constant values. In particular,
+
+enum
+
+constants are
+
+not
+
+considered to be compile-time constants. To have a
+constant value, a field's type must be either a primitive type
+or
+
+String
+
+.
+
+Note that not all
+
+final
+
+fields will have
+constant values. In particular,
+
+enum
+
+constants are
+
+not
+
+considered to be compile-time constants. To have a
+constant value, a field's type must be either a primitive type
+or
+
+String
+
+.
+
+getSimpleName
+
+```java
+Name
+getSimpleName()
+```
+
+Returns the simple name of this variable element.
+
+For method and constructor parameters, the name of each
+parameter must be distinct from the names of all other
+parameters of the same executable. If the original source
+names are not available, an implementation may synthesize names
+subject to the distinctness requirement above.
+
+**Specified by:** getSimpleName
+
+in interface
+
+Element
+**Returns:** the simple name of this variable element
+**See Also:** PackageElement.getSimpleName()
+
+,
+
+ExecutableElement.getSimpleName()
+
+,
+
+TypeElement.getSimpleName()
+
+,
+
+getSimpleName()
+
+,
+
+ModuleElement.getSimpleName()
+
+---
+
+#### getSimpleName
+
+Name
+
+getSimpleName()
+
+Returns the simple name of this variable element.
+
+For method and constructor parameters, the name of each
+parameter must be distinct from the names of all other
+parameters of the same executable. If the original source
+names are not available, an implementation may synthesize names
+subject to the distinctness requirement above.
+
+For method and constructor parameters, the name of each
+parameter must be distinct from the names of all other
+parameters of the same executable. If the original source
+names are not available, an implementation may synthesize names
+subject to the distinctness requirement above.
+
+getEnclosingElement
+
+```java
+Element
+getEnclosingElement()
+```
+
+Returns the enclosing element of this variable.
+
+The enclosing element of a method or constructor parameter is
+the executable declaring the parameter.
+
+**Specified by:** getEnclosingElement
+
+in interface
+
+Element
+**Returns:** the enclosing element of this variable
+**See Also:** Elements.getPackageOf(javax.lang.model.element.Element)
+
+---
+
+#### getEnclosingElement
+
+Element
+
+getEnclosingElement()
+
+Returns the enclosing element of this variable.
+
+The enclosing element of a method or constructor parameter is
+the executable declaring the parameter.
+
+---
+

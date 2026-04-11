@@ -1,0 +1,1508 @@
+# Class PolicyQualifierInfo
+
+**Source:** `java.base\java\security\cert\PolicyQualifierInfo.html`
+
+### Class Description
+
+```java
+public class
+PolicyQualifierInfo
+
+extends
+Object
+```
+
+An immutable policy qualifier represented by the ASN.1 PolicyQualifierInfo
+structure.
+
+The ASN.1 definition is as follows:
+
+```java
+PolicyQualifierInfo ::= SEQUENCE {
+policyQualifierId PolicyQualifierId,
+qualifier ANY DEFINED BY policyQualifierId }
+```
+
+A certificate policies extension, if present in an X.509 version 3
+certificate, contains a sequence of one or more policy information terms,
+each of which consists of an object identifier (OID) and optional
+qualifiers. In an end-entity certificate, these policy information terms
+indicate the policy under which the certificate has been issued and the
+purposes for which the certificate may be used. In a CA certificate, these
+policy information terms limit the set of policies for certification paths
+which include this certificate.
+
+A
+
+Set
+
+of
+
+PolicyQualifierInfo
+
+objects are returned
+by the
+
+PolicyNode.getPolicyQualifiers
+
+method. This allows applications with specific policy requirements to
+process and validate each policy qualifier. Applications that need to
+process policy qualifiers should explicitly set the
+
+policyQualifiersRejected
+
+flag to false (by calling the
+
+PKIXParameters.setPolicyQualifiersRejected
+
+method) before validating
+a certification path.
+
+Note that the PKIX certification path validation algorithm specifies
+that any policy qualifier in a certificate policies extension that is
+marked critical must be processed and validated. Otherwise the
+certification path must be rejected. If the
+
+policyQualifiersRejected
+
+flag is set to false, it is up to
+the application to validate all policy qualifiers in this manner in order
+to be PKIX compliant.
+
+Concurrent Access
+
+All
+
+PolicyQualifierInfo
+
+objects must be immutable and
+thread-safe. That is, multiple threads may concurrently invoke the
+methods defined in this class on a single
+
+PolicyQualifierInfo
+
+object (or more than one) with no ill effects. Requiring
+
+PolicyQualifierInfo
+
+objects to be immutable and thread-safe
+allows them to be passed around to various pieces of code without
+worrying about coordinating access.
+
+**Since:** 1.4
+
+---
+
+### Field Details
+
+*No entries found.*
+
+### Constructor Details
+
+#### public PolicyQualifierInfo​(byte[] encoded)
+throws
+IOException
+
+Creates an instance of
+
+PolicyQualifierInfo
+
+from the
+encoded bytes. The encoded byte array is copied on construction.
+
+**Parameters:**
+- encoded
+
+- a byte array containing the qualifier in DER encoding
+
+**Throws:**
+- IOException
+
+- thrown if the byte array does not represent a
+valid and parsable policy qualifier
+
+---
+
+### Method Details
+
+#### public final
+String
+getPolicyQualifierId()
+
+Returns the
+
+policyQualifierId
+
+field of this
+
+PolicyQualifierInfo
+
+. The
+
+policyQualifierId
+
+is an Object Identifier (OID) represented by a set of nonnegative
+integers separated by periods.
+
+**Returns:**
+- the OID (never
+
+null
+
+)
+
+---
+
+#### public final byte[] getEncoded()
+
+Returns the ASN.1 DER encoded form of this
+
+PolicyQualifierInfo
+
+.
+
+**Returns:**
+- the ASN.1 DER encoded bytes (never
+
+null
+
+).
+Note that a copy is returned, so the data is cloned each time
+this method is called.
+
+---
+
+#### public final byte[] getPolicyQualifier()
+
+Returns the ASN.1 DER encoded form of the
+
+qualifier
+
+field of this
+
+PolicyQualifierInfo
+
+.
+
+**Returns:**
+- the ASN.1 DER encoded bytes of the
+
+qualifier
+
+field. Note that a copy is returned, so the data is cloned each
+time this method is called.
+
+---
+
+#### public
+String
+toString()
+
+Return a printable representation of this
+
+PolicyQualifierInfo
+
+.
+
+**Overrides:**
+- toString
+
+in class
+
+Object
+
+**Returns:**
+- a
+
+String
+
+describing the contents of this
+
+PolicyQualifierInfo
+
+---
+
+### Additional Sections
+
+#### Class PolicyQualifierInfo
+
+java.lang.Object
+
+- java.security.cert.PolicyQualifierInfo
+
+java.security.cert.PolicyQualifierInfo
+
+```java
+public class
+PolicyQualifierInfo
+
+extends
+Object
+```
+
+An immutable policy qualifier represented by the ASN.1 PolicyQualifierInfo
+structure.
+
+The ASN.1 definition is as follows:
+
+```java
+PolicyQualifierInfo ::= SEQUENCE {
+policyQualifierId PolicyQualifierId,
+qualifier ANY DEFINED BY policyQualifierId }
+```
+
+A certificate policies extension, if present in an X.509 version 3
+certificate, contains a sequence of one or more policy information terms,
+each of which consists of an object identifier (OID) and optional
+qualifiers. In an end-entity certificate, these policy information terms
+indicate the policy under which the certificate has been issued and the
+purposes for which the certificate may be used. In a CA certificate, these
+policy information terms limit the set of policies for certification paths
+which include this certificate.
+
+A
+
+Set
+
+of
+
+PolicyQualifierInfo
+
+objects are returned
+by the
+
+PolicyNode.getPolicyQualifiers
+
+method. This allows applications with specific policy requirements to
+process and validate each policy qualifier. Applications that need to
+process policy qualifiers should explicitly set the
+
+policyQualifiersRejected
+
+flag to false (by calling the
+
+PKIXParameters.setPolicyQualifiersRejected
+
+method) before validating
+a certification path.
+
+Note that the PKIX certification path validation algorithm specifies
+that any policy qualifier in a certificate policies extension that is
+marked critical must be processed and validated. Otherwise the
+certification path must be rejected. If the
+
+policyQualifiersRejected
+
+flag is set to false, it is up to
+the application to validate all policy qualifiers in this manner in order
+to be PKIX compliant.
+
+Concurrent Access
+
+All
+
+PolicyQualifierInfo
+
+objects must be immutable and
+thread-safe. That is, multiple threads may concurrently invoke the
+methods defined in this class on a single
+
+PolicyQualifierInfo
+
+object (or more than one) with no ill effects. Requiring
+
+PolicyQualifierInfo
+
+objects to be immutable and thread-safe
+allows them to be passed around to various pieces of code without
+worrying about coordinating access.
+
+**Since:** 1.4
+
+public class
+
+PolicyQualifierInfo
+
+extends
+
+Object
+
+An immutable policy qualifier represented by the ASN.1 PolicyQualifierInfo
+structure.
+
+The ASN.1 definition is as follows:
+
+```java
+PolicyQualifierInfo ::= SEQUENCE {
+policyQualifierId PolicyQualifierId,
+qualifier ANY DEFINED BY policyQualifierId }
+```
+
+A certificate policies extension, if present in an X.509 version 3
+certificate, contains a sequence of one or more policy information terms,
+each of which consists of an object identifier (OID) and optional
+qualifiers. In an end-entity certificate, these policy information terms
+indicate the policy under which the certificate has been issued and the
+purposes for which the certificate may be used. In a CA certificate, these
+policy information terms limit the set of policies for certification paths
+which include this certificate.
+
+A
+
+Set
+
+of
+
+PolicyQualifierInfo
+
+objects are returned
+by the
+
+PolicyNode.getPolicyQualifiers
+
+method. This allows applications with specific policy requirements to
+process and validate each policy qualifier. Applications that need to
+process policy qualifiers should explicitly set the
+
+policyQualifiersRejected
+
+flag to false (by calling the
+
+PKIXParameters.setPolicyQualifiersRejected
+
+method) before validating
+a certification path.
+
+Note that the PKIX certification path validation algorithm specifies
+that any policy qualifier in a certificate policies extension that is
+marked critical must be processed and validated. Otherwise the
+certification path must be rejected. If the
+
+policyQualifiersRejected
+
+flag is set to false, it is up to
+the application to validate all policy qualifiers in this manner in order
+to be PKIX compliant.
+
+Concurrent Access
+
+All
+
+PolicyQualifierInfo
+
+objects must be immutable and
+thread-safe. That is, multiple threads may concurrently invoke the
+methods defined in this class on a single
+
+PolicyQualifierInfo
+
+object (or more than one) with no ill effects. Requiring
+
+PolicyQualifierInfo
+
+objects to be immutable and thread-safe
+allows them to be passed around to various pieces of code without
+worrying about coordinating access.
+
+The ASN.1 definition is as follows:
+
+```java
+PolicyQualifierInfo ::= SEQUENCE {
+policyQualifierId PolicyQualifierId,
+qualifier ANY DEFINED BY policyQualifierId }
+```
+
+A certificate policies extension, if present in an X.509 version 3
+certificate, contains a sequence of one or more policy information terms,
+each of which consists of an object identifier (OID) and optional
+qualifiers. In an end-entity certificate, these policy information terms
+indicate the policy under which the certificate has been issued and the
+purposes for which the certificate may be used. In a CA certificate, these
+policy information terms limit the set of policies for certification paths
+which include this certificate.
+
+A
+
+Set
+
+of
+
+PolicyQualifierInfo
+
+objects are returned
+by the
+
+PolicyNode.getPolicyQualifiers
+
+method. This allows applications with specific policy requirements to
+process and validate each policy qualifier. Applications that need to
+process policy qualifiers should explicitly set the
+
+policyQualifiersRejected
+
+flag to false (by calling the
+
+PKIXParameters.setPolicyQualifiersRejected
+
+method) before validating
+a certification path.
+
+Note that the PKIX certification path validation algorithm specifies
+that any policy qualifier in a certificate policies extension that is
+marked critical must be processed and validated. Otherwise the
+certification path must be rejected. If the
+
+policyQualifiersRejected
+
+flag is set to false, it is up to
+the application to validate all policy qualifiers in this manner in order
+to be PKIX compliant.
+
+Concurrent Access
+
+All
+
+PolicyQualifierInfo
+
+objects must be immutable and
+thread-safe. That is, multiple threads may concurrently invoke the
+methods defined in this class on a single
+
+PolicyQualifierInfo
+
+object (or more than one) with no ill effects. Requiring
+
+PolicyQualifierInfo
+
+objects to be immutable and thread-safe
+allows them to be passed around to various pieces of code without
+worrying about coordinating access.
+
+PolicyQualifierInfo ::= SEQUENCE {
+policyQualifierId PolicyQualifierId,
+qualifier ANY DEFINED BY policyQualifierId }
+
+A certificate policies extension, if present in an X.509 version 3
+certificate, contains a sequence of one or more policy information terms,
+each of which consists of an object identifier (OID) and optional
+qualifiers. In an end-entity certificate, these policy information terms
+indicate the policy under which the certificate has been issued and the
+purposes for which the certificate may be used. In a CA certificate, these
+policy information terms limit the set of policies for certification paths
+which include this certificate.
+
+A
+
+Set
+
+of
+
+PolicyQualifierInfo
+
+objects are returned
+by the
+
+PolicyNode.getPolicyQualifiers
+
+method. This allows applications with specific policy requirements to
+process and validate each policy qualifier. Applications that need to
+process policy qualifiers should explicitly set the
+
+policyQualifiersRejected
+
+flag to false (by calling the
+
+PKIXParameters.setPolicyQualifiersRejected
+
+method) before validating
+a certification path.
+
+Note that the PKIX certification path validation algorithm specifies
+that any policy qualifier in a certificate policies extension that is
+marked critical must be processed and validated. Otherwise the
+certification path must be rejected. If the
+
+policyQualifiersRejected
+
+flag is set to false, it is up to
+the application to validate all policy qualifiers in this manner in order
+to be PKIX compliant.
+
+Concurrent Access
+
+All
+
+PolicyQualifierInfo
+
+objects must be immutable and
+thread-safe. That is, multiple threads may concurrently invoke the
+methods defined in this class on a single
+
+PolicyQualifierInfo
+
+object (or more than one) with no ill effects. Requiring
+
+PolicyQualifierInfo
+
+objects to be immutable and thread-safe
+allows them to be passed around to various pieces of code without
+worrying about coordinating access.
+
+A
+
+Set
+
+of
+
+PolicyQualifierInfo
+
+objects are returned
+by the
+
+PolicyNode.getPolicyQualifiers
+
+method. This allows applications with specific policy requirements to
+process and validate each policy qualifier. Applications that need to
+process policy qualifiers should explicitly set the
+
+policyQualifiersRejected
+
+flag to false (by calling the
+
+PKIXParameters.setPolicyQualifiersRejected
+
+method) before validating
+a certification path.
+
+Note that the PKIX certification path validation algorithm specifies
+that any policy qualifier in a certificate policies extension that is
+marked critical must be processed and validated. Otherwise the
+certification path must be rejected. If the
+
+policyQualifiersRejected
+
+flag is set to false, it is up to
+the application to validate all policy qualifiers in this manner in order
+to be PKIX compliant.
+
+Concurrent Access
+
+All
+
+PolicyQualifierInfo
+
+objects must be immutable and
+thread-safe. That is, multiple threads may concurrently invoke the
+methods defined in this class on a single
+
+PolicyQualifierInfo
+
+object (or more than one) with no ill effects. Requiring
+
+PolicyQualifierInfo
+
+objects to be immutable and thread-safe
+allows them to be passed around to various pieces of code without
+worrying about coordinating access.
+
+Note that the PKIX certification path validation algorithm specifies
+that any policy qualifier in a certificate policies extension that is
+marked critical must be processed and validated. Otherwise the
+certification path must be rejected. If the
+
+policyQualifiersRejected
+
+flag is set to false, it is up to
+the application to validate all policy qualifiers in this manner in order
+to be PKIX compliant.
+
+Concurrent Access
+
+All
+
+PolicyQualifierInfo
+
+objects must be immutable and
+thread-safe. That is, multiple threads may concurrently invoke the
+methods defined in this class on a single
+
+PolicyQualifierInfo
+
+object (or more than one) with no ill effects. Requiring
+
+PolicyQualifierInfo
+
+objects to be immutable and thread-safe
+allows them to be passed around to various pieces of code without
+worrying about coordinating access.
+
+Concurrent Access
+
+All
+
+PolicyQualifierInfo
+
+objects must be immutable and
+thread-safe. That is, multiple threads may concurrently invoke the
+methods defined in this class on a single
+
+PolicyQualifierInfo
+
+object (or more than one) with no ill effects. Requiring
+
+PolicyQualifierInfo
+
+objects to be immutable and thread-safe
+allows them to be passed around to various pieces of code without
+worrying about coordinating access.
+
+All
+
+PolicyQualifierInfo
+
+objects must be immutable and
+thread-safe. That is, multiple threads may concurrently invoke the
+methods defined in this class on a single
+
+PolicyQualifierInfo
+
+object (or more than one) with no ill effects. Requiring
+
+PolicyQualifierInfo
+
+objects to be immutable and thread-safe
+allows them to be passed around to various pieces of code without
+worrying about coordinating access.
+
+======== CONSTRUCTOR SUMMARY ========
+
+- Constructor Summary
+
+Constructors
+
+Constructor
+
+Description
+
+PolicyQualifierInfo
+
+​(byte[] encoded)
+
+Creates an instance of
+
+PolicyQualifierInfo
+
+from the
+encoded bytes.
+
+========== METHOD SUMMARY ===========
+
+- Method Summary
+
+All Methods
+
+Instance Methods
+
+Concrete Methods
+
+Modifier and Type
+
+Method
+
+Description
+
+byte[]
+
+getEncoded
+
+()
+
+Returns the ASN.1 DER encoded form of this
+
+PolicyQualifierInfo
+
+.
+
+byte[]
+
+getPolicyQualifier
+
+()
+
+Returns the ASN.1 DER encoded form of the
+
+qualifier
+
+field of this
+
+PolicyQualifierInfo
+
+.
+
+String
+
+getPolicyQualifierId
+
+()
+
+Returns the
+
+policyQualifierId
+
+field of this
+
+PolicyQualifierInfo
+
+.
+
+String
+
+toString
+
+()
+
+Return a printable representation of this
+
+PolicyQualifierInfo
+
+.
+
+- Methods declared in class java.lang.
+
+Object
+
+clone
+
+,
+
+equals
+
+,
+
+finalize
+
+,
+
+getClass
+
+,
+
+hashCode
+
+,
+
+notify
+
+,
+
+notifyAll
+
+,
+
+wait
+
+,
+
+wait
+
+,
+
+wait
+
+Constructor Summary
+
+Constructors
+
+Constructor
+
+Description
+
+PolicyQualifierInfo
+
+​(byte[] encoded)
+
+Creates an instance of
+
+PolicyQualifierInfo
+
+from the
+encoded bytes.
+
+---
+
+#### Constructor Summary
+
+Creates an instance of
+
+PolicyQualifierInfo
+
+from the
+encoded bytes.
+
+Method Summary
+
+All Methods
+
+Instance Methods
+
+Concrete Methods
+
+Modifier and Type
+
+Method
+
+Description
+
+byte[]
+
+getEncoded
+
+()
+
+Returns the ASN.1 DER encoded form of this
+
+PolicyQualifierInfo
+
+.
+
+byte[]
+
+getPolicyQualifier
+
+()
+
+Returns the ASN.1 DER encoded form of the
+
+qualifier
+
+field of this
+
+PolicyQualifierInfo
+
+.
+
+String
+
+getPolicyQualifierId
+
+()
+
+Returns the
+
+policyQualifierId
+
+field of this
+
+PolicyQualifierInfo
+
+.
+
+String
+
+toString
+
+()
+
+Return a printable representation of this
+
+PolicyQualifierInfo
+
+.
+
+- Methods declared in class java.lang.
+
+Object
+
+clone
+
+,
+
+equals
+
+,
+
+finalize
+
+,
+
+getClass
+
+,
+
+hashCode
+
+,
+
+notify
+
+,
+
+notifyAll
+
+,
+
+wait
+
+,
+
+wait
+
+,
+
+wait
+
+---
+
+#### Method Summary
+
+Returns the ASN.1 DER encoded form of this
+
+PolicyQualifierInfo
+
+.
+
+Returns the ASN.1 DER encoded form of the
+
+qualifier
+
+field of this
+
+PolicyQualifierInfo
+
+.
+
+Returns the
+
+policyQualifierId
+
+field of this
+
+PolicyQualifierInfo
+
+.
+
+Return a printable representation of this
+
+PolicyQualifierInfo
+
+.
+
+Methods declared in class java.lang.
+
+Object
+
+clone
+
+,
+
+equals
+
+,
+
+finalize
+
+,
+
+getClass
+
+,
+
+hashCode
+
+,
+
+notify
+
+,
+
+notifyAll
+
+,
+
+wait
+
+,
+
+wait
+
+,
+
+wait
+
+---
+
+#### Methods declared in class java.lang. Object
+
+========= CONSTRUCTOR DETAIL ========
+
+- Constructor Detail
+
+- PolicyQualifierInfo
+
+```java
+public PolicyQualifierInfo​(byte[] encoded)
+throws
+IOException
+```
+
+Creates an instance of
+
+PolicyQualifierInfo
+
+from the
+encoded bytes. The encoded byte array is copied on construction.
+
+**Parameters:** encoded
+
+- a byte array containing the qualifier in DER encoding
+**Throws:** IOException
+
+- thrown if the byte array does not represent a
+valid and parsable policy qualifier
+
+============ METHOD DETAIL ==========
+
+- Method Detail
+
+- getPolicyQualifierId
+
+```java
+public final
+String
+getPolicyQualifierId()
+```
+
+Returns the
+
+policyQualifierId
+
+field of this
+
+PolicyQualifierInfo
+
+. The
+
+policyQualifierId
+
+is an Object Identifier (OID) represented by a set of nonnegative
+integers separated by periods.
+
+**Returns:** the OID (never
+
+null
+
+)
+
+- getEncoded
+
+```java
+public final byte[] getEncoded()
+```
+
+Returns the ASN.1 DER encoded form of this
+
+PolicyQualifierInfo
+
+.
+
+**Returns:** the ASN.1 DER encoded bytes (never
+
+null
+
+).
+Note that a copy is returned, so the data is cloned each time
+this method is called.
+
+- getPolicyQualifier
+
+```java
+public final byte[] getPolicyQualifier()
+```
+
+Returns the ASN.1 DER encoded form of the
+
+qualifier
+
+field of this
+
+PolicyQualifierInfo
+
+.
+
+**Returns:** the ASN.1 DER encoded bytes of the
+
+qualifier
+
+field. Note that a copy is returned, so the data is cloned each
+time this method is called.
+
+- toString
+
+```java
+public
+String
+toString()
+```
+
+Return a printable representation of this
+
+PolicyQualifierInfo
+
+.
+
+**Overrides:** toString
+
+in class
+
+Object
+**Returns:** a
+
+String
+
+describing the contents of this
+
+PolicyQualifierInfo
+
+Constructor Detail
+
+- PolicyQualifierInfo
+
+```java
+public PolicyQualifierInfo​(byte[] encoded)
+throws
+IOException
+```
+
+Creates an instance of
+
+PolicyQualifierInfo
+
+from the
+encoded bytes. The encoded byte array is copied on construction.
+
+**Parameters:** encoded
+
+- a byte array containing the qualifier in DER encoding
+**Throws:** IOException
+
+- thrown if the byte array does not represent a
+valid and parsable policy qualifier
+
+---
+
+#### Constructor Detail
+
+PolicyQualifierInfo
+
+```java
+public PolicyQualifierInfo​(byte[] encoded)
+throws
+IOException
+```
+
+Creates an instance of
+
+PolicyQualifierInfo
+
+from the
+encoded bytes. The encoded byte array is copied on construction.
+
+**Parameters:** encoded
+
+- a byte array containing the qualifier in DER encoding
+**Throws:** IOException
+
+- thrown if the byte array does not represent a
+valid and parsable policy qualifier
+
+---
+
+#### PolicyQualifierInfo
+
+public PolicyQualifierInfo​(byte[] encoded)
+throws
+
+IOException
+
+Creates an instance of
+
+PolicyQualifierInfo
+
+from the
+encoded bytes. The encoded byte array is copied on construction.
+
+Method Detail
+
+- getPolicyQualifierId
+
+```java
+public final
+String
+getPolicyQualifierId()
+```
+
+Returns the
+
+policyQualifierId
+
+field of this
+
+PolicyQualifierInfo
+
+. The
+
+policyQualifierId
+
+is an Object Identifier (OID) represented by a set of nonnegative
+integers separated by periods.
+
+**Returns:** the OID (never
+
+null
+
+)
+
+- getEncoded
+
+```java
+public final byte[] getEncoded()
+```
+
+Returns the ASN.1 DER encoded form of this
+
+PolicyQualifierInfo
+
+.
+
+**Returns:** the ASN.1 DER encoded bytes (never
+
+null
+
+).
+Note that a copy is returned, so the data is cloned each time
+this method is called.
+
+- getPolicyQualifier
+
+```java
+public final byte[] getPolicyQualifier()
+```
+
+Returns the ASN.1 DER encoded form of the
+
+qualifier
+
+field of this
+
+PolicyQualifierInfo
+
+.
+
+**Returns:** the ASN.1 DER encoded bytes of the
+
+qualifier
+
+field. Note that a copy is returned, so the data is cloned each
+time this method is called.
+
+- toString
+
+```java
+public
+String
+toString()
+```
+
+Return a printable representation of this
+
+PolicyQualifierInfo
+
+.
+
+**Overrides:** toString
+
+in class
+
+Object
+**Returns:** a
+
+String
+
+describing the contents of this
+
+PolicyQualifierInfo
+
+---
+
+#### Method Detail
+
+getPolicyQualifierId
+
+```java
+public final
+String
+getPolicyQualifierId()
+```
+
+Returns the
+
+policyQualifierId
+
+field of this
+
+PolicyQualifierInfo
+
+. The
+
+policyQualifierId
+
+is an Object Identifier (OID) represented by a set of nonnegative
+integers separated by periods.
+
+**Returns:** the OID (never
+
+null
+
+)
+
+---
+
+#### getPolicyQualifierId
+
+public final
+
+String
+
+getPolicyQualifierId()
+
+Returns the
+
+policyQualifierId
+
+field of this
+
+PolicyQualifierInfo
+
+. The
+
+policyQualifierId
+
+is an Object Identifier (OID) represented by a set of nonnegative
+integers separated by periods.
+
+getEncoded
+
+```java
+public final byte[] getEncoded()
+```
+
+Returns the ASN.1 DER encoded form of this
+
+PolicyQualifierInfo
+
+.
+
+**Returns:** the ASN.1 DER encoded bytes (never
+
+null
+
+).
+Note that a copy is returned, so the data is cloned each time
+this method is called.
+
+---
+
+#### getEncoded
+
+public final byte[] getEncoded()
+
+Returns the ASN.1 DER encoded form of this
+
+PolicyQualifierInfo
+
+.
+
+getPolicyQualifier
+
+```java
+public final byte[] getPolicyQualifier()
+```
+
+Returns the ASN.1 DER encoded form of the
+
+qualifier
+
+field of this
+
+PolicyQualifierInfo
+
+.
+
+**Returns:** the ASN.1 DER encoded bytes of the
+
+qualifier
+
+field. Note that a copy is returned, so the data is cloned each
+time this method is called.
+
+---
+
+#### getPolicyQualifier
+
+public final byte[] getPolicyQualifier()
+
+Returns the ASN.1 DER encoded form of the
+
+qualifier
+
+field of this
+
+PolicyQualifierInfo
+
+.
+
+toString
+
+```java
+public
+String
+toString()
+```
+
+Return a printable representation of this
+
+PolicyQualifierInfo
+
+.
+
+**Overrides:** toString
+
+in class
+
+Object
+**Returns:** a
+
+String
+
+describing the contents of this
+
+PolicyQualifierInfo
+
+---
+
+#### toString
+
+public
+
+String
+
+toString()
+
+Return a printable representation of this
+
+PolicyQualifierInfo
+
+.
+
+---
+

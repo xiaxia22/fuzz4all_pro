@@ -1,0 +1,8125 @@
+# Class JSpinner.DefaultEditor
+
+**Source:** `java.desktop\javax\swing\JSpinner.DefaultEditor.html`
+
+### Class Description
+
+```java
+public static class
+JSpinner.DefaultEditor
+
+extends
+JPanel
+
+implements
+ChangeListener
+,
+PropertyChangeListener
+,
+LayoutManager
+```
+
+A simple base class for more specialized editors
+that displays a read-only view of the model's current
+value with a
+
+JFormattedTextField
+
+. Subclasses
+can configure the
+
+JFormattedTextField
+
+to create
+an editor that's appropriate for the type of model they
+support and they may want to override
+the
+
+stateChanged
+
+and
+
+propertyChanged
+
+methods, which keep the model and the text field in sync.
+
+This class defines a
+
+dismiss
+
+method that removes the
+editors
+
+ChangeListener
+
+from the
+
+JSpinner
+
+that it's part of. The
+
+setEditor
+
+method knows about
+
+DefaultEditor.dismiss
+
+, so if the developer
+replaces an editor that's derived from
+
+JSpinner.DefaultEditor
+
+its
+
+ChangeListener
+
+connection back to the
+
+JSpinner
+
+will be removed. However after that,
+it's up to the developer to manage their editor listeners.
+Similarly, if a subclass overrides
+
+createEditor
+
+,
+it's up to the subclasser to deal with their editor
+subsequently being replaced (with
+
+setEditor
+
+).
+We expect that in most cases, and in editor installed
+with
+
+setEditor
+
+or created by a
+
+createEditor
+
+override, will not be replaced anyway.
+
+This class is the
+
+LayoutManager
+
+for it's single
+
+JFormattedTextField
+
+child. By default the
+child is just centered with the parents insets.
+
+**All Implemented Interfaces:** ImageObserver
+
+,
+
+LayoutManager
+
+,
+
+MenuContainer
+
+,
+
+PropertyChangeListener
+
+,
+
+Serializable
+
+,
+
+EventListener
+
+,
+
+Accessible
+
+,
+
+ChangeListener
+
+---
+
+### Field Details
+
+*No entries found.*
+
+### Constructor Details
+
+#### public DefaultEditor​(
+JSpinner
+spinner)
+
+Constructs an editor component for the specified
+
+JSpinner
+
+.
+This
+
+DefaultEditor
+
+is it's own layout manager and
+it is added to the spinner's
+
+ChangeListener
+
+list.
+The constructor creates a single
+
+JFormattedTextField
+
+child,
+initializes it's value to be the spinner model's current value
+and adds it to
+
+this
+
+DefaultEditor
+
+.
+
+**Parameters:**
+- spinner
+
+- the spinner whose model
+
+this
+
+editor will monitor
+
+**See Also:**
+- getTextField()
+
+,
+
+JSpinner.addChangeListener(javax.swing.event.ChangeListener)
+
+---
+
+### Method Details
+
+#### public void dismiss​(
+JSpinner
+spinner)
+
+Disconnect
+
+this
+
+editor from the specified
+
+JSpinner
+
+. By default, this method removes
+itself from the spinners
+
+ChangeListener
+
+list.
+
+**Parameters:**
+- spinner
+
+- the
+
+JSpinner
+
+to disconnect this
+editor from; the same spinner as was passed to the constructor.
+
+---
+
+#### public
+JSpinner
+getSpinner()
+
+Returns the
+
+JSpinner
+
+ancestor of this editor or
+
+null
+
+if none of the ancestors are a
+
+JSpinner
+
+.
+Typically the editor's parent is a
+
+JSpinner
+
+however
+subclasses of
+
+JSpinner
+
+may override the
+the
+
+createEditor
+
+method and insert one or more containers
+between the
+
+JSpinner
+
+and it's editor.
+
+**Returns:**
+- JSpinner
+
+ancestor;
+
+null
+
+if none of the ancestors are a
+
+JSpinner
+
+**See Also:**
+- JSpinner.createEditor(javax.swing.SpinnerModel)
+
+---
+
+#### public
+JFormattedTextField
+getTextField()
+
+Returns the
+
+JFormattedTextField
+
+child of this
+editor. By default the text field is the first and only
+child of editor.
+
+**Returns:**
+- the
+
+JFormattedTextField
+
+that gives the user
+access to the
+
+SpinnerDateModel's
+
+value.
+
+**See Also:**
+- getSpinner()
+
+,
+
+JSpinner.getModel()
+
+---
+
+#### public void stateChanged​(
+ChangeEvent
+e)
+
+This method is called when the spinner's model's state changes.
+It sets the
+
+value
+
+of the text field to the current
+value of the spinners model.
+
+**Specified by:**
+- stateChanged
+
+in interface
+
+ChangeListener
+
+**Parameters:**
+- e
+
+- the
+
+ChangeEvent
+
+whose source is the
+
+JSpinner
+
+whose model has changed.
+
+**See Also:**
+- getTextField()
+
+,
+
+JSpinner.getValue()
+
+---
+
+#### public void propertyChange​(
+PropertyChangeEvent
+e)
+
+Called by the
+
+JFormattedTextField
+
+PropertyChangeListener
+
+. When the
+
+"value"
+
+property changes, which implies that the user has typed a new
+number, we set the value of the spinners model.
+
+This class ignores
+
+PropertyChangeEvents
+
+whose
+source is not the
+
+JFormattedTextField
+
+, so subclasses
+may safely make
+
+this
+
+DefaultEditor
+
+a
+
+PropertyChangeListener
+
+on other objects.
+
+**Specified by:**
+- propertyChange
+
+in interface
+
+PropertyChangeListener
+
+**Parameters:**
+- e
+
+- the
+
+PropertyChangeEvent
+
+whose source is
+the
+
+JFormattedTextField
+
+created by this class.
+
+**See Also:**
+- getTextField()
+
+---
+
+#### public void addLayoutComponent​(
+String
+name,
+
+Component
+child)
+
+This
+
+LayoutManager
+
+method does nothing. We're
+only managing a single child and there's no support
+for layout constraints.
+
+**Specified by:**
+- addLayoutComponent
+
+in interface
+
+LayoutManager
+
+**Parameters:**
+- name
+
+- ignored
+- child
+
+- ignored
+
+---
+
+#### public void removeLayoutComponent​(
+Component
+child)
+
+This
+
+LayoutManager
+
+method does nothing. There
+isn't any per-child state.
+
+**Specified by:**
+- removeLayoutComponent
+
+in interface
+
+LayoutManager
+
+**Parameters:**
+- child
+
+- ignored
+
+---
+
+#### public
+Dimension
+preferredLayoutSize​(
+Container
+parent)
+
+Returns the preferred size of first (and only) child plus the
+size of the parents insets.
+
+**Specified by:**
+- preferredLayoutSize
+
+in interface
+
+LayoutManager
+
+**Parameters:**
+- parent
+
+- the Container that's managing the layout
+
+**Returns:**
+- the preferred dimensions to lay out the subcomponents
+of the specified container.
+
+**See Also:**
+- LayoutManager.minimumLayoutSize(java.awt.Container)
+
+---
+
+#### public
+Dimension
+minimumLayoutSize​(
+Container
+parent)
+
+Returns the minimum size of first (and only) child plus the
+size of the parents insets.
+
+**Specified by:**
+- minimumLayoutSize
+
+in interface
+
+LayoutManager
+
+**Parameters:**
+- parent
+
+- the Container that's managing the layout
+
+**Returns:**
+- the minimum dimensions needed to lay out the subcomponents
+of the specified container.
+
+**See Also:**
+- LayoutManager.preferredLayoutSize(java.awt.Container)
+
+---
+
+#### public void layoutContainer​(
+Container
+parent)
+
+Resize the one (and only) child to completely fill the area
+within the parents insets.
+
+**Specified by:**
+- layoutContainer
+
+in interface
+
+LayoutManager
+
+**Parameters:**
+- parent
+
+- the container to be laid out
+
+---
+
+#### public void commitEdit()
+throws
+ParseException
+
+Pushes the currently edited value to the
+
+SpinnerModel
+
+.
+
+The default implementation invokes
+
+commitEdit
+
+on the
+
+JFormattedTextField
+
+.
+
+**Throws:**
+- ParseException
+
+- if the edited value is not legal
+
+---
+
+#### public int getBaseline​(int width,
+int height)
+
+Returns the baseline.
+
+**Overrides:**
+- getBaseline
+
+in class
+
+JComponent
+
+**Parameters:**
+- width
+
+- the width to get the baseline for
+- height
+
+- the height to get the baseline for
+
+**Returns:**
+- the baseline or < 0 indicating there is no reasonable
+baseline
+
+**Throws:**
+- IllegalArgumentException
+
+- if width or height is < 0
+
+**See Also:**
+- JComponent.getBaseline(int,int)
+
+,
+
+JComponent.getBaselineResizeBehavior()
+
+**Since:**
+- 1.6
+
+---
+
+#### public
+Component.BaselineResizeBehavior
+getBaselineResizeBehavior()
+
+Returns an enum indicating how the baseline of the component
+changes as the size changes.
+
+**Overrides:**
+- getBaselineResizeBehavior
+
+in class
+
+JComponent
+
+**Returns:**
+- an enum indicating how the baseline changes as the component
+size changes
+
+**Throws:**
+- NullPointerException
+
+**See Also:**
+- JComponent.getBaseline(int, int)
+
+**Since:**
+- 1.6
+
+---
+
+### Additional Sections
+
+#### Class JSpinner.DefaultEditor
+
+java.lang.Object
+
+- java.awt.Component
+- - java.awt.Container
+- - javax.swing.JComponent
+- - javax.swing.JPanel
+- - javax.swing.JSpinner.DefaultEditor
+
+java.awt.Component
+
+- java.awt.Container
+- - javax.swing.JComponent
+- - javax.swing.JPanel
+- - javax.swing.JSpinner.DefaultEditor
+
+java.awt.Container
+
+- javax.swing.JComponent
+- - javax.swing.JPanel
+- - javax.swing.JSpinner.DefaultEditor
+
+javax.swing.JComponent
+
+- javax.swing.JPanel
+- - javax.swing.JSpinner.DefaultEditor
+
+javax.swing.JPanel
+
+- javax.swing.JSpinner.DefaultEditor
+
+javax.swing.JSpinner.DefaultEditor
+
+**All Implemented Interfaces:** ImageObserver
+
+,
+
+LayoutManager
+
+,
+
+MenuContainer
+
+,
+
+PropertyChangeListener
+
+,
+
+Serializable
+
+,
+
+EventListener
+
+,
+
+Accessible
+
+,
+
+ChangeListener
+
+**Direct Known Subclasses:** JSpinner.DateEditor
+
+,
+
+JSpinner.ListEditor
+
+,
+
+JSpinner.NumberEditor
+
+**Enclosing class:** JSpinner
+
+```java
+public static class
+JSpinner.DefaultEditor
+
+extends
+JPanel
+
+implements
+ChangeListener
+,
+PropertyChangeListener
+,
+LayoutManager
+```
+
+A simple base class for more specialized editors
+that displays a read-only view of the model's current
+value with a
+
+JFormattedTextField
+
+. Subclasses
+can configure the
+
+JFormattedTextField
+
+to create
+an editor that's appropriate for the type of model they
+support and they may want to override
+the
+
+stateChanged
+
+and
+
+propertyChanged
+
+methods, which keep the model and the text field in sync.
+
+This class defines a
+
+dismiss
+
+method that removes the
+editors
+
+ChangeListener
+
+from the
+
+JSpinner
+
+that it's part of. The
+
+setEditor
+
+method knows about
+
+DefaultEditor.dismiss
+
+, so if the developer
+replaces an editor that's derived from
+
+JSpinner.DefaultEditor
+
+its
+
+ChangeListener
+
+connection back to the
+
+JSpinner
+
+will be removed. However after that,
+it's up to the developer to manage their editor listeners.
+Similarly, if a subclass overrides
+
+createEditor
+
+,
+it's up to the subclasser to deal with their editor
+subsequently being replaced (with
+
+setEditor
+
+).
+We expect that in most cases, and in editor installed
+with
+
+setEditor
+
+or created by a
+
+createEditor
+
+override, will not be replaced anyway.
+
+This class is the
+
+LayoutManager
+
+for it's single
+
+JFormattedTextField
+
+child. By default the
+child is just centered with the parents insets.
+
+**Since:** 1.4
+**See Also:** Serialized Form
+
+public static class
+
+JSpinner.DefaultEditor
+
+extends
+
+JPanel
+
+implements
+
+ChangeListener
+
+,
+
+PropertyChangeListener
+
+,
+
+LayoutManager
+
+A simple base class for more specialized editors
+that displays a read-only view of the model's current
+value with a
+
+JFormattedTextField
+
+. Subclasses
+can configure the
+
+JFormattedTextField
+
+to create
+an editor that's appropriate for the type of model they
+support and they may want to override
+the
+
+stateChanged
+
+and
+
+propertyChanged
+
+methods, which keep the model and the text field in sync.
+
+This class defines a
+
+dismiss
+
+method that removes the
+editors
+
+ChangeListener
+
+from the
+
+JSpinner
+
+that it's part of. The
+
+setEditor
+
+method knows about
+
+DefaultEditor.dismiss
+
+, so if the developer
+replaces an editor that's derived from
+
+JSpinner.DefaultEditor
+
+its
+
+ChangeListener
+
+connection back to the
+
+JSpinner
+
+will be removed. However after that,
+it's up to the developer to manage their editor listeners.
+Similarly, if a subclass overrides
+
+createEditor
+
+,
+it's up to the subclasser to deal with their editor
+subsequently being replaced (with
+
+setEditor
+
+).
+We expect that in most cases, and in editor installed
+with
+
+setEditor
+
+or created by a
+
+createEditor
+
+override, will not be replaced anyway.
+
+This class is the
+
+LayoutManager
+
+for it's single
+
+JFormattedTextField
+
+child. By default the
+child is just centered with the parents insets.
+
+This class defines a
+
+dismiss
+
+method that removes the
+editors
+
+ChangeListener
+
+from the
+
+JSpinner
+
+that it's part of. The
+
+setEditor
+
+method knows about
+
+DefaultEditor.dismiss
+
+, so if the developer
+replaces an editor that's derived from
+
+JSpinner.DefaultEditor
+
+its
+
+ChangeListener
+
+connection back to the
+
+JSpinner
+
+will be removed. However after that,
+it's up to the developer to manage their editor listeners.
+Similarly, if a subclass overrides
+
+createEditor
+
+,
+it's up to the subclasser to deal with their editor
+subsequently being replaced (with
+
+setEditor
+
+).
+We expect that in most cases, and in editor installed
+with
+
+setEditor
+
+or created by a
+
+createEditor
+
+override, will not be replaced anyway.
+
+This class is the
+
+LayoutManager
+
+for it's single
+
+JFormattedTextField
+
+child. By default the
+child is just centered with the parents insets.
+
+This class is the
+
+LayoutManager
+
+for it's single
+
+JFormattedTextField
+
+child. By default the
+child is just centered with the parents insets.
+
+======== NESTED CLASS SUMMARY ========
+
+- Nested Class Summary
+
+- Nested classes/interfaces declared in class javax.swing.
+
+JPanel
+
+JPanel.AccessibleJPanel
+
+- Nested classes/interfaces declared in class javax.swing.
+
+JComponent
+
+JComponent.AccessibleJComponent
+
+- Nested classes/interfaces declared in class java.awt.
+
+Container
+
+Container.AccessibleAWTContainer
+
+- Nested classes/interfaces declared in class java.awt.
+
+Component
+
+Component.AccessibleAWTComponent
+
+,
+
+Component.BaselineResizeBehavior
+
+,
+
+Component.BltBufferStrategy
+
+,
+
+Component.FlipBufferStrategy
+
+=========== FIELD SUMMARY ===========
+
+- Field Summary
+
+- Fields declared in class javax.swing.
+
+JComponent
+
+listenerList
+
+,
+
+TOOL_TIP_TEXT_KEY
+
+,
+
+ui
+
+,
+
+UNDEFINED_CONDITION
+
+,
+
+WHEN_ANCESTOR_OF_FOCUSED_COMPONENT
+
+,
+
+WHEN_FOCUSED
+
+,
+
+WHEN_IN_FOCUSED_WINDOW
+
+- Fields declared in class java.awt.
+
+Component
+
+accessibleContext
+
+,
+
+BOTTOM_ALIGNMENT
+
+,
+
+CENTER_ALIGNMENT
+
+,
+
+LEFT_ALIGNMENT
+
+,
+
+RIGHT_ALIGNMENT
+
+,
+
+TOP_ALIGNMENT
+
+- Fields declared in interface java.awt.image.
+
+ImageObserver
+
+ABORT
+
+,
+
+ALLBITS
+
+,
+
+ERROR
+
+,
+
+FRAMEBITS
+
+,
+
+HEIGHT
+
+,
+
+PROPERTIES
+
+,
+
+SOMEBITS
+
+,
+
+WIDTH
+
+======== CONSTRUCTOR SUMMARY ========
+
+- Constructor Summary
+
+Constructors
+
+Constructor
+
+Description
+
+DefaultEditor
+
+​(
+
+JSpinner
+
+spinner)
+
+Constructs an editor component for the specified
+
+JSpinner
+
+.
+
+========== METHOD SUMMARY ===========
+
+- Method Summary
+
+All Methods
+
+Instance Methods
+
+Concrete Methods
+
+Modifier and Type
+
+Method
+
+Description
+
+void
+
+addLayoutComponent
+
+​(
+
+String
+
+name,
+
+Component
+
+child)
+
+This
+
+LayoutManager
+
+method does nothing.
+
+void
+
+commitEdit
+
+()
+
+Pushes the currently edited value to the
+
+SpinnerModel
+
+.
+
+void
+
+dismiss
+
+​(
+
+JSpinner
+
+spinner)
+
+Disconnect
+
+this
+
+editor from the specified
+
+JSpinner
+
+.
+
+int
+
+getBaseline
+
+​(int width,
+int height)
+
+Returns the baseline.
+
+Component.BaselineResizeBehavior
+
+getBaselineResizeBehavior
+
+()
+
+Returns an enum indicating how the baseline of the component
+changes as the size changes.
+
+JSpinner
+
+getSpinner
+
+()
+
+Returns the
+
+JSpinner
+
+ancestor of this editor or
+
+null
+
+if none of the ancestors are a
+
+JSpinner
+
+.
+
+JFormattedTextField
+
+getTextField
+
+()
+
+Returns the
+
+JFormattedTextField
+
+child of this
+editor.
+
+void
+
+layoutContainer
+
+​(
+
+Container
+
+parent)
+
+Resize the one (and only) child to completely fill the area
+within the parents insets.
+
+Dimension
+
+minimumLayoutSize
+
+​(
+
+Container
+
+parent)
+
+Returns the minimum size of first (and only) child plus the
+size of the parents insets.
+
+Dimension
+
+preferredLayoutSize
+
+​(
+
+Container
+
+parent)
+
+Returns the preferred size of first (and only) child plus the
+size of the parents insets.
+
+void
+
+propertyChange
+
+​(
+
+PropertyChangeEvent
+
+e)
+
+Called by the
+
+JFormattedTextField
+
+PropertyChangeListener
+
+.
+
+void
+
+removeLayoutComponent
+
+​(
+
+Component
+
+child)
+
+This
+
+LayoutManager
+
+method does nothing.
+
+void
+
+stateChanged
+
+​(
+
+ChangeEvent
+
+e)
+
+This method is called when the spinner's model's state changes.
+
+- Methods declared in class javax.swing.
+
+JPanel
+
+getAccessibleContext
+
+,
+
+getUI
+
+,
+
+getUIClassID
+
+,
+
+paramString
+
+,
+
+setUI
+
+,
+
+updateUI
+
+- Methods declared in class javax.swing.
+
+JComponent
+
+addAncestorListener
+
+,
+
+addNotify
+
+,
+
+addVetoableChangeListener
+
+,
+
+computeVisibleRect
+
+,
+
+contains
+
+,
+
+createToolTip
+
+,
+
+disable
+
+,
+
+enable
+
+,
+
+firePropertyChange
+
+,
+
+firePropertyChange
+
+,
+
+fireVetoableChange
+
+,
+
+getActionForKeyStroke
+
+,
+
+getActionMap
+
+,
+
+getAlignmentX
+
+,
+
+getAlignmentY
+
+,
+
+getAncestorListeners
+
+,
+
+getAutoscrolls
+
+,
+
+getBorder
+
+,
+
+getBounds
+
+,
+
+getClientProperty
+
+,
+
+getComponentGraphics
+
+,
+
+getComponentPopupMenu
+
+,
+
+getConditionForKeyStroke
+
+,
+
+getDebugGraphicsOptions
+
+,
+
+getDefaultLocale
+
+,
+
+getFontMetrics
+
+,
+
+getGraphics
+
+,
+
+getHeight
+
+,
+
+getInheritsPopupMenu
+
+,
+
+getInputMap
+
+,
+
+getInputMap
+
+,
+
+getInputVerifier
+
+,
+
+getInsets
+
+,
+
+getInsets
+
+,
+
+getListeners
+
+,
+
+getLocation
+
+,
+
+getMaximumSize
+
+,
+
+getMinimumSize
+
+,
+
+getNextFocusableComponent
+
+,
+
+getPopupLocation
+
+,
+
+getPreferredSize
+
+,
+
+getRegisteredKeyStrokes
+
+,
+
+getRootPane
+
+,
+
+getSize
+
+,
+
+getToolTipLocation
+
+,
+
+getToolTipText
+
+,
+
+getToolTipText
+
+,
+
+getTopLevelAncestor
+
+,
+
+getTransferHandler
+
+,
+
+getVerifyInputWhenFocusTarget
+
+,
+
+getVetoableChangeListeners
+
+,
+
+getVisibleRect
+
+,
+
+getWidth
+
+,
+
+getX
+
+,
+
+getY
+
+,
+
+grabFocus
+
+,
+
+isDoubleBuffered
+
+,
+
+isLightweightComponent
+
+,
+
+isManagingFocus
+
+,
+
+isOpaque
+
+,
+
+isOptimizedDrawingEnabled
+
+,
+
+isPaintingForPrint
+
+,
+
+isPaintingOrigin
+
+,
+
+isPaintingTile
+
+,
+
+isRequestFocusEnabled
+
+,
+
+isValidateRoot
+
+,
+
+paint
+
+,
+
+paintBorder
+
+,
+
+paintChildren
+
+,
+
+paintComponent
+
+,
+
+paintImmediately
+
+,
+
+paintImmediately
+
+,
+
+print
+
+,
+
+printAll
+
+,
+
+printBorder
+
+,
+
+printChildren
+
+,
+
+printComponent
+
+,
+
+processComponentKeyEvent
+
+,
+
+processKeyBinding
+
+,
+
+processKeyEvent
+
+,
+
+processMouseEvent
+
+,
+
+processMouseMotionEvent
+
+,
+
+putClientProperty
+
+,
+
+registerKeyboardAction
+
+,
+
+registerKeyboardAction
+
+,
+
+removeAncestorListener
+
+,
+
+removeNotify
+
+,
+
+removeVetoableChangeListener
+
+,
+
+repaint
+
+,
+
+repaint
+
+,
+
+requestDefaultFocus
+
+,
+
+requestFocus
+
+,
+
+requestFocus
+
+,
+
+requestFocusInWindow
+
+,
+
+requestFocusInWindow
+
+,
+
+resetKeyboardActions
+
+,
+
+reshape
+
+,
+
+revalidate
+
+,
+
+scrollRectToVisible
+
+,
+
+setActionMap
+
+,
+
+setAlignmentX
+
+,
+
+setAlignmentY
+
+,
+
+setAutoscrolls
+
+,
+
+setBackground
+
+,
+
+setBorder
+
+,
+
+setComponentPopupMenu
+
+,
+
+setDebugGraphicsOptions
+
+,
+
+setDefaultLocale
+
+,
+
+setDoubleBuffered
+
+,
+
+setEnabled
+
+,
+
+setFocusTraversalKeys
+
+,
+
+setFont
+
+,
+
+setForeground
+
+,
+
+setInheritsPopupMenu
+
+,
+
+setInputMap
+
+,
+
+setInputVerifier
+
+,
+
+setMaximumSize
+
+,
+
+setMinimumSize
+
+,
+
+setNextFocusableComponent
+
+,
+
+setOpaque
+
+,
+
+setPreferredSize
+
+,
+
+setRequestFocusEnabled
+
+,
+
+setToolTipText
+
+,
+
+setTransferHandler
+
+,
+
+setUI
+
+,
+
+setVerifyInputWhenFocusTarget
+
+,
+
+setVisible
+
+,
+
+unregisterKeyboardAction
+
+,
+
+update
+
+- Methods declared in class java.awt.
+
+Container
+
+add
+
+,
+
+add
+
+,
+
+add
+
+,
+
+add
+
+,
+
+add
+
+,
+
+addContainerListener
+
+,
+
+addImpl
+
+,
+
+addPropertyChangeListener
+
+,
+
+addPropertyChangeListener
+
+,
+
+applyComponentOrientation
+
+,
+
+areFocusTraversalKeysSet
+
+,
+
+countComponents
+
+,
+
+deliverEvent
+
+,
+
+doLayout
+
+,
+
+findComponentAt
+
+,
+
+findComponentAt
+
+,
+
+getComponent
+
+,
+
+getComponentAt
+
+,
+
+getComponentAt
+
+,
+
+getComponentCount
+
+,
+
+getComponents
+
+,
+
+getComponentZOrder
+
+,
+
+getContainerListeners
+
+,
+
+getFocusTraversalKeys
+
+,
+
+getFocusTraversalPolicy
+
+,
+
+getLayout
+
+,
+
+getMousePosition
+
+,
+
+insets
+
+,
+
+invalidate
+
+,
+
+isAncestorOf
+
+,
+
+isFocusCycleRoot
+
+,
+
+isFocusCycleRoot
+
+,
+
+isFocusTraversalPolicyProvider
+
+,
+
+isFocusTraversalPolicySet
+
+,
+
+layout
+
+,
+
+list
+
+,
+
+list
+
+,
+
+locate
+
+,
+
+minimumSize
+
+,
+
+paintComponents
+
+,
+
+preferredSize
+
+,
+
+printComponents
+
+,
+
+processContainerEvent
+
+,
+
+processEvent
+
+,
+
+remove
+
+,
+
+remove
+
+,
+
+removeAll
+
+,
+
+removeContainerListener
+
+,
+
+setComponentZOrder
+
+,
+
+setFocusCycleRoot
+
+,
+
+setFocusTraversalPolicy
+
+,
+
+setFocusTraversalPolicyProvider
+
+,
+
+setLayout
+
+,
+
+transferFocusDownCycle
+
+,
+
+validate
+
+,
+
+validateTree
+
+- Methods declared in class java.awt.
+
+Component
+
+action
+
+,
+
+add
+
+,
+
+addComponentListener
+
+,
+
+addFocusListener
+
+,
+
+addHierarchyBoundsListener
+
+,
+
+addHierarchyListener
+
+,
+
+addInputMethodListener
+
+,
+
+addKeyListener
+
+,
+
+addMouseListener
+
+,
+
+addMouseMotionListener
+
+,
+
+addMouseWheelListener
+
+,
+
+bounds
+
+,
+
+checkImage
+
+,
+
+checkImage
+
+,
+
+coalesceEvents
+
+,
+
+contains
+
+,
+
+createImage
+
+,
+
+createImage
+
+,
+
+createVolatileImage
+
+,
+
+createVolatileImage
+
+,
+
+disableEvents
+
+,
+
+dispatchEvent
+
+,
+
+enable
+
+,
+
+enableEvents
+
+,
+
+enableInputMethods
+
+,
+
+firePropertyChange
+
+,
+
+firePropertyChange
+
+,
+
+firePropertyChange
+
+,
+
+firePropertyChange
+
+,
+
+firePropertyChange
+
+,
+
+firePropertyChange
+
+,
+
+firePropertyChange
+
+,
+
+getBackground
+
+,
+
+getBounds
+
+,
+
+getColorModel
+
+,
+
+getComponentListeners
+
+,
+
+getComponentOrientation
+
+,
+
+getCursor
+
+,
+
+getDropTarget
+
+,
+
+getFocusCycleRootAncestor
+
+,
+
+getFocusListeners
+
+,
+
+getFocusTraversalKeysEnabled
+
+,
+
+getFont
+
+,
+
+getForeground
+
+,
+
+getGraphicsConfiguration
+
+,
+
+getHierarchyBoundsListeners
+
+,
+
+getHierarchyListeners
+
+,
+
+getIgnoreRepaint
+
+,
+
+getInputContext
+
+,
+
+getInputMethodListeners
+
+,
+
+getInputMethodRequests
+
+,
+
+getKeyListeners
+
+,
+
+getLocale
+
+,
+
+getLocation
+
+,
+
+getLocationOnScreen
+
+,
+
+getMouseListeners
+
+,
+
+getMouseMotionListeners
+
+,
+
+getMousePosition
+
+,
+
+getMouseWheelListeners
+
+,
+
+getName
+
+,
+
+getParent
+
+,
+
+getPropertyChangeListeners
+
+,
+
+getPropertyChangeListeners
+
+,
+
+getSize
+
+,
+
+getToolkit
+
+,
+
+getTreeLock
+
+,
+
+gotFocus
+
+,
+
+handleEvent
+
+,
+
+hasFocus
+
+,
+
+hide
+
+,
+
+imageUpdate
+
+,
+
+inside
+
+,
+
+isBackgroundSet
+
+,
+
+isCursorSet
+
+,
+
+isDisplayable
+
+,
+
+isEnabled
+
+,
+
+isFocusable
+
+,
+
+isFocusOwner
+
+,
+
+isFocusTraversable
+
+,
+
+isFontSet
+
+,
+
+isForegroundSet
+
+,
+
+isLightweight
+
+,
+
+isMaximumSizeSet
+
+,
+
+isMinimumSizeSet
+
+,
+
+isPreferredSizeSet
+
+,
+
+isShowing
+
+,
+
+isValid
+
+,
+
+isVisible
+
+,
+
+keyDown
+
+,
+
+keyUp
+
+,
+
+list
+
+,
+
+list
+
+,
+
+list
+
+,
+
+location
+
+,
+
+lostFocus
+
+,
+
+mouseDown
+
+,
+
+mouseDrag
+
+,
+
+mouseEnter
+
+,
+
+mouseExit
+
+,
+
+mouseMove
+
+,
+
+mouseUp
+
+,
+
+move
+
+,
+
+nextFocus
+
+,
+
+paintAll
+
+,
+
+postEvent
+
+,
+
+prepareImage
+
+,
+
+prepareImage
+
+,
+
+processComponentEvent
+
+,
+
+processFocusEvent
+
+,
+
+processHierarchyBoundsEvent
+
+,
+
+processHierarchyEvent
+
+,
+
+processInputMethodEvent
+
+,
+
+processMouseWheelEvent
+
+,
+
+remove
+
+,
+
+removeComponentListener
+
+,
+
+removeFocusListener
+
+,
+
+removeHierarchyBoundsListener
+
+,
+
+removeHierarchyListener
+
+,
+
+removeInputMethodListener
+
+,
+
+removeKeyListener
+
+,
+
+removeMouseListener
+
+,
+
+removeMouseMotionListener
+
+,
+
+removeMouseWheelListener
+
+,
+
+removePropertyChangeListener
+
+,
+
+removePropertyChangeListener
+
+,
+
+repaint
+
+,
+
+repaint
+
+,
+
+repaint
+
+,
+
+requestFocus
+
+,
+
+requestFocus
+
+,
+
+requestFocusInWindow
+
+,
+
+resize
+
+,
+
+resize
+
+,
+
+setBounds
+
+,
+
+setBounds
+
+,
+
+setComponentOrientation
+
+,
+
+setCursor
+
+,
+
+setDropTarget
+
+,
+
+setFocusable
+
+,
+
+setFocusTraversalKeysEnabled
+
+,
+
+setIgnoreRepaint
+
+,
+
+setLocale
+
+,
+
+setLocation
+
+,
+
+setLocation
+
+,
+
+setMixingCutoutShape
+
+,
+
+setName
+
+,
+
+setSize
+
+,
+
+setSize
+
+,
+
+show
+
+,
+
+show
+
+,
+
+size
+
+,
+
+toString
+
+,
+
+transferFocus
+
+,
+
+transferFocusBackward
+
+,
+
+transferFocusUpCycle
+
+- Methods declared in class java.lang.
+
+Object
+
+clone
+
+,
+
+equals
+
+,
+
+finalize
+
+,
+
+getClass
+
+,
+
+hashCode
+
+,
+
+notify
+
+,
+
+notifyAll
+
+,
+
+wait
+
+,
+
+wait
+
+,
+
+wait
+
+Nested Class Summary
+
+- Nested classes/interfaces declared in class javax.swing.
+
+JPanel
+
+JPanel.AccessibleJPanel
+
+- Nested classes/interfaces declared in class javax.swing.
+
+JComponent
+
+JComponent.AccessibleJComponent
+
+- Nested classes/interfaces declared in class java.awt.
+
+Container
+
+Container.AccessibleAWTContainer
+
+- Nested classes/interfaces declared in class java.awt.
+
+Component
+
+Component.AccessibleAWTComponent
+
+,
+
+Component.BaselineResizeBehavior
+
+,
+
+Component.BltBufferStrategy
+
+,
+
+Component.FlipBufferStrategy
+
+---
+
+#### Nested Class Summary
+
+Nested classes/interfaces declared in class javax.swing.
+
+JPanel
+
+JPanel.AccessibleJPanel
+
+---
+
+#### Nested classes/interfaces declared in class javax.swing. JPanel
+
+Nested classes/interfaces declared in class javax.swing.
+
+JComponent
+
+JComponent.AccessibleJComponent
+
+---
+
+#### Nested classes/interfaces declared in class javax.swing. JComponent
+
+Nested classes/interfaces declared in class java.awt.
+
+Container
+
+Container.AccessibleAWTContainer
+
+---
+
+#### Nested classes/interfaces declared in class java.awt. Container
+
+Nested classes/interfaces declared in class java.awt.
+
+Component
+
+Component.AccessibleAWTComponent
+
+,
+
+Component.BaselineResizeBehavior
+
+,
+
+Component.BltBufferStrategy
+
+,
+
+Component.FlipBufferStrategy
+
+---
+
+#### Nested classes/interfaces declared in class java.awt. Component
+
+Field Summary
+
+- Fields declared in class javax.swing.
+
+JComponent
+
+listenerList
+
+,
+
+TOOL_TIP_TEXT_KEY
+
+,
+
+ui
+
+,
+
+UNDEFINED_CONDITION
+
+,
+
+WHEN_ANCESTOR_OF_FOCUSED_COMPONENT
+
+,
+
+WHEN_FOCUSED
+
+,
+
+WHEN_IN_FOCUSED_WINDOW
+
+- Fields declared in class java.awt.
+
+Component
+
+accessibleContext
+
+,
+
+BOTTOM_ALIGNMENT
+
+,
+
+CENTER_ALIGNMENT
+
+,
+
+LEFT_ALIGNMENT
+
+,
+
+RIGHT_ALIGNMENT
+
+,
+
+TOP_ALIGNMENT
+
+- Fields declared in interface java.awt.image.
+
+ImageObserver
+
+ABORT
+
+,
+
+ALLBITS
+
+,
+
+ERROR
+
+,
+
+FRAMEBITS
+
+,
+
+HEIGHT
+
+,
+
+PROPERTIES
+
+,
+
+SOMEBITS
+
+,
+
+WIDTH
+
+---
+
+#### Field Summary
+
+Fields declared in class javax.swing.
+
+JComponent
+
+listenerList
+
+,
+
+TOOL_TIP_TEXT_KEY
+
+,
+
+ui
+
+,
+
+UNDEFINED_CONDITION
+
+,
+
+WHEN_ANCESTOR_OF_FOCUSED_COMPONENT
+
+,
+
+WHEN_FOCUSED
+
+,
+
+WHEN_IN_FOCUSED_WINDOW
+
+---
+
+#### Fields declared in class javax.swing. JComponent
+
+Fields declared in class java.awt.
+
+Component
+
+accessibleContext
+
+,
+
+BOTTOM_ALIGNMENT
+
+,
+
+CENTER_ALIGNMENT
+
+,
+
+LEFT_ALIGNMENT
+
+,
+
+RIGHT_ALIGNMENT
+
+,
+
+TOP_ALIGNMENT
+
+---
+
+#### Fields declared in class java.awt. Component
+
+Fields declared in interface java.awt.image.
+
+ImageObserver
+
+ABORT
+
+,
+
+ALLBITS
+
+,
+
+ERROR
+
+,
+
+FRAMEBITS
+
+,
+
+HEIGHT
+
+,
+
+PROPERTIES
+
+,
+
+SOMEBITS
+
+,
+
+WIDTH
+
+---
+
+#### Fields declared in interface java.awt.image. ImageObserver
+
+Constructor Summary
+
+Constructors
+
+Constructor
+
+Description
+
+DefaultEditor
+
+​(
+
+JSpinner
+
+spinner)
+
+Constructs an editor component for the specified
+
+JSpinner
+
+.
+
+---
+
+#### Constructor Summary
+
+Constructs an editor component for the specified
+
+JSpinner
+
+.
+
+Method Summary
+
+All Methods
+
+Instance Methods
+
+Concrete Methods
+
+Modifier and Type
+
+Method
+
+Description
+
+void
+
+addLayoutComponent
+
+​(
+
+String
+
+name,
+
+Component
+
+child)
+
+This
+
+LayoutManager
+
+method does nothing.
+
+void
+
+commitEdit
+
+()
+
+Pushes the currently edited value to the
+
+SpinnerModel
+
+.
+
+void
+
+dismiss
+
+​(
+
+JSpinner
+
+spinner)
+
+Disconnect
+
+this
+
+editor from the specified
+
+JSpinner
+
+.
+
+int
+
+getBaseline
+
+​(int width,
+int height)
+
+Returns the baseline.
+
+Component.BaselineResizeBehavior
+
+getBaselineResizeBehavior
+
+()
+
+Returns an enum indicating how the baseline of the component
+changes as the size changes.
+
+JSpinner
+
+getSpinner
+
+()
+
+Returns the
+
+JSpinner
+
+ancestor of this editor or
+
+null
+
+if none of the ancestors are a
+
+JSpinner
+
+.
+
+JFormattedTextField
+
+getTextField
+
+()
+
+Returns the
+
+JFormattedTextField
+
+child of this
+editor.
+
+void
+
+layoutContainer
+
+​(
+
+Container
+
+parent)
+
+Resize the one (and only) child to completely fill the area
+within the parents insets.
+
+Dimension
+
+minimumLayoutSize
+
+​(
+
+Container
+
+parent)
+
+Returns the minimum size of first (and only) child plus the
+size of the parents insets.
+
+Dimension
+
+preferredLayoutSize
+
+​(
+
+Container
+
+parent)
+
+Returns the preferred size of first (and only) child plus the
+size of the parents insets.
+
+void
+
+propertyChange
+
+​(
+
+PropertyChangeEvent
+
+e)
+
+Called by the
+
+JFormattedTextField
+
+PropertyChangeListener
+
+.
+
+void
+
+removeLayoutComponent
+
+​(
+
+Component
+
+child)
+
+This
+
+LayoutManager
+
+method does nothing.
+
+void
+
+stateChanged
+
+​(
+
+ChangeEvent
+
+e)
+
+This method is called when the spinner's model's state changes.
+
+- Methods declared in class javax.swing.
+
+JPanel
+
+getAccessibleContext
+
+,
+
+getUI
+
+,
+
+getUIClassID
+
+,
+
+paramString
+
+,
+
+setUI
+
+,
+
+updateUI
+
+- Methods declared in class javax.swing.
+
+JComponent
+
+addAncestorListener
+
+,
+
+addNotify
+
+,
+
+addVetoableChangeListener
+
+,
+
+computeVisibleRect
+
+,
+
+contains
+
+,
+
+createToolTip
+
+,
+
+disable
+
+,
+
+enable
+
+,
+
+firePropertyChange
+
+,
+
+firePropertyChange
+
+,
+
+fireVetoableChange
+
+,
+
+getActionForKeyStroke
+
+,
+
+getActionMap
+
+,
+
+getAlignmentX
+
+,
+
+getAlignmentY
+
+,
+
+getAncestorListeners
+
+,
+
+getAutoscrolls
+
+,
+
+getBorder
+
+,
+
+getBounds
+
+,
+
+getClientProperty
+
+,
+
+getComponentGraphics
+
+,
+
+getComponentPopupMenu
+
+,
+
+getConditionForKeyStroke
+
+,
+
+getDebugGraphicsOptions
+
+,
+
+getDefaultLocale
+
+,
+
+getFontMetrics
+
+,
+
+getGraphics
+
+,
+
+getHeight
+
+,
+
+getInheritsPopupMenu
+
+,
+
+getInputMap
+
+,
+
+getInputMap
+
+,
+
+getInputVerifier
+
+,
+
+getInsets
+
+,
+
+getInsets
+
+,
+
+getListeners
+
+,
+
+getLocation
+
+,
+
+getMaximumSize
+
+,
+
+getMinimumSize
+
+,
+
+getNextFocusableComponent
+
+,
+
+getPopupLocation
+
+,
+
+getPreferredSize
+
+,
+
+getRegisteredKeyStrokes
+
+,
+
+getRootPane
+
+,
+
+getSize
+
+,
+
+getToolTipLocation
+
+,
+
+getToolTipText
+
+,
+
+getToolTipText
+
+,
+
+getTopLevelAncestor
+
+,
+
+getTransferHandler
+
+,
+
+getVerifyInputWhenFocusTarget
+
+,
+
+getVetoableChangeListeners
+
+,
+
+getVisibleRect
+
+,
+
+getWidth
+
+,
+
+getX
+
+,
+
+getY
+
+,
+
+grabFocus
+
+,
+
+isDoubleBuffered
+
+,
+
+isLightweightComponent
+
+,
+
+isManagingFocus
+
+,
+
+isOpaque
+
+,
+
+isOptimizedDrawingEnabled
+
+,
+
+isPaintingForPrint
+
+,
+
+isPaintingOrigin
+
+,
+
+isPaintingTile
+
+,
+
+isRequestFocusEnabled
+
+,
+
+isValidateRoot
+
+,
+
+paint
+
+,
+
+paintBorder
+
+,
+
+paintChildren
+
+,
+
+paintComponent
+
+,
+
+paintImmediately
+
+,
+
+paintImmediately
+
+,
+
+print
+
+,
+
+printAll
+
+,
+
+printBorder
+
+,
+
+printChildren
+
+,
+
+printComponent
+
+,
+
+processComponentKeyEvent
+
+,
+
+processKeyBinding
+
+,
+
+processKeyEvent
+
+,
+
+processMouseEvent
+
+,
+
+processMouseMotionEvent
+
+,
+
+putClientProperty
+
+,
+
+registerKeyboardAction
+
+,
+
+registerKeyboardAction
+
+,
+
+removeAncestorListener
+
+,
+
+removeNotify
+
+,
+
+removeVetoableChangeListener
+
+,
+
+repaint
+
+,
+
+repaint
+
+,
+
+requestDefaultFocus
+
+,
+
+requestFocus
+
+,
+
+requestFocus
+
+,
+
+requestFocusInWindow
+
+,
+
+requestFocusInWindow
+
+,
+
+resetKeyboardActions
+
+,
+
+reshape
+
+,
+
+revalidate
+
+,
+
+scrollRectToVisible
+
+,
+
+setActionMap
+
+,
+
+setAlignmentX
+
+,
+
+setAlignmentY
+
+,
+
+setAutoscrolls
+
+,
+
+setBackground
+
+,
+
+setBorder
+
+,
+
+setComponentPopupMenu
+
+,
+
+setDebugGraphicsOptions
+
+,
+
+setDefaultLocale
+
+,
+
+setDoubleBuffered
+
+,
+
+setEnabled
+
+,
+
+setFocusTraversalKeys
+
+,
+
+setFont
+
+,
+
+setForeground
+
+,
+
+setInheritsPopupMenu
+
+,
+
+setInputMap
+
+,
+
+setInputVerifier
+
+,
+
+setMaximumSize
+
+,
+
+setMinimumSize
+
+,
+
+setNextFocusableComponent
+
+,
+
+setOpaque
+
+,
+
+setPreferredSize
+
+,
+
+setRequestFocusEnabled
+
+,
+
+setToolTipText
+
+,
+
+setTransferHandler
+
+,
+
+setUI
+
+,
+
+setVerifyInputWhenFocusTarget
+
+,
+
+setVisible
+
+,
+
+unregisterKeyboardAction
+
+,
+
+update
+
+- Methods declared in class java.awt.
+
+Container
+
+add
+
+,
+
+add
+
+,
+
+add
+
+,
+
+add
+
+,
+
+add
+
+,
+
+addContainerListener
+
+,
+
+addImpl
+
+,
+
+addPropertyChangeListener
+
+,
+
+addPropertyChangeListener
+
+,
+
+applyComponentOrientation
+
+,
+
+areFocusTraversalKeysSet
+
+,
+
+countComponents
+
+,
+
+deliverEvent
+
+,
+
+doLayout
+
+,
+
+findComponentAt
+
+,
+
+findComponentAt
+
+,
+
+getComponent
+
+,
+
+getComponentAt
+
+,
+
+getComponentAt
+
+,
+
+getComponentCount
+
+,
+
+getComponents
+
+,
+
+getComponentZOrder
+
+,
+
+getContainerListeners
+
+,
+
+getFocusTraversalKeys
+
+,
+
+getFocusTraversalPolicy
+
+,
+
+getLayout
+
+,
+
+getMousePosition
+
+,
+
+insets
+
+,
+
+invalidate
+
+,
+
+isAncestorOf
+
+,
+
+isFocusCycleRoot
+
+,
+
+isFocusCycleRoot
+
+,
+
+isFocusTraversalPolicyProvider
+
+,
+
+isFocusTraversalPolicySet
+
+,
+
+layout
+
+,
+
+list
+
+,
+
+list
+
+,
+
+locate
+
+,
+
+minimumSize
+
+,
+
+paintComponents
+
+,
+
+preferredSize
+
+,
+
+printComponents
+
+,
+
+processContainerEvent
+
+,
+
+processEvent
+
+,
+
+remove
+
+,
+
+remove
+
+,
+
+removeAll
+
+,
+
+removeContainerListener
+
+,
+
+setComponentZOrder
+
+,
+
+setFocusCycleRoot
+
+,
+
+setFocusTraversalPolicy
+
+,
+
+setFocusTraversalPolicyProvider
+
+,
+
+setLayout
+
+,
+
+transferFocusDownCycle
+
+,
+
+validate
+
+,
+
+validateTree
+
+- Methods declared in class java.awt.
+
+Component
+
+action
+
+,
+
+add
+
+,
+
+addComponentListener
+
+,
+
+addFocusListener
+
+,
+
+addHierarchyBoundsListener
+
+,
+
+addHierarchyListener
+
+,
+
+addInputMethodListener
+
+,
+
+addKeyListener
+
+,
+
+addMouseListener
+
+,
+
+addMouseMotionListener
+
+,
+
+addMouseWheelListener
+
+,
+
+bounds
+
+,
+
+checkImage
+
+,
+
+checkImage
+
+,
+
+coalesceEvents
+
+,
+
+contains
+
+,
+
+createImage
+
+,
+
+createImage
+
+,
+
+createVolatileImage
+
+,
+
+createVolatileImage
+
+,
+
+disableEvents
+
+,
+
+dispatchEvent
+
+,
+
+enable
+
+,
+
+enableEvents
+
+,
+
+enableInputMethods
+
+,
+
+firePropertyChange
+
+,
+
+firePropertyChange
+
+,
+
+firePropertyChange
+
+,
+
+firePropertyChange
+
+,
+
+firePropertyChange
+
+,
+
+firePropertyChange
+
+,
+
+firePropertyChange
+
+,
+
+getBackground
+
+,
+
+getBounds
+
+,
+
+getColorModel
+
+,
+
+getComponentListeners
+
+,
+
+getComponentOrientation
+
+,
+
+getCursor
+
+,
+
+getDropTarget
+
+,
+
+getFocusCycleRootAncestor
+
+,
+
+getFocusListeners
+
+,
+
+getFocusTraversalKeysEnabled
+
+,
+
+getFont
+
+,
+
+getForeground
+
+,
+
+getGraphicsConfiguration
+
+,
+
+getHierarchyBoundsListeners
+
+,
+
+getHierarchyListeners
+
+,
+
+getIgnoreRepaint
+
+,
+
+getInputContext
+
+,
+
+getInputMethodListeners
+
+,
+
+getInputMethodRequests
+
+,
+
+getKeyListeners
+
+,
+
+getLocale
+
+,
+
+getLocation
+
+,
+
+getLocationOnScreen
+
+,
+
+getMouseListeners
+
+,
+
+getMouseMotionListeners
+
+,
+
+getMousePosition
+
+,
+
+getMouseWheelListeners
+
+,
+
+getName
+
+,
+
+getParent
+
+,
+
+getPropertyChangeListeners
+
+,
+
+getPropertyChangeListeners
+
+,
+
+getSize
+
+,
+
+getToolkit
+
+,
+
+getTreeLock
+
+,
+
+gotFocus
+
+,
+
+handleEvent
+
+,
+
+hasFocus
+
+,
+
+hide
+
+,
+
+imageUpdate
+
+,
+
+inside
+
+,
+
+isBackgroundSet
+
+,
+
+isCursorSet
+
+,
+
+isDisplayable
+
+,
+
+isEnabled
+
+,
+
+isFocusable
+
+,
+
+isFocusOwner
+
+,
+
+isFocusTraversable
+
+,
+
+isFontSet
+
+,
+
+isForegroundSet
+
+,
+
+isLightweight
+
+,
+
+isMaximumSizeSet
+
+,
+
+isMinimumSizeSet
+
+,
+
+isPreferredSizeSet
+
+,
+
+isShowing
+
+,
+
+isValid
+
+,
+
+isVisible
+
+,
+
+keyDown
+
+,
+
+keyUp
+
+,
+
+list
+
+,
+
+list
+
+,
+
+list
+
+,
+
+location
+
+,
+
+lostFocus
+
+,
+
+mouseDown
+
+,
+
+mouseDrag
+
+,
+
+mouseEnter
+
+,
+
+mouseExit
+
+,
+
+mouseMove
+
+,
+
+mouseUp
+
+,
+
+move
+
+,
+
+nextFocus
+
+,
+
+paintAll
+
+,
+
+postEvent
+
+,
+
+prepareImage
+
+,
+
+prepareImage
+
+,
+
+processComponentEvent
+
+,
+
+processFocusEvent
+
+,
+
+processHierarchyBoundsEvent
+
+,
+
+processHierarchyEvent
+
+,
+
+processInputMethodEvent
+
+,
+
+processMouseWheelEvent
+
+,
+
+remove
+
+,
+
+removeComponentListener
+
+,
+
+removeFocusListener
+
+,
+
+removeHierarchyBoundsListener
+
+,
+
+removeHierarchyListener
+
+,
+
+removeInputMethodListener
+
+,
+
+removeKeyListener
+
+,
+
+removeMouseListener
+
+,
+
+removeMouseMotionListener
+
+,
+
+removeMouseWheelListener
+
+,
+
+removePropertyChangeListener
+
+,
+
+removePropertyChangeListener
+
+,
+
+repaint
+
+,
+
+repaint
+
+,
+
+repaint
+
+,
+
+requestFocus
+
+,
+
+requestFocus
+
+,
+
+requestFocusInWindow
+
+,
+
+resize
+
+,
+
+resize
+
+,
+
+setBounds
+
+,
+
+setBounds
+
+,
+
+setComponentOrientation
+
+,
+
+setCursor
+
+,
+
+setDropTarget
+
+,
+
+setFocusable
+
+,
+
+setFocusTraversalKeysEnabled
+
+,
+
+setIgnoreRepaint
+
+,
+
+setLocale
+
+,
+
+setLocation
+
+,
+
+setLocation
+
+,
+
+setMixingCutoutShape
+
+,
+
+setName
+
+,
+
+setSize
+
+,
+
+setSize
+
+,
+
+show
+
+,
+
+show
+
+,
+
+size
+
+,
+
+toString
+
+,
+
+transferFocus
+
+,
+
+transferFocusBackward
+
+,
+
+transferFocusUpCycle
+
+- Methods declared in class java.lang.
+
+Object
+
+clone
+
+,
+
+equals
+
+,
+
+finalize
+
+,
+
+getClass
+
+,
+
+hashCode
+
+,
+
+notify
+
+,
+
+notifyAll
+
+,
+
+wait
+
+,
+
+wait
+
+,
+
+wait
+
+---
+
+#### Method Summary
+
+This
+
+LayoutManager
+
+method does nothing.
+
+Pushes the currently edited value to the
+
+SpinnerModel
+
+.
+
+Disconnect
+
+this
+
+editor from the specified
+
+JSpinner
+
+.
+
+Returns the baseline.
+
+Returns an enum indicating how the baseline of the component
+changes as the size changes.
+
+Returns the
+
+JSpinner
+
+ancestor of this editor or
+
+null
+
+if none of the ancestors are a
+
+JSpinner
+
+.
+
+Returns the
+
+JFormattedTextField
+
+child of this
+editor.
+
+Resize the one (and only) child to completely fill the area
+within the parents insets.
+
+Returns the minimum size of first (and only) child plus the
+size of the parents insets.
+
+Returns the preferred size of first (and only) child plus the
+size of the parents insets.
+
+Called by the
+
+JFormattedTextField
+
+PropertyChangeListener
+
+.
+
+This method is called when the spinner's model's state changes.
+
+Methods declared in class javax.swing.
+
+JPanel
+
+getAccessibleContext
+
+,
+
+getUI
+
+,
+
+getUIClassID
+
+,
+
+paramString
+
+,
+
+setUI
+
+,
+
+updateUI
+
+---
+
+#### Methods declared in class javax.swing. JPanel
+
+Methods declared in class javax.swing.
+
+JComponent
+
+addAncestorListener
+
+,
+
+addNotify
+
+,
+
+addVetoableChangeListener
+
+,
+
+computeVisibleRect
+
+,
+
+contains
+
+,
+
+createToolTip
+
+,
+
+disable
+
+,
+
+enable
+
+,
+
+firePropertyChange
+
+,
+
+firePropertyChange
+
+,
+
+fireVetoableChange
+
+,
+
+getActionForKeyStroke
+
+,
+
+getActionMap
+
+,
+
+getAlignmentX
+
+,
+
+getAlignmentY
+
+,
+
+getAncestorListeners
+
+,
+
+getAutoscrolls
+
+,
+
+getBorder
+
+,
+
+getBounds
+
+,
+
+getClientProperty
+
+,
+
+getComponentGraphics
+
+,
+
+getComponentPopupMenu
+
+,
+
+getConditionForKeyStroke
+
+,
+
+getDebugGraphicsOptions
+
+,
+
+getDefaultLocale
+
+,
+
+getFontMetrics
+
+,
+
+getGraphics
+
+,
+
+getHeight
+
+,
+
+getInheritsPopupMenu
+
+,
+
+getInputMap
+
+,
+
+getInputMap
+
+,
+
+getInputVerifier
+
+,
+
+getInsets
+
+,
+
+getInsets
+
+,
+
+getListeners
+
+,
+
+getLocation
+
+,
+
+getMaximumSize
+
+,
+
+getMinimumSize
+
+,
+
+getNextFocusableComponent
+
+,
+
+getPopupLocation
+
+,
+
+getPreferredSize
+
+,
+
+getRegisteredKeyStrokes
+
+,
+
+getRootPane
+
+,
+
+getSize
+
+,
+
+getToolTipLocation
+
+,
+
+getToolTipText
+
+,
+
+getToolTipText
+
+,
+
+getTopLevelAncestor
+
+,
+
+getTransferHandler
+
+,
+
+getVerifyInputWhenFocusTarget
+
+,
+
+getVetoableChangeListeners
+
+,
+
+getVisibleRect
+
+,
+
+getWidth
+
+,
+
+getX
+
+,
+
+getY
+
+,
+
+grabFocus
+
+,
+
+isDoubleBuffered
+
+,
+
+isLightweightComponent
+
+,
+
+isManagingFocus
+
+,
+
+isOpaque
+
+,
+
+isOptimizedDrawingEnabled
+
+,
+
+isPaintingForPrint
+
+,
+
+isPaintingOrigin
+
+,
+
+isPaintingTile
+
+,
+
+isRequestFocusEnabled
+
+,
+
+isValidateRoot
+
+,
+
+paint
+
+,
+
+paintBorder
+
+,
+
+paintChildren
+
+,
+
+paintComponent
+
+,
+
+paintImmediately
+
+,
+
+paintImmediately
+
+,
+
+print
+
+,
+
+printAll
+
+,
+
+printBorder
+
+,
+
+printChildren
+
+,
+
+printComponent
+
+,
+
+processComponentKeyEvent
+
+,
+
+processKeyBinding
+
+,
+
+processKeyEvent
+
+,
+
+processMouseEvent
+
+,
+
+processMouseMotionEvent
+
+,
+
+putClientProperty
+
+,
+
+registerKeyboardAction
+
+,
+
+registerKeyboardAction
+
+,
+
+removeAncestorListener
+
+,
+
+removeNotify
+
+,
+
+removeVetoableChangeListener
+
+,
+
+repaint
+
+,
+
+repaint
+
+,
+
+requestDefaultFocus
+
+,
+
+requestFocus
+
+,
+
+requestFocus
+
+,
+
+requestFocusInWindow
+
+,
+
+requestFocusInWindow
+
+,
+
+resetKeyboardActions
+
+,
+
+reshape
+
+,
+
+revalidate
+
+,
+
+scrollRectToVisible
+
+,
+
+setActionMap
+
+,
+
+setAlignmentX
+
+,
+
+setAlignmentY
+
+,
+
+setAutoscrolls
+
+,
+
+setBackground
+
+,
+
+setBorder
+
+,
+
+setComponentPopupMenu
+
+,
+
+setDebugGraphicsOptions
+
+,
+
+setDefaultLocale
+
+,
+
+setDoubleBuffered
+
+,
+
+setEnabled
+
+,
+
+setFocusTraversalKeys
+
+,
+
+setFont
+
+,
+
+setForeground
+
+,
+
+setInheritsPopupMenu
+
+,
+
+setInputMap
+
+,
+
+setInputVerifier
+
+,
+
+setMaximumSize
+
+,
+
+setMinimumSize
+
+,
+
+setNextFocusableComponent
+
+,
+
+setOpaque
+
+,
+
+setPreferredSize
+
+,
+
+setRequestFocusEnabled
+
+,
+
+setToolTipText
+
+,
+
+setTransferHandler
+
+,
+
+setUI
+
+,
+
+setVerifyInputWhenFocusTarget
+
+,
+
+setVisible
+
+,
+
+unregisterKeyboardAction
+
+,
+
+update
+
+---
+
+#### Methods declared in class javax.swing. JComponent
+
+Methods declared in class java.awt.
+
+Container
+
+add
+
+,
+
+add
+
+,
+
+add
+
+,
+
+add
+
+,
+
+add
+
+,
+
+addContainerListener
+
+,
+
+addImpl
+
+,
+
+addPropertyChangeListener
+
+,
+
+addPropertyChangeListener
+
+,
+
+applyComponentOrientation
+
+,
+
+areFocusTraversalKeysSet
+
+,
+
+countComponents
+
+,
+
+deliverEvent
+
+,
+
+doLayout
+
+,
+
+findComponentAt
+
+,
+
+findComponentAt
+
+,
+
+getComponent
+
+,
+
+getComponentAt
+
+,
+
+getComponentAt
+
+,
+
+getComponentCount
+
+,
+
+getComponents
+
+,
+
+getComponentZOrder
+
+,
+
+getContainerListeners
+
+,
+
+getFocusTraversalKeys
+
+,
+
+getFocusTraversalPolicy
+
+,
+
+getLayout
+
+,
+
+getMousePosition
+
+,
+
+insets
+
+,
+
+invalidate
+
+,
+
+isAncestorOf
+
+,
+
+isFocusCycleRoot
+
+,
+
+isFocusCycleRoot
+
+,
+
+isFocusTraversalPolicyProvider
+
+,
+
+isFocusTraversalPolicySet
+
+,
+
+layout
+
+,
+
+list
+
+,
+
+list
+
+,
+
+locate
+
+,
+
+minimumSize
+
+,
+
+paintComponents
+
+,
+
+preferredSize
+
+,
+
+printComponents
+
+,
+
+processContainerEvent
+
+,
+
+processEvent
+
+,
+
+remove
+
+,
+
+remove
+
+,
+
+removeAll
+
+,
+
+removeContainerListener
+
+,
+
+setComponentZOrder
+
+,
+
+setFocusCycleRoot
+
+,
+
+setFocusTraversalPolicy
+
+,
+
+setFocusTraversalPolicyProvider
+
+,
+
+setLayout
+
+,
+
+transferFocusDownCycle
+
+,
+
+validate
+
+,
+
+validateTree
+
+---
+
+#### Methods declared in class java.awt. Container
+
+Methods declared in class java.awt.
+
+Component
+
+action
+
+,
+
+add
+
+,
+
+addComponentListener
+
+,
+
+addFocusListener
+
+,
+
+addHierarchyBoundsListener
+
+,
+
+addHierarchyListener
+
+,
+
+addInputMethodListener
+
+,
+
+addKeyListener
+
+,
+
+addMouseListener
+
+,
+
+addMouseMotionListener
+
+,
+
+addMouseWheelListener
+
+,
+
+bounds
+
+,
+
+checkImage
+
+,
+
+checkImage
+
+,
+
+coalesceEvents
+
+,
+
+contains
+
+,
+
+createImage
+
+,
+
+createImage
+
+,
+
+createVolatileImage
+
+,
+
+createVolatileImage
+
+,
+
+disableEvents
+
+,
+
+dispatchEvent
+
+,
+
+enable
+
+,
+
+enableEvents
+
+,
+
+enableInputMethods
+
+,
+
+firePropertyChange
+
+,
+
+firePropertyChange
+
+,
+
+firePropertyChange
+
+,
+
+firePropertyChange
+
+,
+
+firePropertyChange
+
+,
+
+firePropertyChange
+
+,
+
+firePropertyChange
+
+,
+
+getBackground
+
+,
+
+getBounds
+
+,
+
+getColorModel
+
+,
+
+getComponentListeners
+
+,
+
+getComponentOrientation
+
+,
+
+getCursor
+
+,
+
+getDropTarget
+
+,
+
+getFocusCycleRootAncestor
+
+,
+
+getFocusListeners
+
+,
+
+getFocusTraversalKeysEnabled
+
+,
+
+getFont
+
+,
+
+getForeground
+
+,
+
+getGraphicsConfiguration
+
+,
+
+getHierarchyBoundsListeners
+
+,
+
+getHierarchyListeners
+
+,
+
+getIgnoreRepaint
+
+,
+
+getInputContext
+
+,
+
+getInputMethodListeners
+
+,
+
+getInputMethodRequests
+
+,
+
+getKeyListeners
+
+,
+
+getLocale
+
+,
+
+getLocation
+
+,
+
+getLocationOnScreen
+
+,
+
+getMouseListeners
+
+,
+
+getMouseMotionListeners
+
+,
+
+getMousePosition
+
+,
+
+getMouseWheelListeners
+
+,
+
+getName
+
+,
+
+getParent
+
+,
+
+getPropertyChangeListeners
+
+,
+
+getPropertyChangeListeners
+
+,
+
+getSize
+
+,
+
+getToolkit
+
+,
+
+getTreeLock
+
+,
+
+gotFocus
+
+,
+
+handleEvent
+
+,
+
+hasFocus
+
+,
+
+hide
+
+,
+
+imageUpdate
+
+,
+
+inside
+
+,
+
+isBackgroundSet
+
+,
+
+isCursorSet
+
+,
+
+isDisplayable
+
+,
+
+isEnabled
+
+,
+
+isFocusable
+
+,
+
+isFocusOwner
+
+,
+
+isFocusTraversable
+
+,
+
+isFontSet
+
+,
+
+isForegroundSet
+
+,
+
+isLightweight
+
+,
+
+isMaximumSizeSet
+
+,
+
+isMinimumSizeSet
+
+,
+
+isPreferredSizeSet
+
+,
+
+isShowing
+
+,
+
+isValid
+
+,
+
+isVisible
+
+,
+
+keyDown
+
+,
+
+keyUp
+
+,
+
+list
+
+,
+
+list
+
+,
+
+list
+
+,
+
+location
+
+,
+
+lostFocus
+
+,
+
+mouseDown
+
+,
+
+mouseDrag
+
+,
+
+mouseEnter
+
+,
+
+mouseExit
+
+,
+
+mouseMove
+
+,
+
+mouseUp
+
+,
+
+move
+
+,
+
+nextFocus
+
+,
+
+paintAll
+
+,
+
+postEvent
+
+,
+
+prepareImage
+
+,
+
+prepareImage
+
+,
+
+processComponentEvent
+
+,
+
+processFocusEvent
+
+,
+
+processHierarchyBoundsEvent
+
+,
+
+processHierarchyEvent
+
+,
+
+processInputMethodEvent
+
+,
+
+processMouseWheelEvent
+
+,
+
+remove
+
+,
+
+removeComponentListener
+
+,
+
+removeFocusListener
+
+,
+
+removeHierarchyBoundsListener
+
+,
+
+removeHierarchyListener
+
+,
+
+removeInputMethodListener
+
+,
+
+removeKeyListener
+
+,
+
+removeMouseListener
+
+,
+
+removeMouseMotionListener
+
+,
+
+removeMouseWheelListener
+
+,
+
+removePropertyChangeListener
+
+,
+
+removePropertyChangeListener
+
+,
+
+repaint
+
+,
+
+repaint
+
+,
+
+repaint
+
+,
+
+requestFocus
+
+,
+
+requestFocus
+
+,
+
+requestFocusInWindow
+
+,
+
+resize
+
+,
+
+resize
+
+,
+
+setBounds
+
+,
+
+setBounds
+
+,
+
+setComponentOrientation
+
+,
+
+setCursor
+
+,
+
+setDropTarget
+
+,
+
+setFocusable
+
+,
+
+setFocusTraversalKeysEnabled
+
+,
+
+setIgnoreRepaint
+
+,
+
+setLocale
+
+,
+
+setLocation
+
+,
+
+setLocation
+
+,
+
+setMixingCutoutShape
+
+,
+
+setName
+
+,
+
+setSize
+
+,
+
+setSize
+
+,
+
+show
+
+,
+
+show
+
+,
+
+size
+
+,
+
+toString
+
+,
+
+transferFocus
+
+,
+
+transferFocusBackward
+
+,
+
+transferFocusUpCycle
+
+---
+
+#### Methods declared in class java.awt. Component
+
+Methods declared in class java.lang.
+
+Object
+
+clone
+
+,
+
+equals
+
+,
+
+finalize
+
+,
+
+getClass
+
+,
+
+hashCode
+
+,
+
+notify
+
+,
+
+notifyAll
+
+,
+
+wait
+
+,
+
+wait
+
+,
+
+wait
+
+---
+
+#### Methods declared in class java.lang. Object
+
+========= CONSTRUCTOR DETAIL ========
+
+- Constructor Detail
+
+- DefaultEditor
+
+```java
+public DefaultEditor​(
+JSpinner
+spinner)
+```
+
+Constructs an editor component for the specified
+
+JSpinner
+
+.
+This
+
+DefaultEditor
+
+is it's own layout manager and
+it is added to the spinner's
+
+ChangeListener
+
+list.
+The constructor creates a single
+
+JFormattedTextField
+
+child,
+initializes it's value to be the spinner model's current value
+and adds it to
+
+this
+
+DefaultEditor
+
+.
+
+**Parameters:** spinner
+
+- the spinner whose model
+
+this
+
+editor will monitor
+**See Also:** getTextField()
+
+,
+
+JSpinner.addChangeListener(javax.swing.event.ChangeListener)
+
+============ METHOD DETAIL ==========
+
+- Method Detail
+
+- dismiss
+
+```java
+public void dismiss​(
+JSpinner
+spinner)
+```
+
+Disconnect
+
+this
+
+editor from the specified
+
+JSpinner
+
+. By default, this method removes
+itself from the spinners
+
+ChangeListener
+
+list.
+
+**Parameters:** spinner
+
+- the
+
+JSpinner
+
+to disconnect this
+editor from; the same spinner as was passed to the constructor.
+
+- getSpinner
+
+```java
+public
+JSpinner
+getSpinner()
+```
+
+Returns the
+
+JSpinner
+
+ancestor of this editor or
+
+null
+
+if none of the ancestors are a
+
+JSpinner
+
+.
+Typically the editor's parent is a
+
+JSpinner
+
+however
+subclasses of
+
+JSpinner
+
+may override the
+the
+
+createEditor
+
+method and insert one or more containers
+between the
+
+JSpinner
+
+and it's editor.
+
+**Returns:** JSpinner
+
+ancestor;
+
+null
+
+if none of the ancestors are a
+
+JSpinner
+**See Also:** JSpinner.createEditor(javax.swing.SpinnerModel)
+
+- getTextField
+
+```java
+public
+JFormattedTextField
+getTextField()
+```
+
+Returns the
+
+JFormattedTextField
+
+child of this
+editor. By default the text field is the first and only
+child of editor.
+
+**Returns:** the
+
+JFormattedTextField
+
+that gives the user
+access to the
+
+SpinnerDateModel's
+
+value.
+**See Also:** getSpinner()
+
+,
+
+JSpinner.getModel()
+
+- stateChanged
+
+```java
+public void stateChanged​(
+ChangeEvent
+e)
+```
+
+This method is called when the spinner's model's state changes.
+It sets the
+
+value
+
+of the text field to the current
+value of the spinners model.
+
+**Specified by:** stateChanged
+
+in interface
+
+ChangeListener
+**Parameters:** e
+
+- the
+
+ChangeEvent
+
+whose source is the
+
+JSpinner
+
+whose model has changed.
+**See Also:** getTextField()
+
+,
+
+JSpinner.getValue()
+
+- propertyChange
+
+```java
+public void propertyChange​(
+PropertyChangeEvent
+e)
+```
+
+Called by the
+
+JFormattedTextField
+
+PropertyChangeListener
+
+. When the
+
+"value"
+
+property changes, which implies that the user has typed a new
+number, we set the value of the spinners model.
+
+This class ignores
+
+PropertyChangeEvents
+
+whose
+source is not the
+
+JFormattedTextField
+
+, so subclasses
+may safely make
+
+this
+
+DefaultEditor
+
+a
+
+PropertyChangeListener
+
+on other objects.
+
+**Specified by:** propertyChange
+
+in interface
+
+PropertyChangeListener
+**Parameters:** e
+
+- the
+
+PropertyChangeEvent
+
+whose source is
+the
+
+JFormattedTextField
+
+created by this class.
+**See Also:** getTextField()
+
+- addLayoutComponent
+
+```java
+public void addLayoutComponent​(
+String
+name,
+
+Component
+child)
+```
+
+This
+
+LayoutManager
+
+method does nothing. We're
+only managing a single child and there's no support
+for layout constraints.
+
+**Specified by:** addLayoutComponent
+
+in interface
+
+LayoutManager
+**Parameters:** name
+
+- ignored
+**Parameters:** child
+
+- ignored
+
+- removeLayoutComponent
+
+```java
+public void removeLayoutComponent​(
+Component
+child)
+```
+
+This
+
+LayoutManager
+
+method does nothing. There
+isn't any per-child state.
+
+**Specified by:** removeLayoutComponent
+
+in interface
+
+LayoutManager
+**Parameters:** child
+
+- ignored
+
+- preferredLayoutSize
+
+```java
+public
+Dimension
+preferredLayoutSize​(
+Container
+parent)
+```
+
+Returns the preferred size of first (and only) child plus the
+size of the parents insets.
+
+**Specified by:** preferredLayoutSize
+
+in interface
+
+LayoutManager
+**Parameters:** parent
+
+- the Container that's managing the layout
+**Returns:** the preferred dimensions to lay out the subcomponents
+of the specified container.
+**See Also:** LayoutManager.minimumLayoutSize(java.awt.Container)
+
+- minimumLayoutSize
+
+```java
+public
+Dimension
+minimumLayoutSize​(
+Container
+parent)
+```
+
+Returns the minimum size of first (and only) child plus the
+size of the parents insets.
+
+**Specified by:** minimumLayoutSize
+
+in interface
+
+LayoutManager
+**Parameters:** parent
+
+- the Container that's managing the layout
+**Returns:** the minimum dimensions needed to lay out the subcomponents
+of the specified container.
+**See Also:** LayoutManager.preferredLayoutSize(java.awt.Container)
+
+- layoutContainer
+
+```java
+public void layoutContainer​(
+Container
+parent)
+```
+
+Resize the one (and only) child to completely fill the area
+within the parents insets.
+
+**Specified by:** layoutContainer
+
+in interface
+
+LayoutManager
+**Parameters:** parent
+
+- the container to be laid out
+
+- commitEdit
+
+```java
+public void commitEdit()
+throws
+ParseException
+```
+
+Pushes the currently edited value to the
+
+SpinnerModel
+
+.
+
+The default implementation invokes
+
+commitEdit
+
+on the
+
+JFormattedTextField
+
+.
+
+**Throws:** ParseException
+
+- if the edited value is not legal
+
+- getBaseline
+
+```java
+public int getBaseline​(int width,
+int height)
+```
+
+Returns the baseline.
+
+**Overrides:** getBaseline
+
+in class
+
+JComponent
+**Parameters:** width
+
+- the width to get the baseline for
+**Parameters:** height
+
+- the height to get the baseline for
+**Returns:** the baseline or < 0 indicating there is no reasonable
+baseline
+**Throws:** IllegalArgumentException
+
+- if width or height is < 0
+**Since:** 1.6
+**See Also:** JComponent.getBaseline(int,int)
+
+,
+
+JComponent.getBaselineResizeBehavior()
+
+- getBaselineResizeBehavior
+
+```java
+public
+Component.BaselineResizeBehavior
+getBaselineResizeBehavior()
+```
+
+Returns an enum indicating how the baseline of the component
+changes as the size changes.
+
+**Overrides:** getBaselineResizeBehavior
+
+in class
+
+JComponent
+**Returns:** an enum indicating how the baseline changes as the component
+size changes
+**Throws:** NullPointerException
+**Since:** 1.6
+**See Also:** JComponent.getBaseline(int, int)
+
+Constructor Detail
+
+- DefaultEditor
+
+```java
+public DefaultEditor​(
+JSpinner
+spinner)
+```
+
+Constructs an editor component for the specified
+
+JSpinner
+
+.
+This
+
+DefaultEditor
+
+is it's own layout manager and
+it is added to the spinner's
+
+ChangeListener
+
+list.
+The constructor creates a single
+
+JFormattedTextField
+
+child,
+initializes it's value to be the spinner model's current value
+and adds it to
+
+this
+
+DefaultEditor
+
+.
+
+**Parameters:** spinner
+
+- the spinner whose model
+
+this
+
+editor will monitor
+**See Also:** getTextField()
+
+,
+
+JSpinner.addChangeListener(javax.swing.event.ChangeListener)
+
+---
+
+#### Constructor Detail
+
+DefaultEditor
+
+```java
+public DefaultEditor​(
+JSpinner
+spinner)
+```
+
+Constructs an editor component for the specified
+
+JSpinner
+
+.
+This
+
+DefaultEditor
+
+is it's own layout manager and
+it is added to the spinner's
+
+ChangeListener
+
+list.
+The constructor creates a single
+
+JFormattedTextField
+
+child,
+initializes it's value to be the spinner model's current value
+and adds it to
+
+this
+
+DefaultEditor
+
+.
+
+**Parameters:** spinner
+
+- the spinner whose model
+
+this
+
+editor will monitor
+**See Also:** getTextField()
+
+,
+
+JSpinner.addChangeListener(javax.swing.event.ChangeListener)
+
+---
+
+#### DefaultEditor
+
+public DefaultEditor​(
+
+JSpinner
+
+spinner)
+
+Constructs an editor component for the specified
+
+JSpinner
+
+.
+This
+
+DefaultEditor
+
+is it's own layout manager and
+it is added to the spinner's
+
+ChangeListener
+
+list.
+The constructor creates a single
+
+JFormattedTextField
+
+child,
+initializes it's value to be the spinner model's current value
+and adds it to
+
+this
+
+DefaultEditor
+
+.
+
+Method Detail
+
+- dismiss
+
+```java
+public void dismiss​(
+JSpinner
+spinner)
+```
+
+Disconnect
+
+this
+
+editor from the specified
+
+JSpinner
+
+. By default, this method removes
+itself from the spinners
+
+ChangeListener
+
+list.
+
+**Parameters:** spinner
+
+- the
+
+JSpinner
+
+to disconnect this
+editor from; the same spinner as was passed to the constructor.
+
+- getSpinner
+
+```java
+public
+JSpinner
+getSpinner()
+```
+
+Returns the
+
+JSpinner
+
+ancestor of this editor or
+
+null
+
+if none of the ancestors are a
+
+JSpinner
+
+.
+Typically the editor's parent is a
+
+JSpinner
+
+however
+subclasses of
+
+JSpinner
+
+may override the
+the
+
+createEditor
+
+method and insert one or more containers
+between the
+
+JSpinner
+
+and it's editor.
+
+**Returns:** JSpinner
+
+ancestor;
+
+null
+
+if none of the ancestors are a
+
+JSpinner
+**See Also:** JSpinner.createEditor(javax.swing.SpinnerModel)
+
+- getTextField
+
+```java
+public
+JFormattedTextField
+getTextField()
+```
+
+Returns the
+
+JFormattedTextField
+
+child of this
+editor. By default the text field is the first and only
+child of editor.
+
+**Returns:** the
+
+JFormattedTextField
+
+that gives the user
+access to the
+
+SpinnerDateModel's
+
+value.
+**See Also:** getSpinner()
+
+,
+
+JSpinner.getModel()
+
+- stateChanged
+
+```java
+public void stateChanged​(
+ChangeEvent
+e)
+```
+
+This method is called when the spinner's model's state changes.
+It sets the
+
+value
+
+of the text field to the current
+value of the spinners model.
+
+**Specified by:** stateChanged
+
+in interface
+
+ChangeListener
+**Parameters:** e
+
+- the
+
+ChangeEvent
+
+whose source is the
+
+JSpinner
+
+whose model has changed.
+**See Also:** getTextField()
+
+,
+
+JSpinner.getValue()
+
+- propertyChange
+
+```java
+public void propertyChange​(
+PropertyChangeEvent
+e)
+```
+
+Called by the
+
+JFormattedTextField
+
+PropertyChangeListener
+
+. When the
+
+"value"
+
+property changes, which implies that the user has typed a new
+number, we set the value of the spinners model.
+
+This class ignores
+
+PropertyChangeEvents
+
+whose
+source is not the
+
+JFormattedTextField
+
+, so subclasses
+may safely make
+
+this
+
+DefaultEditor
+
+a
+
+PropertyChangeListener
+
+on other objects.
+
+**Specified by:** propertyChange
+
+in interface
+
+PropertyChangeListener
+**Parameters:** e
+
+- the
+
+PropertyChangeEvent
+
+whose source is
+the
+
+JFormattedTextField
+
+created by this class.
+**See Also:** getTextField()
+
+- addLayoutComponent
+
+```java
+public void addLayoutComponent​(
+String
+name,
+
+Component
+child)
+```
+
+This
+
+LayoutManager
+
+method does nothing. We're
+only managing a single child and there's no support
+for layout constraints.
+
+**Specified by:** addLayoutComponent
+
+in interface
+
+LayoutManager
+**Parameters:** name
+
+- ignored
+**Parameters:** child
+
+- ignored
+
+- removeLayoutComponent
+
+```java
+public void removeLayoutComponent​(
+Component
+child)
+```
+
+This
+
+LayoutManager
+
+method does nothing. There
+isn't any per-child state.
+
+**Specified by:** removeLayoutComponent
+
+in interface
+
+LayoutManager
+**Parameters:** child
+
+- ignored
+
+- preferredLayoutSize
+
+```java
+public
+Dimension
+preferredLayoutSize​(
+Container
+parent)
+```
+
+Returns the preferred size of first (and only) child plus the
+size of the parents insets.
+
+**Specified by:** preferredLayoutSize
+
+in interface
+
+LayoutManager
+**Parameters:** parent
+
+- the Container that's managing the layout
+**Returns:** the preferred dimensions to lay out the subcomponents
+of the specified container.
+**See Also:** LayoutManager.minimumLayoutSize(java.awt.Container)
+
+- minimumLayoutSize
+
+```java
+public
+Dimension
+minimumLayoutSize​(
+Container
+parent)
+```
+
+Returns the minimum size of first (and only) child plus the
+size of the parents insets.
+
+**Specified by:** minimumLayoutSize
+
+in interface
+
+LayoutManager
+**Parameters:** parent
+
+- the Container that's managing the layout
+**Returns:** the minimum dimensions needed to lay out the subcomponents
+of the specified container.
+**See Also:** LayoutManager.preferredLayoutSize(java.awt.Container)
+
+- layoutContainer
+
+```java
+public void layoutContainer​(
+Container
+parent)
+```
+
+Resize the one (and only) child to completely fill the area
+within the parents insets.
+
+**Specified by:** layoutContainer
+
+in interface
+
+LayoutManager
+**Parameters:** parent
+
+- the container to be laid out
+
+- commitEdit
+
+```java
+public void commitEdit()
+throws
+ParseException
+```
+
+Pushes the currently edited value to the
+
+SpinnerModel
+
+.
+
+The default implementation invokes
+
+commitEdit
+
+on the
+
+JFormattedTextField
+
+.
+
+**Throws:** ParseException
+
+- if the edited value is not legal
+
+- getBaseline
+
+```java
+public int getBaseline​(int width,
+int height)
+```
+
+Returns the baseline.
+
+**Overrides:** getBaseline
+
+in class
+
+JComponent
+**Parameters:** width
+
+- the width to get the baseline for
+**Parameters:** height
+
+- the height to get the baseline for
+**Returns:** the baseline or < 0 indicating there is no reasonable
+baseline
+**Throws:** IllegalArgumentException
+
+- if width or height is < 0
+**Since:** 1.6
+**See Also:** JComponent.getBaseline(int,int)
+
+,
+
+JComponent.getBaselineResizeBehavior()
+
+- getBaselineResizeBehavior
+
+```java
+public
+Component.BaselineResizeBehavior
+getBaselineResizeBehavior()
+```
+
+Returns an enum indicating how the baseline of the component
+changes as the size changes.
+
+**Overrides:** getBaselineResizeBehavior
+
+in class
+
+JComponent
+**Returns:** an enum indicating how the baseline changes as the component
+size changes
+**Throws:** NullPointerException
+**Since:** 1.6
+**See Also:** JComponent.getBaseline(int, int)
+
+---
+
+#### Method Detail
+
+dismiss
+
+```java
+public void dismiss​(
+JSpinner
+spinner)
+```
+
+Disconnect
+
+this
+
+editor from the specified
+
+JSpinner
+
+. By default, this method removes
+itself from the spinners
+
+ChangeListener
+
+list.
+
+**Parameters:** spinner
+
+- the
+
+JSpinner
+
+to disconnect this
+editor from; the same spinner as was passed to the constructor.
+
+---
+
+#### dismiss
+
+public void dismiss​(
+
+JSpinner
+
+spinner)
+
+Disconnect
+
+this
+
+editor from the specified
+
+JSpinner
+
+. By default, this method removes
+itself from the spinners
+
+ChangeListener
+
+list.
+
+getSpinner
+
+```java
+public
+JSpinner
+getSpinner()
+```
+
+Returns the
+
+JSpinner
+
+ancestor of this editor or
+
+null
+
+if none of the ancestors are a
+
+JSpinner
+
+.
+Typically the editor's parent is a
+
+JSpinner
+
+however
+subclasses of
+
+JSpinner
+
+may override the
+the
+
+createEditor
+
+method and insert one or more containers
+between the
+
+JSpinner
+
+and it's editor.
+
+**Returns:** JSpinner
+
+ancestor;
+
+null
+
+if none of the ancestors are a
+
+JSpinner
+**See Also:** JSpinner.createEditor(javax.swing.SpinnerModel)
+
+---
+
+#### getSpinner
+
+public
+
+JSpinner
+
+getSpinner()
+
+Returns the
+
+JSpinner
+
+ancestor of this editor or
+
+null
+
+if none of the ancestors are a
+
+JSpinner
+
+.
+Typically the editor's parent is a
+
+JSpinner
+
+however
+subclasses of
+
+JSpinner
+
+may override the
+the
+
+createEditor
+
+method and insert one or more containers
+between the
+
+JSpinner
+
+and it's editor.
+
+getTextField
+
+```java
+public
+JFormattedTextField
+getTextField()
+```
+
+Returns the
+
+JFormattedTextField
+
+child of this
+editor. By default the text field is the first and only
+child of editor.
+
+**Returns:** the
+
+JFormattedTextField
+
+that gives the user
+access to the
+
+SpinnerDateModel's
+
+value.
+**See Also:** getSpinner()
+
+,
+
+JSpinner.getModel()
+
+---
+
+#### getTextField
+
+public
+
+JFormattedTextField
+
+getTextField()
+
+Returns the
+
+JFormattedTextField
+
+child of this
+editor. By default the text field is the first and only
+child of editor.
+
+stateChanged
+
+```java
+public void stateChanged​(
+ChangeEvent
+e)
+```
+
+This method is called when the spinner's model's state changes.
+It sets the
+
+value
+
+of the text field to the current
+value of the spinners model.
+
+**Specified by:** stateChanged
+
+in interface
+
+ChangeListener
+**Parameters:** e
+
+- the
+
+ChangeEvent
+
+whose source is the
+
+JSpinner
+
+whose model has changed.
+**See Also:** getTextField()
+
+,
+
+JSpinner.getValue()
+
+---
+
+#### stateChanged
+
+public void stateChanged​(
+
+ChangeEvent
+
+e)
+
+This method is called when the spinner's model's state changes.
+It sets the
+
+value
+
+of the text field to the current
+value of the spinners model.
+
+propertyChange
+
+```java
+public void propertyChange​(
+PropertyChangeEvent
+e)
+```
+
+Called by the
+
+JFormattedTextField
+
+PropertyChangeListener
+
+. When the
+
+"value"
+
+property changes, which implies that the user has typed a new
+number, we set the value of the spinners model.
+
+This class ignores
+
+PropertyChangeEvents
+
+whose
+source is not the
+
+JFormattedTextField
+
+, so subclasses
+may safely make
+
+this
+
+DefaultEditor
+
+a
+
+PropertyChangeListener
+
+on other objects.
+
+**Specified by:** propertyChange
+
+in interface
+
+PropertyChangeListener
+**Parameters:** e
+
+- the
+
+PropertyChangeEvent
+
+whose source is
+the
+
+JFormattedTextField
+
+created by this class.
+**See Also:** getTextField()
+
+---
+
+#### propertyChange
+
+public void propertyChange​(
+
+PropertyChangeEvent
+
+e)
+
+Called by the
+
+JFormattedTextField
+
+PropertyChangeListener
+
+. When the
+
+"value"
+
+property changes, which implies that the user has typed a new
+number, we set the value of the spinners model.
+
+This class ignores
+
+PropertyChangeEvents
+
+whose
+source is not the
+
+JFormattedTextField
+
+, so subclasses
+may safely make
+
+this
+
+DefaultEditor
+
+a
+
+PropertyChangeListener
+
+on other objects.
+
+This class ignores
+
+PropertyChangeEvents
+
+whose
+source is not the
+
+JFormattedTextField
+
+, so subclasses
+may safely make
+
+this
+
+DefaultEditor
+
+a
+
+PropertyChangeListener
+
+on other objects.
+
+addLayoutComponent
+
+```java
+public void addLayoutComponent​(
+String
+name,
+
+Component
+child)
+```
+
+This
+
+LayoutManager
+
+method does nothing. We're
+only managing a single child and there's no support
+for layout constraints.
+
+**Specified by:** addLayoutComponent
+
+in interface
+
+LayoutManager
+**Parameters:** name
+
+- ignored
+**Parameters:** child
+
+- ignored
+
+---
+
+#### addLayoutComponent
+
+public void addLayoutComponent​(
+
+String
+
+name,
+
+Component
+
+child)
+
+This
+
+LayoutManager
+
+method does nothing. We're
+only managing a single child and there's no support
+for layout constraints.
+
+removeLayoutComponent
+
+```java
+public void removeLayoutComponent​(
+Component
+child)
+```
+
+This
+
+LayoutManager
+
+method does nothing. There
+isn't any per-child state.
+
+**Specified by:** removeLayoutComponent
+
+in interface
+
+LayoutManager
+**Parameters:** child
+
+- ignored
+
+---
+
+#### removeLayoutComponent
+
+public void removeLayoutComponent​(
+
+Component
+
+child)
+
+This
+
+LayoutManager
+
+method does nothing. There
+isn't any per-child state.
+
+preferredLayoutSize
+
+```java
+public
+Dimension
+preferredLayoutSize​(
+Container
+parent)
+```
+
+Returns the preferred size of first (and only) child plus the
+size of the parents insets.
+
+**Specified by:** preferredLayoutSize
+
+in interface
+
+LayoutManager
+**Parameters:** parent
+
+- the Container that's managing the layout
+**Returns:** the preferred dimensions to lay out the subcomponents
+of the specified container.
+**See Also:** LayoutManager.minimumLayoutSize(java.awt.Container)
+
+---
+
+#### preferredLayoutSize
+
+public
+
+Dimension
+
+preferredLayoutSize​(
+
+Container
+
+parent)
+
+Returns the preferred size of first (and only) child plus the
+size of the parents insets.
+
+minimumLayoutSize
+
+```java
+public
+Dimension
+minimumLayoutSize​(
+Container
+parent)
+```
+
+Returns the minimum size of first (and only) child plus the
+size of the parents insets.
+
+**Specified by:** minimumLayoutSize
+
+in interface
+
+LayoutManager
+**Parameters:** parent
+
+- the Container that's managing the layout
+**Returns:** the minimum dimensions needed to lay out the subcomponents
+of the specified container.
+**See Also:** LayoutManager.preferredLayoutSize(java.awt.Container)
+
+---
+
+#### minimumLayoutSize
+
+public
+
+Dimension
+
+minimumLayoutSize​(
+
+Container
+
+parent)
+
+Returns the minimum size of first (and only) child plus the
+size of the parents insets.
+
+layoutContainer
+
+```java
+public void layoutContainer​(
+Container
+parent)
+```
+
+Resize the one (and only) child to completely fill the area
+within the parents insets.
+
+**Specified by:** layoutContainer
+
+in interface
+
+LayoutManager
+**Parameters:** parent
+
+- the container to be laid out
+
+---
+
+#### layoutContainer
+
+public void layoutContainer​(
+
+Container
+
+parent)
+
+Resize the one (and only) child to completely fill the area
+within the parents insets.
+
+commitEdit
+
+```java
+public void commitEdit()
+throws
+ParseException
+```
+
+Pushes the currently edited value to the
+
+SpinnerModel
+
+.
+
+The default implementation invokes
+
+commitEdit
+
+on the
+
+JFormattedTextField
+
+.
+
+**Throws:** ParseException
+
+- if the edited value is not legal
+
+---
+
+#### commitEdit
+
+public void commitEdit()
+throws
+
+ParseException
+
+Pushes the currently edited value to the
+
+SpinnerModel
+
+.
+
+The default implementation invokes
+
+commitEdit
+
+on the
+
+JFormattedTextField
+
+.
+
+The default implementation invokes
+
+commitEdit
+
+on the
+
+JFormattedTextField
+
+.
+
+getBaseline
+
+```java
+public int getBaseline​(int width,
+int height)
+```
+
+Returns the baseline.
+
+**Overrides:** getBaseline
+
+in class
+
+JComponent
+**Parameters:** width
+
+- the width to get the baseline for
+**Parameters:** height
+
+- the height to get the baseline for
+**Returns:** the baseline or < 0 indicating there is no reasonable
+baseline
+**Throws:** IllegalArgumentException
+
+- if width or height is < 0
+**Since:** 1.6
+**See Also:** JComponent.getBaseline(int,int)
+
+,
+
+JComponent.getBaselineResizeBehavior()
+
+---
+
+#### getBaseline
+
+public int getBaseline​(int width,
+int height)
+
+Returns the baseline.
+
+getBaselineResizeBehavior
+
+```java
+public
+Component.BaselineResizeBehavior
+getBaselineResizeBehavior()
+```
+
+Returns an enum indicating how the baseline of the component
+changes as the size changes.
+
+**Overrides:** getBaselineResizeBehavior
+
+in class
+
+JComponent
+**Returns:** an enum indicating how the baseline changes as the component
+size changes
+**Throws:** NullPointerException
+**Since:** 1.6
+**See Also:** JComponent.getBaseline(int, int)
+
+---
+
+#### getBaselineResizeBehavior
+
+public
+
+Component.BaselineResizeBehavior
+
+getBaselineResizeBehavior()
+
+Returns an enum indicating how the baseline of the component
+changes as the size changes.
+
+---
+

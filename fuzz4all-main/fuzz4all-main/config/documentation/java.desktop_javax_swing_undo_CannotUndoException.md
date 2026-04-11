@@ -1,0 +1,544 @@
+# Class CannotUndoException
+
+**Source:** `java.desktop\javax\swing\undo\CannotUndoException.html`
+
+### Class Description
+
+```java
+public class
+CannotUndoException
+
+extends
+RuntimeException
+```
+
+Thrown when an UndoableEdit is told to
+
+undo()
+
+and can't.
+
+Warning:
+
+Serialized objects of this class will not be compatible with
+future Swing releases. The current serialization support is
+appropriate for short term storage or RMI between applications running
+the same version of Swing. As of 1.4, support for long term storage
+of all JavaBeans™
+has been added to the
+
+java.beans
+
+package.
+Please see
+
+XMLEncoder
+
+.
+
+**All Implemented Interfaces:** Serializable
+
+---
+
+### Field Details
+
+*No entries found.*
+
+### Constructor Details
+
+#### public CannotUndoException()
+
+*No description found.*
+
+---
+
+### Method Details
+
+*No entries found.*
+
+### Additional Sections
+
+#### Class CannotUndoException
+
+java.lang.Object
+
+- java.lang.Throwable
+- - java.lang.Exception
+- - java.lang.RuntimeException
+- - javax.swing.undo.CannotUndoException
+
+java.lang.Throwable
+
+- java.lang.Exception
+- - java.lang.RuntimeException
+- - javax.swing.undo.CannotUndoException
+
+java.lang.Exception
+
+- java.lang.RuntimeException
+- - javax.swing.undo.CannotUndoException
+
+java.lang.RuntimeException
+
+- javax.swing.undo.CannotUndoException
+
+javax.swing.undo.CannotUndoException
+
+**All Implemented Interfaces:** Serializable
+
+```java
+public class
+CannotUndoException
+
+extends
+RuntimeException
+```
+
+Thrown when an UndoableEdit is told to
+
+undo()
+
+and can't.
+
+Warning:
+
+Serialized objects of this class will not be compatible with
+future Swing releases. The current serialization support is
+appropriate for short term storage or RMI between applications running
+the same version of Swing. As of 1.4, support for long term storage
+of all JavaBeans™
+has been added to the
+
+java.beans
+
+package.
+Please see
+
+XMLEncoder
+
+.
+
+**See Also:** Serialized Form
+
+public class
+
+CannotUndoException
+
+extends
+
+RuntimeException
+
+Thrown when an UndoableEdit is told to
+
+undo()
+
+and can't.
+
+Warning:
+
+Serialized objects of this class will not be compatible with
+future Swing releases. The current serialization support is
+appropriate for short term storage or RMI between applications running
+the same version of Swing. As of 1.4, support for long term storage
+of all JavaBeans™
+has been added to the
+
+java.beans
+
+package.
+Please see
+
+XMLEncoder
+
+.
+
+Warning:
+
+Serialized objects of this class will not be compatible with
+future Swing releases. The current serialization support is
+appropriate for short term storage or RMI between applications running
+the same version of Swing. As of 1.4, support for long term storage
+of all JavaBeans™
+has been added to the
+
+java.beans
+
+package.
+Please see
+
+XMLEncoder
+
+.
+
+======== CONSTRUCTOR SUMMARY ========
+
+- Constructor Summary
+
+Constructors
+
+Constructor
+
+Description
+
+CannotUndoException
+
+()
+
+========== METHOD SUMMARY ===========
+
+- Method Summary
+
+- Methods declared in class java.lang.
+
+Throwable
+
+addSuppressed
+
+,
+
+fillInStackTrace
+
+,
+
+getCause
+
+,
+
+getLocalizedMessage
+
+,
+
+getMessage
+
+,
+
+getStackTrace
+
+,
+
+getSuppressed
+
+,
+
+initCause
+
+,
+
+printStackTrace
+
+,
+
+printStackTrace
+
+,
+
+printStackTrace
+
+,
+
+setStackTrace
+
+,
+
+toString
+
+- Methods declared in class java.lang.
+
+Object
+
+clone
+
+,
+
+equals
+
+,
+
+finalize
+
+,
+
+getClass
+
+,
+
+hashCode
+
+,
+
+notify
+
+,
+
+notifyAll
+
+,
+
+wait
+
+,
+
+wait
+
+,
+
+wait
+
+Constructor Summary
+
+Constructors
+
+Constructor
+
+Description
+
+CannotUndoException
+
+()
+
+---
+
+#### Constructor Summary
+
+Method Summary
+
+- Methods declared in class java.lang.
+
+Throwable
+
+addSuppressed
+
+,
+
+fillInStackTrace
+
+,
+
+getCause
+
+,
+
+getLocalizedMessage
+
+,
+
+getMessage
+
+,
+
+getStackTrace
+
+,
+
+getSuppressed
+
+,
+
+initCause
+
+,
+
+printStackTrace
+
+,
+
+printStackTrace
+
+,
+
+printStackTrace
+
+,
+
+setStackTrace
+
+,
+
+toString
+
+- Methods declared in class java.lang.
+
+Object
+
+clone
+
+,
+
+equals
+
+,
+
+finalize
+
+,
+
+getClass
+
+,
+
+hashCode
+
+,
+
+notify
+
+,
+
+notifyAll
+
+,
+
+wait
+
+,
+
+wait
+
+,
+
+wait
+
+---
+
+#### Method Summary
+
+Methods declared in class java.lang.
+
+Throwable
+
+addSuppressed
+
+,
+
+fillInStackTrace
+
+,
+
+getCause
+
+,
+
+getLocalizedMessage
+
+,
+
+getMessage
+
+,
+
+getStackTrace
+
+,
+
+getSuppressed
+
+,
+
+initCause
+
+,
+
+printStackTrace
+
+,
+
+printStackTrace
+
+,
+
+printStackTrace
+
+,
+
+setStackTrace
+
+,
+
+toString
+
+---
+
+#### Methods declared in class java.lang. Throwable
+
+Methods declared in class java.lang.
+
+Object
+
+clone
+
+,
+
+equals
+
+,
+
+finalize
+
+,
+
+getClass
+
+,
+
+hashCode
+
+,
+
+notify
+
+,
+
+notifyAll
+
+,
+
+wait
+
+,
+
+wait
+
+,
+
+wait
+
+---
+
+#### Methods declared in class java.lang. Object
+
+========= CONSTRUCTOR DETAIL ========
+
+- Constructor Detail
+
+- CannotUndoException
+
+```java
+public CannotUndoException()
+```
+
+Constructor Detail
+
+- CannotUndoException
+
+```java
+public CannotUndoException()
+```
+
+---
+
+#### Constructor Detail
+
+CannotUndoException
+
+```java
+public CannotUndoException()
+```
+
+---
+
+#### CannotUndoException
+
+public CannotUndoException()
+
+---
+

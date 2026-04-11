@@ -1,0 +1,3951 @@
+# Class SctpServerChannel
+
+**Source:** `jdk.sctp\com\sun\nio\sctp\SctpServerChannel.html`
+
+### Class Description
+
+```java
+public abstract class
+SctpServerChannel
+
+extends
+AbstractSelectableChannel
+```
+
+A selectable channel for message-oriented listening SCTP sockets.
+
+An
+
+SCTPServerChannel
+
+is created by invoking the
+
+open
+
+method of this class. A newly-created SCTP server
+channel is open but not yet bound. An attempt to invoke the
+
+accept
+
+method of an unbound channel will cause the
+
+NotYetBoundException
+
+to be thrown. An SCTP server
+channel can be bound by invoking one of the
+
+bind
+
+methods defined by this class.
+
+Socket options are configured using the
+
+setOption
+
+method. SCTP server socket
+channels support the following options:
+
+Socket options
+
+Option Name
+
+Description
+
+SCTP_INIT_MAXSTREAMS
+
+The maximum number of streams requested by the local endpoint during
+association initialization
+
+Additional (implementation specific) options may also be supported. The list
+of options supported is obtained by invoking the
+
+supportedOptions
+
+method.
+
+SCTP server channels are safe for use by multiple concurrent threads.
+
+**All Implemented Interfaces:** Closeable
+
+,
+
+AutoCloseable
+
+,
+
+Channel
+
+,
+
+InterruptibleChannel
+
+---
+
+### Field Details
+
+*No entries found.*
+
+### Constructor Details
+
+#### protected SctpServerChannel​(
+SelectorProvider
+provider)
+
+Initializes a new instance of this class.
+
+**Parameters:**
+- provider
+
+- The selector provider for this channel
+
+---
+
+### Method Details
+
+#### public static
+SctpServerChannel
+open()
+throws
+IOException
+
+Opens an SCTP server channel.
+
+The new channel's socket is initially unbound; it must be bound
+to a specific address via one of its socket's
+
+bind
+
+methods before associations can be accepted.
+
+**Returns:**
+- A new SCTP server channel
+
+**Throws:**
+- UnsupportedOperationException
+
+- If the SCTP protocol is not supported
+- IOException
+
+- If an I/O error occurs
+
+---
+
+#### public abstract
+SctpChannel
+accept()
+throws
+IOException
+
+Accepts an association on this channel's socket.
+
+If this channel is in non-blocking mode then this method will
+immediately return
+
+null
+
+if there are no pending associations.
+Otherwise it will block indefinitely until a new association is
+available or an I/O error occurs.
+
+The
+
+SCTPChannel
+
+returned by this method, if any, will be in
+blocking mode regardless of the blocking mode of this channel.
+
+If a security manager has been installed then for each new
+association this method verifies that the address and port number of the
+assocaitions's remote peer are permitted by the security manager's
+
+checkAccept
+
+method.
+
+**Returns:**
+- The SCTP channel for the new association, or
+
+null
+
+if this channel is in non-blocking mode and no association is
+available to be accepted
+
+**Throws:**
+- ClosedChannelException
+
+- If this channel is closed
+- AsynchronousCloseException
+
+- If another thread closes this channel
+while the accept operation is in progress
+- ClosedByInterruptException
+
+- If another thread interrupts the current thread
+while the accept operation is in progress, thereby
+closing the channel and setting the current thread's
+interrupt status
+- NotYetBoundException
+
+- If this channel's socket has not yet been bound
+- SecurityException
+
+- If a security manager has been installed and it does not permit
+access to the remote peer of the new association
+- IOException
+
+- If some other I/O error occurs
+
+---
+
+#### public final
+SctpServerChannel
+bind​(
+SocketAddress
+local)
+throws
+IOException
+
+Binds the channel's socket to a local address and configures the socket
+to listen for associations.
+
+This method works as if invoking it were equivalent to evaluating the
+expression:
+
+```java
+bind(local, 0);
+```
+
+**Parameters:**
+- local
+
+- The local address to bind the socket, or
+
+null
+
+to
+bind the socket to an automatically assigned socket address
+
+**Returns:**
+- This channel
+
+**Throws:**
+- ClosedChannelException
+
+- If this channel is closed
+- AlreadyBoundException
+
+- If this channel is already bound
+- UnsupportedAddressTypeException
+
+- If the type of the given address is not supported
+- SecurityException
+
+- If a security manager has been installed and its
+
+checkListen
+
+method
+denies the operation
+- IOException
+
+- If some other I/O error occurs
+
+---
+
+#### public abstract
+SctpServerChannel
+bind​(
+SocketAddress
+local,
+int backlog)
+throws
+IOException
+
+Binds the channel's socket to a local address and configures the socket
+to listen for associations.
+
+This method is used to establish a relationship between the socket
+and the local address. Once a relationship is established then
+the socket remains bound until the channel is closed. This relationship
+may not necesssarily be with the address
+
+local
+
+as it may be
+removed by
+
+unbindAddress
+
+, but there will always be
+at least one local address bound to the channel's socket once an
+invocation of this method successfully completes.
+
+Once the channel's socket has been successfully bound to a specific
+address, that is not automatically assigned, more addresses
+may be bound to it using
+
+bindAddress
+
+, or removed
+using
+
+unbindAddress
+
+.
+
+The backlog parameter is the maximum number of pending associations
+on the socket. Its exact semantics are implementation specific. An
+implementation may impose an implementation specific maximum length or
+may choose to ignore the parameter. If the backlog parameter has the
+value
+
+0
+
+, or a negative value, then an implementation specific
+default is used.
+
+**Parameters:**
+- local
+
+- The local address to bind the socket, or
+
+null
+
+to
+bind the socket to an automatically assigned socket address
+- backlog
+
+- The maximum number of pending associations
+
+**Returns:**
+- This channel
+
+**Throws:**
+- ClosedChannelException
+
+- If this channel is closed
+- AlreadyBoundException
+
+- If this channel is already bound
+- UnsupportedAddressTypeException
+
+- If the type of the given address is not supported
+- SecurityException
+
+- If a security manager has been installed and its
+
+checkListen
+
+method
+denies the operation
+- IOException
+
+- If some other I/O error occurs
+
+---
+
+#### public abstract
+SctpServerChannel
+bindAddress​(
+InetAddress
+address)
+throws
+IOException
+
+Adds the given address to the bound addresses for the channel's
+socket.
+
+The given address must not be the
+
+wildcard
+
+address.
+The channel must be first bound using
+
+bind
+
+before
+invoking this method, otherwise
+
+NotYetBoundException
+
+is thrown. The
+
+bind
+
+method takes a
+
+SocketAddress
+
+as its argument which typically
+contains a port number as well as an address. Addresses subquently bound
+using this method are simply addresses as the SCTP port number remains
+the same for the lifetime of the channel.
+
+New associations accepted after this method successfully completes
+will be associated with the given address.
+
+**Parameters:**
+- address
+
+- The address to add to the bound addresses for the socket
+
+**Returns:**
+- This channel
+
+**Throws:**
+- ClosedChannelException
+
+- If this channel is closed
+- NotYetBoundException
+
+- If this channel is not yet bound
+- AlreadyBoundException
+
+- If this channel is already bound to the given address
+- IllegalArgumentException
+
+- If address is
+
+null
+
+or the
+
+wildcard
+
+address
+- IOException
+
+- If some other I/O error occurs
+
+---
+
+#### public abstract
+SctpServerChannel
+unbindAddress​(
+InetAddress
+address)
+throws
+IOException
+
+Removes the given address from the bound addresses for the channel's
+socket.
+
+The given address must not be the
+
+wildcard
+
+address.
+The channel must be first bound using
+
+bind
+
+before
+invoking this method, otherwise
+
+NotYetBoundException
+
+is thrown.
+If this method is invoked on a channel that does not have
+
+address
+
+as one of its bound addresses, or that has only one
+local address bound to it, then this method throws
+
+IllegalUnbindException
+
+.
+The initial address that the channel's socket is bound to using
+
+bind
+
+may be removed from the bound addresses for the
+channel's socket.
+
+New associations accepted after this method successfully completes
+will not be associated with the given address.
+
+**Parameters:**
+- address
+
+- The address to remove from the bound addresses for the socket
+
+**Returns:**
+- This channel
+
+**Throws:**
+- ClosedChannelException
+
+- If this channel is closed
+- NotYetBoundException
+
+- If this channel is not yet bound
+- IllegalArgumentException
+
+- If address is
+
+null
+
+or the
+
+wildcard
+
+address
+- IllegalUnbindException
+
+- If the implementation does not support removing addresses from a
+listening socket,
+
+address
+
+is not bound to the channel's
+socket, or the channel has only one address bound to it
+- IOException
+
+- If some other I/O error occurs
+
+---
+
+#### public abstract
+Set
+<
+SocketAddress
+> getAllLocalAddresses()
+throws
+IOException
+
+Returns all of the socket addresses to which this channel's socket is
+bound.
+
+**Returns:**
+- All the socket addresses that this channel's socket is
+bound to, or an empty
+
+Set
+
+if the channel's socket is not
+bound
+
+**Throws:**
+- ClosedChannelException
+
+- If the channel is closed
+- IOException
+
+- If an I/O error occurs
+
+---
+
+#### public abstract <T> T getOption​(
+SctpSocketOption
+<T> name)
+throws
+IOException
+
+Returns the value of a socket option.
+
+**Parameters:**
+- name
+
+- The socket option
+
+**Returns:**
+- The value of the socket option. A value of
+
+null
+
+may be
+a valid value for some socket options.
+
+**Throws:**
+- UnsupportedOperationException
+
+- If the socket option is not supported by this channel
+- ClosedChannelException
+
+- If this channel is closed
+- IOException
+
+- If an I/O error occurs
+
+**See Also:**
+- SctpStandardSocketOptions
+
+**Type Parameters:**
+- T
+
+- The type of the socket option value
+
+---
+
+#### public abstract <T>
+SctpServerChannel
+setOption​(
+SctpSocketOption
+<T> name,
+T value)
+throws
+IOException
+
+Sets the value of a socket option.
+
+**Parameters:**
+- name
+
+- The socket option
+- value
+
+- The value of the socket option. A value of
+
+null
+
+may be
+a valid value for some socket options.
+
+**Returns:**
+- This channel
+
+**Throws:**
+- UnsupportedOperationException
+
+- If the socket option is not supported by this channel
+- IllegalArgumentException
+
+- If the value is not a valid value for this socket option
+- ClosedChannelException
+
+- If this channel is closed
+- IOException
+
+- If an I/O error occurs
+
+**See Also:**
+- SctpStandardSocketOptions
+
+**Type Parameters:**
+- T
+
+- The type of the socket option value
+
+---
+
+#### public abstract
+Set
+<
+SctpSocketOption
+<?>> supportedOptions()
+
+Returns a set of the socket options supported by this channel.
+
+This method will continue to return the set of options even after the
+channel has been closed.
+
+**Returns:**
+- A set of the socket options supported by this channel
+
+---
+
+#### public final int validOps()
+
+Returns an operation set identifying this channel's supported
+operations.
+
+SCTP server channels only support the accepting of new
+associations, so this method returns
+
+SelectionKey.OP_ACCEPT
+
+.
+
+**Specified by:**
+- validOps
+
+in class
+
+SelectableChannel
+
+**Returns:**
+- The valid-operation set
+
+---
+
+### Additional Sections
+
+#### Class SctpServerChannel
+
+java.lang.Object
+
+- java.nio.channels.spi.AbstractInterruptibleChannel
+- - java.nio.channels.SelectableChannel
+- - java.nio.channels.spi.AbstractSelectableChannel
+- - com.sun.nio.sctp.SctpServerChannel
+
+java.nio.channels.spi.AbstractInterruptibleChannel
+
+- java.nio.channels.SelectableChannel
+- - java.nio.channels.spi.AbstractSelectableChannel
+- - com.sun.nio.sctp.SctpServerChannel
+
+java.nio.channels.SelectableChannel
+
+- java.nio.channels.spi.AbstractSelectableChannel
+- - com.sun.nio.sctp.SctpServerChannel
+
+java.nio.channels.spi.AbstractSelectableChannel
+
+- com.sun.nio.sctp.SctpServerChannel
+
+com.sun.nio.sctp.SctpServerChannel
+
+**All Implemented Interfaces:** Closeable
+
+,
+
+AutoCloseable
+
+,
+
+Channel
+
+,
+
+InterruptibleChannel
+
+```java
+public abstract class
+SctpServerChannel
+
+extends
+AbstractSelectableChannel
+```
+
+A selectable channel for message-oriented listening SCTP sockets.
+
+An
+
+SCTPServerChannel
+
+is created by invoking the
+
+open
+
+method of this class. A newly-created SCTP server
+channel is open but not yet bound. An attempt to invoke the
+
+accept
+
+method of an unbound channel will cause the
+
+NotYetBoundException
+
+to be thrown. An SCTP server
+channel can be bound by invoking one of the
+
+bind
+
+methods defined by this class.
+
+Socket options are configured using the
+
+setOption
+
+method. SCTP server socket
+channels support the following options:
+
+Socket options
+
+Option Name
+
+Description
+
+SCTP_INIT_MAXSTREAMS
+
+The maximum number of streams requested by the local endpoint during
+association initialization
+
+Additional (implementation specific) options may also be supported. The list
+of options supported is obtained by invoking the
+
+supportedOptions
+
+method.
+
+SCTP server channels are safe for use by multiple concurrent threads.
+
+**Since:** 1.7
+
+public abstract class
+
+SctpServerChannel
+
+extends
+
+AbstractSelectableChannel
+
+A selectable channel for message-oriented listening SCTP sockets.
+
+An
+
+SCTPServerChannel
+
+is created by invoking the
+
+open
+
+method of this class. A newly-created SCTP server
+channel is open but not yet bound. An attempt to invoke the
+
+accept
+
+method of an unbound channel will cause the
+
+NotYetBoundException
+
+to be thrown. An SCTP server
+channel can be bound by invoking one of the
+
+bind
+
+methods defined by this class.
+
+Socket options are configured using the
+
+setOption
+
+method. SCTP server socket
+channels support the following options:
+
+Socket options
+
+Option Name
+
+Description
+
+SCTP_INIT_MAXSTREAMS
+
+The maximum number of streams requested by the local endpoint during
+association initialization
+
+Additional (implementation specific) options may also be supported. The list
+of options supported is obtained by invoking the
+
+supportedOptions
+
+method.
+
+SCTP server channels are safe for use by multiple concurrent threads.
+
+An
+
+SCTPServerChannel
+
+is created by invoking the
+
+open
+
+method of this class. A newly-created SCTP server
+channel is open but not yet bound. An attempt to invoke the
+
+accept
+
+method of an unbound channel will cause the
+
+NotYetBoundException
+
+to be thrown. An SCTP server
+channel can be bound by invoking one of the
+
+bind
+
+methods defined by this class.
+
+Socket options are configured using the
+
+setOption
+
+method. SCTP server socket
+channels support the following options:
+
+Socket options
+
+Option Name
+
+Description
+
+SCTP_INIT_MAXSTREAMS
+
+The maximum number of streams requested by the local endpoint during
+association initialization
+
+Additional (implementation specific) options may also be supported. The list
+of options supported is obtained by invoking the
+
+supportedOptions
+
+method.
+
+SCTP server channels are safe for use by multiple concurrent threads.
+
+Socket options are configured using the
+
+setOption
+
+method. SCTP server socket
+channels support the following options:
+
+Socket options
+
+Option Name
+
+Description
+
+SCTP_INIT_MAXSTREAMS
+
+The maximum number of streams requested by the local endpoint during
+association initialization
+
+Additional (implementation specific) options may also be supported. The list
+of options supported is obtained by invoking the
+
+supportedOptions
+
+method.
+
+SCTP server channels are safe for use by multiple concurrent threads.
+
+SCTP server channels are safe for use by multiple concurrent threads.
+
+======== CONSTRUCTOR SUMMARY ========
+
+- Constructor Summary
+
+Constructors
+
+Modifier
+
+Constructor
+
+Description
+
+protected
+
+SctpServerChannel
+
+​(
+
+SelectorProvider
+
+provider)
+
+Initializes a new instance of this class.
+
+========== METHOD SUMMARY ===========
+
+- Method Summary
+
+All Methods
+
+Static Methods
+
+Instance Methods
+
+Abstract Methods
+
+Concrete Methods
+
+Modifier and Type
+
+Method
+
+Description
+
+abstract
+
+SctpChannel
+
+accept
+
+()
+
+Accepts an association on this channel's socket.
+
+SctpServerChannel
+
+bind
+
+​(
+
+SocketAddress
+
+local)
+
+Binds the channel's socket to a local address and configures the socket
+to listen for associations.
+
+abstract
+
+SctpServerChannel
+
+bind
+
+​(
+
+SocketAddress
+
+local,
+int backlog)
+
+Binds the channel's socket to a local address and configures the socket
+to listen for associations.
+
+abstract
+
+SctpServerChannel
+
+bindAddress
+
+​(
+
+InetAddress
+
+address)
+
+Adds the given address to the bound addresses for the channel's
+socket.
+
+abstract
+
+Set
+
+<
+
+SocketAddress
+
+>
+
+getAllLocalAddresses
+
+()
+
+Returns all of the socket addresses to which this channel's socket is
+bound.
+
+abstract <T> T
+
+getOption
+
+​(
+
+SctpSocketOption
+
+<T> name)
+
+Returns the value of a socket option.
+
+static
+
+SctpServerChannel
+
+open
+
+()
+
+Opens an SCTP server channel.
+
+abstract <T>
+
+SctpServerChannel
+
+setOption
+
+​(
+
+SctpSocketOption
+
+<T> name,
+T value)
+
+Sets the value of a socket option.
+
+abstract
+
+Set
+
+<
+
+SctpSocketOption
+
+<?>>
+
+supportedOptions
+
+()
+
+Returns a set of the socket options supported by this channel.
+
+abstract
+
+SctpServerChannel
+
+unbindAddress
+
+​(
+
+InetAddress
+
+address)
+
+Removes the given address from the bound addresses for the channel's
+socket.
+
+int
+
+validOps
+
+()
+
+Returns an operation set identifying this channel's supported
+operations.
+
+- Methods declared in class java.nio.channels.spi.
+
+AbstractSelectableChannel
+
+configureBlocking
+
+,
+
+implCloseChannel
+
+,
+
+implCloseSelectableChannel
+
+,
+
+implConfigureBlocking
+
+,
+
+provider
+
+,
+
+register
+
+- Methods declared in class java.nio.channels.
+
+SelectableChannel
+
+blockingLock
+
+,
+
+isBlocking
+
+,
+
+isRegistered
+
+,
+
+keyFor
+
+,
+
+register
+
+- Methods declared in class java.nio.channels.spi.
+
+AbstractInterruptibleChannel
+
+begin
+
+,
+
+close
+
+,
+
+end
+
+- Methods declared in class java.lang.
+
+Object
+
+clone
+
+,
+
+equals
+
+,
+
+finalize
+
+,
+
+getClass
+
+,
+
+hashCode
+
+,
+
+notify
+
+,
+
+notifyAll
+
+,
+
+toString
+
+,
+
+wait
+
+,
+
+wait
+
+,
+
+wait
+
+- Methods declared in interface java.nio.channels.
+
+Channel
+
+isOpen
+
+Constructor Summary
+
+Constructors
+
+Modifier
+
+Constructor
+
+Description
+
+protected
+
+SctpServerChannel
+
+​(
+
+SelectorProvider
+
+provider)
+
+Initializes a new instance of this class.
+
+---
+
+#### Constructor Summary
+
+Initializes a new instance of this class.
+
+Method Summary
+
+All Methods
+
+Static Methods
+
+Instance Methods
+
+Abstract Methods
+
+Concrete Methods
+
+Modifier and Type
+
+Method
+
+Description
+
+abstract
+
+SctpChannel
+
+accept
+
+()
+
+Accepts an association on this channel's socket.
+
+SctpServerChannel
+
+bind
+
+​(
+
+SocketAddress
+
+local)
+
+Binds the channel's socket to a local address and configures the socket
+to listen for associations.
+
+abstract
+
+SctpServerChannel
+
+bind
+
+​(
+
+SocketAddress
+
+local,
+int backlog)
+
+Binds the channel's socket to a local address and configures the socket
+to listen for associations.
+
+abstract
+
+SctpServerChannel
+
+bindAddress
+
+​(
+
+InetAddress
+
+address)
+
+Adds the given address to the bound addresses for the channel's
+socket.
+
+abstract
+
+Set
+
+<
+
+SocketAddress
+
+>
+
+getAllLocalAddresses
+
+()
+
+Returns all of the socket addresses to which this channel's socket is
+bound.
+
+abstract <T> T
+
+getOption
+
+​(
+
+SctpSocketOption
+
+<T> name)
+
+Returns the value of a socket option.
+
+static
+
+SctpServerChannel
+
+open
+
+()
+
+Opens an SCTP server channel.
+
+abstract <T>
+
+SctpServerChannel
+
+setOption
+
+​(
+
+SctpSocketOption
+
+<T> name,
+T value)
+
+Sets the value of a socket option.
+
+abstract
+
+Set
+
+<
+
+SctpSocketOption
+
+<?>>
+
+supportedOptions
+
+()
+
+Returns a set of the socket options supported by this channel.
+
+abstract
+
+SctpServerChannel
+
+unbindAddress
+
+​(
+
+InetAddress
+
+address)
+
+Removes the given address from the bound addresses for the channel's
+socket.
+
+int
+
+validOps
+
+()
+
+Returns an operation set identifying this channel's supported
+operations.
+
+- Methods declared in class java.nio.channels.spi.
+
+AbstractSelectableChannel
+
+configureBlocking
+
+,
+
+implCloseChannel
+
+,
+
+implCloseSelectableChannel
+
+,
+
+implConfigureBlocking
+
+,
+
+provider
+
+,
+
+register
+
+- Methods declared in class java.nio.channels.
+
+SelectableChannel
+
+blockingLock
+
+,
+
+isBlocking
+
+,
+
+isRegistered
+
+,
+
+keyFor
+
+,
+
+register
+
+- Methods declared in class java.nio.channels.spi.
+
+AbstractInterruptibleChannel
+
+begin
+
+,
+
+close
+
+,
+
+end
+
+- Methods declared in class java.lang.
+
+Object
+
+clone
+
+,
+
+equals
+
+,
+
+finalize
+
+,
+
+getClass
+
+,
+
+hashCode
+
+,
+
+notify
+
+,
+
+notifyAll
+
+,
+
+toString
+
+,
+
+wait
+
+,
+
+wait
+
+,
+
+wait
+
+- Methods declared in interface java.nio.channels.
+
+Channel
+
+isOpen
+
+---
+
+#### Method Summary
+
+Accepts an association on this channel's socket.
+
+Binds the channel's socket to a local address and configures the socket
+to listen for associations.
+
+Adds the given address to the bound addresses for the channel's
+socket.
+
+Returns all of the socket addresses to which this channel's socket is
+bound.
+
+Returns the value of a socket option.
+
+Opens an SCTP server channel.
+
+Sets the value of a socket option.
+
+Returns a set of the socket options supported by this channel.
+
+Removes the given address from the bound addresses for the channel's
+socket.
+
+Returns an operation set identifying this channel's supported
+operations.
+
+Methods declared in class java.nio.channels.spi.
+
+AbstractSelectableChannel
+
+configureBlocking
+
+,
+
+implCloseChannel
+
+,
+
+implCloseSelectableChannel
+
+,
+
+implConfigureBlocking
+
+,
+
+provider
+
+,
+
+register
+
+---
+
+#### Methods declared in class java.nio.channels.spi. AbstractSelectableChannel
+
+Methods declared in class java.nio.channels.
+
+SelectableChannel
+
+blockingLock
+
+,
+
+isBlocking
+
+,
+
+isRegistered
+
+,
+
+keyFor
+
+,
+
+register
+
+---
+
+#### Methods declared in class java.nio.channels. SelectableChannel
+
+Methods declared in class java.nio.channels.spi.
+
+AbstractInterruptibleChannel
+
+begin
+
+,
+
+close
+
+,
+
+end
+
+---
+
+#### Methods declared in class java.nio.channels.spi. AbstractInterruptibleChannel
+
+Methods declared in class java.lang.
+
+Object
+
+clone
+
+,
+
+equals
+
+,
+
+finalize
+
+,
+
+getClass
+
+,
+
+hashCode
+
+,
+
+notify
+
+,
+
+notifyAll
+
+,
+
+toString
+
+,
+
+wait
+
+,
+
+wait
+
+,
+
+wait
+
+---
+
+#### Methods declared in class java.lang. Object
+
+Methods declared in interface java.nio.channels.
+
+Channel
+
+isOpen
+
+---
+
+#### Methods declared in interface java.nio.channels. Channel
+
+========= CONSTRUCTOR DETAIL ========
+
+- Constructor Detail
+
+- SctpServerChannel
+
+```java
+protected SctpServerChannel​(
+SelectorProvider
+provider)
+```
+
+Initializes a new instance of this class.
+
+**Parameters:** provider
+
+- The selector provider for this channel
+
+============ METHOD DETAIL ==========
+
+- Method Detail
+
+- open
+
+```java
+public static
+SctpServerChannel
+open()
+throws
+IOException
+```
+
+Opens an SCTP server channel.
+
+The new channel's socket is initially unbound; it must be bound
+to a specific address via one of its socket's
+
+bind
+
+methods before associations can be accepted.
+
+**Returns:** A new SCTP server channel
+**Throws:** UnsupportedOperationException
+
+- If the SCTP protocol is not supported
+**Throws:** IOException
+
+- If an I/O error occurs
+
+- accept
+
+```java
+public abstract
+SctpChannel
+accept()
+throws
+IOException
+```
+
+Accepts an association on this channel's socket.
+
+If this channel is in non-blocking mode then this method will
+immediately return
+
+null
+
+if there are no pending associations.
+Otherwise it will block indefinitely until a new association is
+available or an I/O error occurs.
+
+The
+
+SCTPChannel
+
+returned by this method, if any, will be in
+blocking mode regardless of the blocking mode of this channel.
+
+If a security manager has been installed then for each new
+association this method verifies that the address and port number of the
+assocaitions's remote peer are permitted by the security manager's
+
+checkAccept
+
+method.
+
+**Returns:** The SCTP channel for the new association, or
+
+null
+
+if this channel is in non-blocking mode and no association is
+available to be accepted
+**Throws:** ClosedChannelException
+
+- If this channel is closed
+**Throws:** AsynchronousCloseException
+
+- If another thread closes this channel
+while the accept operation is in progress
+**Throws:** ClosedByInterruptException
+
+- If another thread interrupts the current thread
+while the accept operation is in progress, thereby
+closing the channel and setting the current thread's
+interrupt status
+**Throws:** NotYetBoundException
+
+- If this channel's socket has not yet been bound
+**Throws:** SecurityException
+
+- If a security manager has been installed and it does not permit
+access to the remote peer of the new association
+**Throws:** IOException
+
+- If some other I/O error occurs
+
+- bind
+
+```java
+public final
+SctpServerChannel
+bind​(
+SocketAddress
+local)
+throws
+IOException
+```
+
+Binds the channel's socket to a local address and configures the socket
+to listen for associations.
+
+This method works as if invoking it were equivalent to evaluating the
+expression:
+
+```java
+bind(local, 0);
+```
+
+**Parameters:** local
+
+- The local address to bind the socket, or
+
+null
+
+to
+bind the socket to an automatically assigned socket address
+**Returns:** This channel
+**Throws:** ClosedChannelException
+
+- If this channel is closed
+**Throws:** AlreadyBoundException
+
+- If this channel is already bound
+**Throws:** UnsupportedAddressTypeException
+
+- If the type of the given address is not supported
+**Throws:** SecurityException
+
+- If a security manager has been installed and its
+
+checkListen
+
+method
+denies the operation
+**Throws:** IOException
+
+- If some other I/O error occurs
+
+- bind
+
+```java
+public abstract
+SctpServerChannel
+bind​(
+SocketAddress
+local,
+int backlog)
+throws
+IOException
+```
+
+Binds the channel's socket to a local address and configures the socket
+to listen for associations.
+
+This method is used to establish a relationship between the socket
+and the local address. Once a relationship is established then
+the socket remains bound until the channel is closed. This relationship
+may not necesssarily be with the address
+
+local
+
+as it may be
+removed by
+
+unbindAddress
+
+, but there will always be
+at least one local address bound to the channel's socket once an
+invocation of this method successfully completes.
+
+Once the channel's socket has been successfully bound to a specific
+address, that is not automatically assigned, more addresses
+may be bound to it using
+
+bindAddress
+
+, or removed
+using
+
+unbindAddress
+
+.
+
+The backlog parameter is the maximum number of pending associations
+on the socket. Its exact semantics are implementation specific. An
+implementation may impose an implementation specific maximum length or
+may choose to ignore the parameter. If the backlog parameter has the
+value
+
+0
+
+, or a negative value, then an implementation specific
+default is used.
+
+**Parameters:** local
+
+- The local address to bind the socket, or
+
+null
+
+to
+bind the socket to an automatically assigned socket address
+**Parameters:** backlog
+
+- The maximum number of pending associations
+**Returns:** This channel
+**Throws:** ClosedChannelException
+
+- If this channel is closed
+**Throws:** AlreadyBoundException
+
+- If this channel is already bound
+**Throws:** UnsupportedAddressTypeException
+
+- If the type of the given address is not supported
+**Throws:** SecurityException
+
+- If a security manager has been installed and its
+
+checkListen
+
+method
+denies the operation
+**Throws:** IOException
+
+- If some other I/O error occurs
+
+- bindAddress
+
+```java
+public abstract
+SctpServerChannel
+bindAddress​(
+InetAddress
+address)
+throws
+IOException
+```
+
+Adds the given address to the bound addresses for the channel's
+socket.
+
+The given address must not be the
+
+wildcard
+
+address.
+The channel must be first bound using
+
+bind
+
+before
+invoking this method, otherwise
+
+NotYetBoundException
+
+is thrown. The
+
+bind
+
+method takes a
+
+SocketAddress
+
+as its argument which typically
+contains a port number as well as an address. Addresses subquently bound
+using this method are simply addresses as the SCTP port number remains
+the same for the lifetime of the channel.
+
+New associations accepted after this method successfully completes
+will be associated with the given address.
+
+**Parameters:** address
+
+- The address to add to the bound addresses for the socket
+**Returns:** This channel
+**Throws:** ClosedChannelException
+
+- If this channel is closed
+**Throws:** NotYetBoundException
+
+- If this channel is not yet bound
+**Throws:** AlreadyBoundException
+
+- If this channel is already bound to the given address
+**Throws:** IllegalArgumentException
+
+- If address is
+
+null
+
+or the
+
+wildcard
+
+address
+**Throws:** IOException
+
+- If some other I/O error occurs
+
+- unbindAddress
+
+```java
+public abstract
+SctpServerChannel
+unbindAddress​(
+InetAddress
+address)
+throws
+IOException
+```
+
+Removes the given address from the bound addresses for the channel's
+socket.
+
+The given address must not be the
+
+wildcard
+
+address.
+The channel must be first bound using
+
+bind
+
+before
+invoking this method, otherwise
+
+NotYetBoundException
+
+is thrown.
+If this method is invoked on a channel that does not have
+
+address
+
+as one of its bound addresses, or that has only one
+local address bound to it, then this method throws
+
+IllegalUnbindException
+
+.
+The initial address that the channel's socket is bound to using
+
+bind
+
+may be removed from the bound addresses for the
+channel's socket.
+
+New associations accepted after this method successfully completes
+will not be associated with the given address.
+
+**Parameters:** address
+
+- The address to remove from the bound addresses for the socket
+**Returns:** This channel
+**Throws:** ClosedChannelException
+
+- If this channel is closed
+**Throws:** NotYetBoundException
+
+- If this channel is not yet bound
+**Throws:** IllegalArgumentException
+
+- If address is
+
+null
+
+or the
+
+wildcard
+
+address
+**Throws:** IllegalUnbindException
+
+- If the implementation does not support removing addresses from a
+listening socket,
+
+address
+
+is not bound to the channel's
+socket, or the channel has only one address bound to it
+**Throws:** IOException
+
+- If some other I/O error occurs
+
+- getAllLocalAddresses
+
+```java
+public abstract
+Set
+<
+SocketAddress
+> getAllLocalAddresses()
+throws
+IOException
+```
+
+Returns all of the socket addresses to which this channel's socket is
+bound.
+
+**Returns:** All the socket addresses that this channel's socket is
+bound to, or an empty
+
+Set
+
+if the channel's socket is not
+bound
+**Throws:** ClosedChannelException
+
+- If the channel is closed
+**Throws:** IOException
+
+- If an I/O error occurs
+
+- getOption
+
+```java
+public abstract <T> T getOption​(
+SctpSocketOption
+<T> name)
+throws
+IOException
+```
+
+Returns the value of a socket option.
+
+**Type Parameters:** T
+
+- The type of the socket option value
+**Parameters:** name
+
+- The socket option
+**Returns:** The value of the socket option. A value of
+
+null
+
+may be
+a valid value for some socket options.
+**Throws:** UnsupportedOperationException
+
+- If the socket option is not supported by this channel
+**Throws:** ClosedChannelException
+
+- If this channel is closed
+**Throws:** IOException
+
+- If an I/O error occurs
+**See Also:** SctpStandardSocketOptions
+
+- setOption
+
+```java
+public abstract <T>
+SctpServerChannel
+setOption​(
+SctpSocketOption
+<T> name,
+T value)
+throws
+IOException
+```
+
+Sets the value of a socket option.
+
+**Type Parameters:** T
+
+- The type of the socket option value
+**Parameters:** name
+
+- The socket option
+**Parameters:** value
+
+- The value of the socket option. A value of
+
+null
+
+may be
+a valid value for some socket options.
+**Returns:** This channel
+**Throws:** UnsupportedOperationException
+
+- If the socket option is not supported by this channel
+**Throws:** IllegalArgumentException
+
+- If the value is not a valid value for this socket option
+**Throws:** ClosedChannelException
+
+- If this channel is closed
+**Throws:** IOException
+
+- If an I/O error occurs
+**See Also:** SctpStandardSocketOptions
+
+- supportedOptions
+
+```java
+public abstract
+Set
+<
+SctpSocketOption
+<?>> supportedOptions()
+```
+
+Returns a set of the socket options supported by this channel.
+
+This method will continue to return the set of options even after the
+channel has been closed.
+
+**Returns:** A set of the socket options supported by this channel
+
+- validOps
+
+```java
+public final int validOps()
+```
+
+Returns an operation set identifying this channel's supported
+operations.
+
+SCTP server channels only support the accepting of new
+associations, so this method returns
+
+SelectionKey.OP_ACCEPT
+
+.
+
+**Specified by:** validOps
+
+in class
+
+SelectableChannel
+**Returns:** The valid-operation set
+
+Constructor Detail
+
+- SctpServerChannel
+
+```java
+protected SctpServerChannel​(
+SelectorProvider
+provider)
+```
+
+Initializes a new instance of this class.
+
+**Parameters:** provider
+
+- The selector provider for this channel
+
+---
+
+#### Constructor Detail
+
+SctpServerChannel
+
+```java
+protected SctpServerChannel​(
+SelectorProvider
+provider)
+```
+
+Initializes a new instance of this class.
+
+**Parameters:** provider
+
+- The selector provider for this channel
+
+---
+
+#### SctpServerChannel
+
+protected SctpServerChannel​(
+
+SelectorProvider
+
+provider)
+
+Initializes a new instance of this class.
+
+Method Detail
+
+- open
+
+```java
+public static
+SctpServerChannel
+open()
+throws
+IOException
+```
+
+Opens an SCTP server channel.
+
+The new channel's socket is initially unbound; it must be bound
+to a specific address via one of its socket's
+
+bind
+
+methods before associations can be accepted.
+
+**Returns:** A new SCTP server channel
+**Throws:** UnsupportedOperationException
+
+- If the SCTP protocol is not supported
+**Throws:** IOException
+
+- If an I/O error occurs
+
+- accept
+
+```java
+public abstract
+SctpChannel
+accept()
+throws
+IOException
+```
+
+Accepts an association on this channel's socket.
+
+If this channel is in non-blocking mode then this method will
+immediately return
+
+null
+
+if there are no pending associations.
+Otherwise it will block indefinitely until a new association is
+available or an I/O error occurs.
+
+The
+
+SCTPChannel
+
+returned by this method, if any, will be in
+blocking mode regardless of the blocking mode of this channel.
+
+If a security manager has been installed then for each new
+association this method verifies that the address and port number of the
+assocaitions's remote peer are permitted by the security manager's
+
+checkAccept
+
+method.
+
+**Returns:** The SCTP channel for the new association, or
+
+null
+
+if this channel is in non-blocking mode and no association is
+available to be accepted
+**Throws:** ClosedChannelException
+
+- If this channel is closed
+**Throws:** AsynchronousCloseException
+
+- If another thread closes this channel
+while the accept operation is in progress
+**Throws:** ClosedByInterruptException
+
+- If another thread interrupts the current thread
+while the accept operation is in progress, thereby
+closing the channel and setting the current thread's
+interrupt status
+**Throws:** NotYetBoundException
+
+- If this channel's socket has not yet been bound
+**Throws:** SecurityException
+
+- If a security manager has been installed and it does not permit
+access to the remote peer of the new association
+**Throws:** IOException
+
+- If some other I/O error occurs
+
+- bind
+
+```java
+public final
+SctpServerChannel
+bind​(
+SocketAddress
+local)
+throws
+IOException
+```
+
+Binds the channel's socket to a local address and configures the socket
+to listen for associations.
+
+This method works as if invoking it were equivalent to evaluating the
+expression:
+
+```java
+bind(local, 0);
+```
+
+**Parameters:** local
+
+- The local address to bind the socket, or
+
+null
+
+to
+bind the socket to an automatically assigned socket address
+**Returns:** This channel
+**Throws:** ClosedChannelException
+
+- If this channel is closed
+**Throws:** AlreadyBoundException
+
+- If this channel is already bound
+**Throws:** UnsupportedAddressTypeException
+
+- If the type of the given address is not supported
+**Throws:** SecurityException
+
+- If a security manager has been installed and its
+
+checkListen
+
+method
+denies the operation
+**Throws:** IOException
+
+- If some other I/O error occurs
+
+- bind
+
+```java
+public abstract
+SctpServerChannel
+bind​(
+SocketAddress
+local,
+int backlog)
+throws
+IOException
+```
+
+Binds the channel's socket to a local address and configures the socket
+to listen for associations.
+
+This method is used to establish a relationship between the socket
+and the local address. Once a relationship is established then
+the socket remains bound until the channel is closed. This relationship
+may not necesssarily be with the address
+
+local
+
+as it may be
+removed by
+
+unbindAddress
+
+, but there will always be
+at least one local address bound to the channel's socket once an
+invocation of this method successfully completes.
+
+Once the channel's socket has been successfully bound to a specific
+address, that is not automatically assigned, more addresses
+may be bound to it using
+
+bindAddress
+
+, or removed
+using
+
+unbindAddress
+
+.
+
+The backlog parameter is the maximum number of pending associations
+on the socket. Its exact semantics are implementation specific. An
+implementation may impose an implementation specific maximum length or
+may choose to ignore the parameter. If the backlog parameter has the
+value
+
+0
+
+, or a negative value, then an implementation specific
+default is used.
+
+**Parameters:** local
+
+- The local address to bind the socket, or
+
+null
+
+to
+bind the socket to an automatically assigned socket address
+**Parameters:** backlog
+
+- The maximum number of pending associations
+**Returns:** This channel
+**Throws:** ClosedChannelException
+
+- If this channel is closed
+**Throws:** AlreadyBoundException
+
+- If this channel is already bound
+**Throws:** UnsupportedAddressTypeException
+
+- If the type of the given address is not supported
+**Throws:** SecurityException
+
+- If a security manager has been installed and its
+
+checkListen
+
+method
+denies the operation
+**Throws:** IOException
+
+- If some other I/O error occurs
+
+- bindAddress
+
+```java
+public abstract
+SctpServerChannel
+bindAddress​(
+InetAddress
+address)
+throws
+IOException
+```
+
+Adds the given address to the bound addresses for the channel's
+socket.
+
+The given address must not be the
+
+wildcard
+
+address.
+The channel must be first bound using
+
+bind
+
+before
+invoking this method, otherwise
+
+NotYetBoundException
+
+is thrown. The
+
+bind
+
+method takes a
+
+SocketAddress
+
+as its argument which typically
+contains a port number as well as an address. Addresses subquently bound
+using this method are simply addresses as the SCTP port number remains
+the same for the lifetime of the channel.
+
+New associations accepted after this method successfully completes
+will be associated with the given address.
+
+**Parameters:** address
+
+- The address to add to the bound addresses for the socket
+**Returns:** This channel
+**Throws:** ClosedChannelException
+
+- If this channel is closed
+**Throws:** NotYetBoundException
+
+- If this channel is not yet bound
+**Throws:** AlreadyBoundException
+
+- If this channel is already bound to the given address
+**Throws:** IllegalArgumentException
+
+- If address is
+
+null
+
+or the
+
+wildcard
+
+address
+**Throws:** IOException
+
+- If some other I/O error occurs
+
+- unbindAddress
+
+```java
+public abstract
+SctpServerChannel
+unbindAddress​(
+InetAddress
+address)
+throws
+IOException
+```
+
+Removes the given address from the bound addresses for the channel's
+socket.
+
+The given address must not be the
+
+wildcard
+
+address.
+The channel must be first bound using
+
+bind
+
+before
+invoking this method, otherwise
+
+NotYetBoundException
+
+is thrown.
+If this method is invoked on a channel that does not have
+
+address
+
+as one of its bound addresses, or that has only one
+local address bound to it, then this method throws
+
+IllegalUnbindException
+
+.
+The initial address that the channel's socket is bound to using
+
+bind
+
+may be removed from the bound addresses for the
+channel's socket.
+
+New associations accepted after this method successfully completes
+will not be associated with the given address.
+
+**Parameters:** address
+
+- The address to remove from the bound addresses for the socket
+**Returns:** This channel
+**Throws:** ClosedChannelException
+
+- If this channel is closed
+**Throws:** NotYetBoundException
+
+- If this channel is not yet bound
+**Throws:** IllegalArgumentException
+
+- If address is
+
+null
+
+or the
+
+wildcard
+
+address
+**Throws:** IllegalUnbindException
+
+- If the implementation does not support removing addresses from a
+listening socket,
+
+address
+
+is not bound to the channel's
+socket, or the channel has only one address bound to it
+**Throws:** IOException
+
+- If some other I/O error occurs
+
+- getAllLocalAddresses
+
+```java
+public abstract
+Set
+<
+SocketAddress
+> getAllLocalAddresses()
+throws
+IOException
+```
+
+Returns all of the socket addresses to which this channel's socket is
+bound.
+
+**Returns:** All the socket addresses that this channel's socket is
+bound to, or an empty
+
+Set
+
+if the channel's socket is not
+bound
+**Throws:** ClosedChannelException
+
+- If the channel is closed
+**Throws:** IOException
+
+- If an I/O error occurs
+
+- getOption
+
+```java
+public abstract <T> T getOption​(
+SctpSocketOption
+<T> name)
+throws
+IOException
+```
+
+Returns the value of a socket option.
+
+**Type Parameters:** T
+
+- The type of the socket option value
+**Parameters:** name
+
+- The socket option
+**Returns:** The value of the socket option. A value of
+
+null
+
+may be
+a valid value for some socket options.
+**Throws:** UnsupportedOperationException
+
+- If the socket option is not supported by this channel
+**Throws:** ClosedChannelException
+
+- If this channel is closed
+**Throws:** IOException
+
+- If an I/O error occurs
+**See Also:** SctpStandardSocketOptions
+
+- setOption
+
+```java
+public abstract <T>
+SctpServerChannel
+setOption​(
+SctpSocketOption
+<T> name,
+T value)
+throws
+IOException
+```
+
+Sets the value of a socket option.
+
+**Type Parameters:** T
+
+- The type of the socket option value
+**Parameters:** name
+
+- The socket option
+**Parameters:** value
+
+- The value of the socket option. A value of
+
+null
+
+may be
+a valid value for some socket options.
+**Returns:** This channel
+**Throws:** UnsupportedOperationException
+
+- If the socket option is not supported by this channel
+**Throws:** IllegalArgumentException
+
+- If the value is not a valid value for this socket option
+**Throws:** ClosedChannelException
+
+- If this channel is closed
+**Throws:** IOException
+
+- If an I/O error occurs
+**See Also:** SctpStandardSocketOptions
+
+- supportedOptions
+
+```java
+public abstract
+Set
+<
+SctpSocketOption
+<?>> supportedOptions()
+```
+
+Returns a set of the socket options supported by this channel.
+
+This method will continue to return the set of options even after the
+channel has been closed.
+
+**Returns:** A set of the socket options supported by this channel
+
+- validOps
+
+```java
+public final int validOps()
+```
+
+Returns an operation set identifying this channel's supported
+operations.
+
+SCTP server channels only support the accepting of new
+associations, so this method returns
+
+SelectionKey.OP_ACCEPT
+
+.
+
+**Specified by:** validOps
+
+in class
+
+SelectableChannel
+**Returns:** The valid-operation set
+
+---
+
+#### Method Detail
+
+open
+
+```java
+public static
+SctpServerChannel
+open()
+throws
+IOException
+```
+
+Opens an SCTP server channel.
+
+The new channel's socket is initially unbound; it must be bound
+to a specific address via one of its socket's
+
+bind
+
+methods before associations can be accepted.
+
+**Returns:** A new SCTP server channel
+**Throws:** UnsupportedOperationException
+
+- If the SCTP protocol is not supported
+**Throws:** IOException
+
+- If an I/O error occurs
+
+---
+
+#### open
+
+public static
+
+SctpServerChannel
+
+open()
+throws
+
+IOException
+
+Opens an SCTP server channel.
+
+The new channel's socket is initially unbound; it must be bound
+to a specific address via one of its socket's
+
+bind
+
+methods before associations can be accepted.
+
+The new channel's socket is initially unbound; it must be bound
+to a specific address via one of its socket's
+
+bind
+
+methods before associations can be accepted.
+
+accept
+
+```java
+public abstract
+SctpChannel
+accept()
+throws
+IOException
+```
+
+Accepts an association on this channel's socket.
+
+If this channel is in non-blocking mode then this method will
+immediately return
+
+null
+
+if there are no pending associations.
+Otherwise it will block indefinitely until a new association is
+available or an I/O error occurs.
+
+The
+
+SCTPChannel
+
+returned by this method, if any, will be in
+blocking mode regardless of the blocking mode of this channel.
+
+If a security manager has been installed then for each new
+association this method verifies that the address and port number of the
+assocaitions's remote peer are permitted by the security manager's
+
+checkAccept
+
+method.
+
+**Returns:** The SCTP channel for the new association, or
+
+null
+
+if this channel is in non-blocking mode and no association is
+available to be accepted
+**Throws:** ClosedChannelException
+
+- If this channel is closed
+**Throws:** AsynchronousCloseException
+
+- If another thread closes this channel
+while the accept operation is in progress
+**Throws:** ClosedByInterruptException
+
+- If another thread interrupts the current thread
+while the accept operation is in progress, thereby
+closing the channel and setting the current thread's
+interrupt status
+**Throws:** NotYetBoundException
+
+- If this channel's socket has not yet been bound
+**Throws:** SecurityException
+
+- If a security manager has been installed and it does not permit
+access to the remote peer of the new association
+**Throws:** IOException
+
+- If some other I/O error occurs
+
+---
+
+#### accept
+
+public abstract
+
+SctpChannel
+
+accept()
+throws
+
+IOException
+
+Accepts an association on this channel's socket.
+
+If this channel is in non-blocking mode then this method will
+immediately return
+
+null
+
+if there are no pending associations.
+Otherwise it will block indefinitely until a new association is
+available or an I/O error occurs.
+
+The
+
+SCTPChannel
+
+returned by this method, if any, will be in
+blocking mode regardless of the blocking mode of this channel.
+
+If a security manager has been installed then for each new
+association this method verifies that the address and port number of the
+assocaitions's remote peer are permitted by the security manager's
+
+checkAccept
+
+method.
+
+If this channel is in non-blocking mode then this method will
+immediately return
+
+null
+
+if there are no pending associations.
+Otherwise it will block indefinitely until a new association is
+available or an I/O error occurs.
+
+The
+
+SCTPChannel
+
+returned by this method, if any, will be in
+blocking mode regardless of the blocking mode of this channel.
+
+If a security manager has been installed then for each new
+association this method verifies that the address and port number of the
+assocaitions's remote peer are permitted by the security manager's
+
+checkAccept
+
+method.
+
+The
+
+SCTPChannel
+
+returned by this method, if any, will be in
+blocking mode regardless of the blocking mode of this channel.
+
+If a security manager has been installed then for each new
+association this method verifies that the address and port number of the
+assocaitions's remote peer are permitted by the security manager's
+
+checkAccept
+
+method.
+
+If a security manager has been installed then for each new
+association this method verifies that the address and port number of the
+assocaitions's remote peer are permitted by the security manager's
+
+checkAccept
+
+method.
+
+bind
+
+```java
+public final
+SctpServerChannel
+bind​(
+SocketAddress
+local)
+throws
+IOException
+```
+
+Binds the channel's socket to a local address and configures the socket
+to listen for associations.
+
+This method works as if invoking it were equivalent to evaluating the
+expression:
+
+```java
+bind(local, 0);
+```
+
+**Parameters:** local
+
+- The local address to bind the socket, or
+
+null
+
+to
+bind the socket to an automatically assigned socket address
+**Returns:** This channel
+**Throws:** ClosedChannelException
+
+- If this channel is closed
+**Throws:** AlreadyBoundException
+
+- If this channel is already bound
+**Throws:** UnsupportedAddressTypeException
+
+- If the type of the given address is not supported
+**Throws:** SecurityException
+
+- If a security manager has been installed and its
+
+checkListen
+
+method
+denies the operation
+**Throws:** IOException
+
+- If some other I/O error occurs
+
+---
+
+#### bind
+
+public final
+
+SctpServerChannel
+
+bind​(
+
+SocketAddress
+
+local)
+throws
+
+IOException
+
+Binds the channel's socket to a local address and configures the socket
+to listen for associations.
+
+This method works as if invoking it were equivalent to evaluating the
+expression:
+
+```java
+bind(local, 0);
+```
+
+This method works as if invoking it were equivalent to evaluating the
+expression:
+
+```java
+bind(local, 0);
+```
+
+bind(local, 0);
+
+bind
+
+```java
+public abstract
+SctpServerChannel
+bind​(
+SocketAddress
+local,
+int backlog)
+throws
+IOException
+```
+
+Binds the channel's socket to a local address and configures the socket
+to listen for associations.
+
+This method is used to establish a relationship between the socket
+and the local address. Once a relationship is established then
+the socket remains bound until the channel is closed. This relationship
+may not necesssarily be with the address
+
+local
+
+as it may be
+removed by
+
+unbindAddress
+
+, but there will always be
+at least one local address bound to the channel's socket once an
+invocation of this method successfully completes.
+
+Once the channel's socket has been successfully bound to a specific
+address, that is not automatically assigned, more addresses
+may be bound to it using
+
+bindAddress
+
+, or removed
+using
+
+unbindAddress
+
+.
+
+The backlog parameter is the maximum number of pending associations
+on the socket. Its exact semantics are implementation specific. An
+implementation may impose an implementation specific maximum length or
+may choose to ignore the parameter. If the backlog parameter has the
+value
+
+0
+
+, or a negative value, then an implementation specific
+default is used.
+
+**Parameters:** local
+
+- The local address to bind the socket, or
+
+null
+
+to
+bind the socket to an automatically assigned socket address
+**Parameters:** backlog
+
+- The maximum number of pending associations
+**Returns:** This channel
+**Throws:** ClosedChannelException
+
+- If this channel is closed
+**Throws:** AlreadyBoundException
+
+- If this channel is already bound
+**Throws:** UnsupportedAddressTypeException
+
+- If the type of the given address is not supported
+**Throws:** SecurityException
+
+- If a security manager has been installed and its
+
+checkListen
+
+method
+denies the operation
+**Throws:** IOException
+
+- If some other I/O error occurs
+
+---
+
+#### bind
+
+public abstract
+
+SctpServerChannel
+
+bind​(
+
+SocketAddress
+
+local,
+int backlog)
+throws
+
+IOException
+
+Binds the channel's socket to a local address and configures the socket
+to listen for associations.
+
+This method is used to establish a relationship between the socket
+and the local address. Once a relationship is established then
+the socket remains bound until the channel is closed. This relationship
+may not necesssarily be with the address
+
+local
+
+as it may be
+removed by
+
+unbindAddress
+
+, but there will always be
+at least one local address bound to the channel's socket once an
+invocation of this method successfully completes.
+
+Once the channel's socket has been successfully bound to a specific
+address, that is not automatically assigned, more addresses
+may be bound to it using
+
+bindAddress
+
+, or removed
+using
+
+unbindAddress
+
+.
+
+The backlog parameter is the maximum number of pending associations
+on the socket. Its exact semantics are implementation specific. An
+implementation may impose an implementation specific maximum length or
+may choose to ignore the parameter. If the backlog parameter has the
+value
+
+0
+
+, or a negative value, then an implementation specific
+default is used.
+
+This method is used to establish a relationship between the socket
+and the local address. Once a relationship is established then
+the socket remains bound until the channel is closed. This relationship
+may not necesssarily be with the address
+
+local
+
+as it may be
+removed by
+
+unbindAddress
+
+, but there will always be
+at least one local address bound to the channel's socket once an
+invocation of this method successfully completes.
+
+Once the channel's socket has been successfully bound to a specific
+address, that is not automatically assigned, more addresses
+may be bound to it using
+
+bindAddress
+
+, or removed
+using
+
+unbindAddress
+
+.
+
+The backlog parameter is the maximum number of pending associations
+on the socket. Its exact semantics are implementation specific. An
+implementation may impose an implementation specific maximum length or
+may choose to ignore the parameter. If the backlog parameter has the
+value
+
+0
+
+, or a negative value, then an implementation specific
+default is used.
+
+Once the channel's socket has been successfully bound to a specific
+address, that is not automatically assigned, more addresses
+may be bound to it using
+
+bindAddress
+
+, or removed
+using
+
+unbindAddress
+
+.
+
+The backlog parameter is the maximum number of pending associations
+on the socket. Its exact semantics are implementation specific. An
+implementation may impose an implementation specific maximum length or
+may choose to ignore the parameter. If the backlog parameter has the
+value
+
+0
+
+, or a negative value, then an implementation specific
+default is used.
+
+The backlog parameter is the maximum number of pending associations
+on the socket. Its exact semantics are implementation specific. An
+implementation may impose an implementation specific maximum length or
+may choose to ignore the parameter. If the backlog parameter has the
+value
+
+0
+
+, or a negative value, then an implementation specific
+default is used.
+
+bindAddress
+
+```java
+public abstract
+SctpServerChannel
+bindAddress​(
+InetAddress
+address)
+throws
+IOException
+```
+
+Adds the given address to the bound addresses for the channel's
+socket.
+
+The given address must not be the
+
+wildcard
+
+address.
+The channel must be first bound using
+
+bind
+
+before
+invoking this method, otherwise
+
+NotYetBoundException
+
+is thrown. The
+
+bind
+
+method takes a
+
+SocketAddress
+
+as its argument which typically
+contains a port number as well as an address. Addresses subquently bound
+using this method are simply addresses as the SCTP port number remains
+the same for the lifetime of the channel.
+
+New associations accepted after this method successfully completes
+will be associated with the given address.
+
+**Parameters:** address
+
+- The address to add to the bound addresses for the socket
+**Returns:** This channel
+**Throws:** ClosedChannelException
+
+- If this channel is closed
+**Throws:** NotYetBoundException
+
+- If this channel is not yet bound
+**Throws:** AlreadyBoundException
+
+- If this channel is already bound to the given address
+**Throws:** IllegalArgumentException
+
+- If address is
+
+null
+
+or the
+
+wildcard
+
+address
+**Throws:** IOException
+
+- If some other I/O error occurs
+
+---
+
+#### bindAddress
+
+public abstract
+
+SctpServerChannel
+
+bindAddress​(
+
+InetAddress
+
+address)
+throws
+
+IOException
+
+Adds the given address to the bound addresses for the channel's
+socket.
+
+The given address must not be the
+
+wildcard
+
+address.
+The channel must be first bound using
+
+bind
+
+before
+invoking this method, otherwise
+
+NotYetBoundException
+
+is thrown. The
+
+bind
+
+method takes a
+
+SocketAddress
+
+as its argument which typically
+contains a port number as well as an address. Addresses subquently bound
+using this method are simply addresses as the SCTP port number remains
+the same for the lifetime of the channel.
+
+New associations accepted after this method successfully completes
+will be associated with the given address.
+
+The given address must not be the
+
+wildcard
+
+address.
+The channel must be first bound using
+
+bind
+
+before
+invoking this method, otherwise
+
+NotYetBoundException
+
+is thrown. The
+
+bind
+
+method takes a
+
+SocketAddress
+
+as its argument which typically
+contains a port number as well as an address. Addresses subquently bound
+using this method are simply addresses as the SCTP port number remains
+the same for the lifetime of the channel.
+
+New associations accepted after this method successfully completes
+will be associated with the given address.
+
+New associations accepted after this method successfully completes
+will be associated with the given address.
+
+unbindAddress
+
+```java
+public abstract
+SctpServerChannel
+unbindAddress​(
+InetAddress
+address)
+throws
+IOException
+```
+
+Removes the given address from the bound addresses for the channel's
+socket.
+
+The given address must not be the
+
+wildcard
+
+address.
+The channel must be first bound using
+
+bind
+
+before
+invoking this method, otherwise
+
+NotYetBoundException
+
+is thrown.
+If this method is invoked on a channel that does not have
+
+address
+
+as one of its bound addresses, or that has only one
+local address bound to it, then this method throws
+
+IllegalUnbindException
+
+.
+The initial address that the channel's socket is bound to using
+
+bind
+
+may be removed from the bound addresses for the
+channel's socket.
+
+New associations accepted after this method successfully completes
+will not be associated with the given address.
+
+**Parameters:** address
+
+- The address to remove from the bound addresses for the socket
+**Returns:** This channel
+**Throws:** ClosedChannelException
+
+- If this channel is closed
+**Throws:** NotYetBoundException
+
+- If this channel is not yet bound
+**Throws:** IllegalArgumentException
+
+- If address is
+
+null
+
+or the
+
+wildcard
+
+address
+**Throws:** IllegalUnbindException
+
+- If the implementation does not support removing addresses from a
+listening socket,
+
+address
+
+is not bound to the channel's
+socket, or the channel has only one address bound to it
+**Throws:** IOException
+
+- If some other I/O error occurs
+
+---
+
+#### unbindAddress
+
+public abstract
+
+SctpServerChannel
+
+unbindAddress​(
+
+InetAddress
+
+address)
+throws
+
+IOException
+
+Removes the given address from the bound addresses for the channel's
+socket.
+
+The given address must not be the
+
+wildcard
+
+address.
+The channel must be first bound using
+
+bind
+
+before
+invoking this method, otherwise
+
+NotYetBoundException
+
+is thrown.
+If this method is invoked on a channel that does not have
+
+address
+
+as one of its bound addresses, or that has only one
+local address bound to it, then this method throws
+
+IllegalUnbindException
+
+.
+The initial address that the channel's socket is bound to using
+
+bind
+
+may be removed from the bound addresses for the
+channel's socket.
+
+New associations accepted after this method successfully completes
+will not be associated with the given address.
+
+The given address must not be the
+
+wildcard
+
+address.
+The channel must be first bound using
+
+bind
+
+before
+invoking this method, otherwise
+
+NotYetBoundException
+
+is thrown.
+If this method is invoked on a channel that does not have
+
+address
+
+as one of its bound addresses, or that has only one
+local address bound to it, then this method throws
+
+IllegalUnbindException
+
+.
+The initial address that the channel's socket is bound to using
+
+bind
+
+may be removed from the bound addresses for the
+channel's socket.
+
+New associations accepted after this method successfully completes
+will not be associated with the given address.
+
+New associations accepted after this method successfully completes
+will not be associated with the given address.
+
+getAllLocalAddresses
+
+```java
+public abstract
+Set
+<
+SocketAddress
+> getAllLocalAddresses()
+throws
+IOException
+```
+
+Returns all of the socket addresses to which this channel's socket is
+bound.
+
+**Returns:** All the socket addresses that this channel's socket is
+bound to, or an empty
+
+Set
+
+if the channel's socket is not
+bound
+**Throws:** ClosedChannelException
+
+- If the channel is closed
+**Throws:** IOException
+
+- If an I/O error occurs
+
+---
+
+#### getAllLocalAddresses
+
+public abstract
+
+Set
+
+<
+
+SocketAddress
+
+> getAllLocalAddresses()
+throws
+
+IOException
+
+Returns all of the socket addresses to which this channel's socket is
+bound.
+
+getOption
+
+```java
+public abstract <T> T getOption​(
+SctpSocketOption
+<T> name)
+throws
+IOException
+```
+
+Returns the value of a socket option.
+
+**Type Parameters:** T
+
+- The type of the socket option value
+**Parameters:** name
+
+- The socket option
+**Returns:** The value of the socket option. A value of
+
+null
+
+may be
+a valid value for some socket options.
+**Throws:** UnsupportedOperationException
+
+- If the socket option is not supported by this channel
+**Throws:** ClosedChannelException
+
+- If this channel is closed
+**Throws:** IOException
+
+- If an I/O error occurs
+**See Also:** SctpStandardSocketOptions
+
+---
+
+#### getOption
+
+public abstract <T> T getOption​(
+
+SctpSocketOption
+
+<T> name)
+throws
+
+IOException
+
+Returns the value of a socket option.
+
+setOption
+
+```java
+public abstract <T>
+SctpServerChannel
+setOption​(
+SctpSocketOption
+<T> name,
+T value)
+throws
+IOException
+```
+
+Sets the value of a socket option.
+
+**Type Parameters:** T
+
+- The type of the socket option value
+**Parameters:** name
+
+- The socket option
+**Parameters:** value
+
+- The value of the socket option. A value of
+
+null
+
+may be
+a valid value for some socket options.
+**Returns:** This channel
+**Throws:** UnsupportedOperationException
+
+- If the socket option is not supported by this channel
+**Throws:** IllegalArgumentException
+
+- If the value is not a valid value for this socket option
+**Throws:** ClosedChannelException
+
+- If this channel is closed
+**Throws:** IOException
+
+- If an I/O error occurs
+**See Also:** SctpStandardSocketOptions
+
+---
+
+#### setOption
+
+public abstract <T>
+
+SctpServerChannel
+
+setOption​(
+
+SctpSocketOption
+
+<T> name,
+T value)
+throws
+
+IOException
+
+Sets the value of a socket option.
+
+supportedOptions
+
+```java
+public abstract
+Set
+<
+SctpSocketOption
+<?>> supportedOptions()
+```
+
+Returns a set of the socket options supported by this channel.
+
+This method will continue to return the set of options even after the
+channel has been closed.
+
+**Returns:** A set of the socket options supported by this channel
+
+---
+
+#### supportedOptions
+
+public abstract
+
+Set
+
+<
+
+SctpSocketOption
+
+<?>> supportedOptions()
+
+Returns a set of the socket options supported by this channel.
+
+This method will continue to return the set of options even after the
+channel has been closed.
+
+This method will continue to return the set of options even after the
+channel has been closed.
+
+validOps
+
+```java
+public final int validOps()
+```
+
+Returns an operation set identifying this channel's supported
+operations.
+
+SCTP server channels only support the accepting of new
+associations, so this method returns
+
+SelectionKey.OP_ACCEPT
+
+.
+
+**Specified by:** validOps
+
+in class
+
+SelectableChannel
+**Returns:** The valid-operation set
+
+---
+
+#### validOps
+
+public final int validOps()
+
+Returns an operation set identifying this channel's supported
+operations.
+
+SCTP server channels only support the accepting of new
+associations, so this method returns
+
+SelectionKey.OP_ACCEPT
+
+.
+
+SCTP server channels only support the accepting of new
+associations, so this method returns
+
+SelectionKey.OP_ACCEPT
+
+.
+
+---
+

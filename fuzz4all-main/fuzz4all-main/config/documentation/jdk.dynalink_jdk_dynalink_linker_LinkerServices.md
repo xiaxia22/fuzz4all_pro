@@ -1,0 +1,2110 @@
+# Interface LinkerServices
+
+**Source:** `jdk.dynalink\jdk\dynalink\linker\LinkerServices.html`
+
+### Class Description
+
+```java
+public interface
+LinkerServices
+```
+
+Interface for services provided to
+
+GuardingDynamicLinker
+
+instances by
+the
+
+DynamicLinker
+
+that owns them.
+
+---
+
+### Field Details
+
+*No entries found.*
+
+### Constructor Details
+
+*No entries found.*
+
+### Method Details
+
+#### MethodHandle
+asType​(
+MethodHandle
+handle,
+
+MethodType
+fromType)
+
+Similar to
+
+MethodHandle.asType(MethodType)
+
+except it also hooks
+in method handles produced by all available
+
+GuardingTypeConverterFactory
+
+implementations, providing for
+language-specific type coercing of parameters. It will apply
+
+MethodHandle.asType(MethodType)
+
+for all primitive-to-primitive,
+wrapper-to-primitive, primitive-to-wrapper conversions as well as for all
+upcasts. For all other conversions, it'll insert
+
+MethodHandles.filterArguments(MethodHandle, int, MethodHandle...)
+
+with composite filters provided by
+
+GuardingTypeConverterFactory
+
+implementations.
+
+**Parameters:**
+- handle
+
+- target method handle
+- fromType
+
+- the types of source arguments
+
+**Returns:**
+- a method handle that is a suitable combination of
+
+MethodHandle.asType(MethodType)
+
+,
+
+MethodHandles.filterArguments(MethodHandle, int, MethodHandle...)
+
+,
+and
+
+MethodHandles.filterReturnValue(MethodHandle, MethodHandle)
+
+with
+
+GuardingTypeConverterFactory
+
+-produced type converters as
+filters.
+
+---
+
+#### default
+MethodHandle
+asTypeLosslessReturn​(
+MethodHandle
+handle,
+
+MethodType
+fromType)
+
+Similar to
+
+asType(MethodHandle, MethodType)
+
+except it treats
+return value type conversion specially. It only converts the return type
+of the method handle when it can be done using a conversion that loses
+neither precision nor magnitude, otherwise it leaves it unchanged. These
+are the only return value conversions that should be performed by
+individual language-specific linkers, and
+
+pre-link transformer of the dynamic linker
+
+should implement the strategy
+for dealing with potentially lossy return type conversions in a manner
+specific to the language runtime where the call site is located.
+
+**Parameters:**
+- handle
+
+- target method handle
+- fromType
+
+- the types of source arguments
+
+**Returns:**
+- a method handle that is a suitable combination of
+
+MethodHandle.asType(MethodType)
+
+, and
+
+MethodHandles.filterArguments(MethodHandle, int, MethodHandle...)
+
+with
+
+GuardingTypeConverterFactory
+
+-produced type converters as filters.
+
+---
+
+#### MethodHandle
+getTypeConverter​(
+Class
+<?> sourceType,
+
+Class
+<?> targetType)
+
+Given a source and target type, returns a method handle that converts
+between them. Never returns null; in worst case it will return an
+identity conversion (that might fail for some values at runtime). You
+rarely need to use this method directly and should mostly rely on
+
+asType(MethodHandle, MethodType)
+
+instead. This method is needed
+when you need to reuse existing type conversion machinery outside the
+context of processing a link request.
+
+**Parameters:**
+- sourceType
+
+- the type to convert from
+- targetType
+
+- the type to convert to
+
+**Returns:**
+- a method handle performing the conversion.
+
+---
+
+#### boolean canConvert​(
+Class
+<?> from,
+
+Class
+<?> to)
+
+Returns true if there might exist a conversion between the requested
+types (either an automatic JVM conversion, or one provided by any
+available
+
+GuardingTypeConverterFactory
+
+), or false if there
+definitely does not exist a conversion between the requested types. Note
+that returning true does not guarantee that the conversion will succeed
+at runtime for all values (especially if the "from" or "to" types are
+sufficiently generic), but returning false guarantees that it would fail.
+
+**Parameters:**
+- from
+
+- the source type for the conversion
+- to
+
+- the target type for the conversion
+
+**Returns:**
+- true if there can be a conversion, false if there can not.
+
+---
+
+#### GuardedInvocation
+getGuardedInvocation​(
+LinkRequest
+linkRequest)
+throws
+Exception
+
+Creates a guarded invocation delegating back to the
+
+DynamicLinker
+
+that exposes this linker services object. The dynamic linker will then
+itself delegate the linking to all of its managed
+
+GuardingDynamicLinker
+
+s including potentially this one if no
+linker responds earlier, so beware of infinite recursion. You'll
+typically craft the link request so that it will be different than the
+one you are currently trying to link.
+
+**Parameters:**
+- linkRequest
+
+- a request for linking the invocation
+
+**Returns:**
+- a guarded invocation linked by some of the guarding dynamic
+linkers managed by the top-level dynamic linker. Can be null if no
+available linker is able to link the invocation. You will typically use
+the elements of the returned invocation to compose your own invocation.
+
+**Throws:**
+- Exception
+
+- in case the top-level linker throws an exception
+
+---
+
+#### ConversionComparator.Comparison
+compareConversion​(
+Class
+<?> sourceType,
+
+Class
+<?> targetType1,
+
+Class
+<?> targetType2)
+
+Determines which of the two type conversions from a source type to the
+two target types is preferred. This is used for dynamic overloaded method
+resolution. If the source type is convertible to exactly one target type
+with a method invocation conversion, it is chosen, otherwise available
+
+ConversionComparator
+
+s are consulted.
+
+**Parameters:**
+- sourceType
+
+- the source type.
+- targetType1
+
+- one potential target type
+- targetType2
+
+- another potential target type.
+
+**Returns:**
+- one of Comparison constants that establish which – if any
+– of the target types is preferable for the conversion.
+
+---
+
+#### MethodHandle
+filterInternalObjects​(
+MethodHandle
+target)
+
+Modifies the method handle so that any parameters that can receive
+potentially internal language runtime objects will have a filter added on
+them to prevent them from escaping, potentially by wrapping them. It can
+also potentially add an unwrapping filter to the return value. Basically
+transforms the method handle using the transformer configured by
+
+DynamicLinkerFactory.setInternalObjectsFilter(MethodHandleTransformer)
+
+.
+
+**Parameters:**
+- target
+
+- the target method handle
+
+**Returns:**
+- a method handle with parameters and/or return type potentially
+filtered for wrapping and unwrapping.
+
+---
+
+#### <T> T getWithLookup​(
+Supplier
+<T> operation,
+
+SecureLookupSupplier
+lookupSupplier)
+
+Executes an operation within the context of a particular
+
+MethodHandles.Lookup
+
+lookup object. Normally, methods on
+
+LinkerServices
+
+are invoked as part of the linking mechanism in
+which case Dynalink internally maintains a per-thread current lookup
+(the one belonging to the descriptor of the call site being linked). This
+lookup can be retrieved by any
+
+GuardingTypeConverterFactory
+
+involved in linking if it needs to generate lookup-sensitive converters.
+However, linker services' methods can be invoked outside the linking
+process too when implementing invocation-time dispatch schemes, invoking
+conversions at runtime, etc. If it becomes necessary to use any type
+converter in this situation, and it needs a lookup, it will normally only
+get
+
+MethodHandles.publicLookup()
+
+as the thread is not engaged in
+a linking operation. If there is a way to meaningfully associate the
+operation to the context of some caller class, consider performing it
+within an invocation of this method and passing a full-strength lookup
+for that class, as it will associate that lookup with the current thread
+for the duration of the operation. Note that since you are passing a
+
+SecureLookupSupplier
+
+, any invoked type converter factories will
+still need to hold the necessary runtime permission to be able to get the
+lookup should they need it.
+
+**Parameters:**
+- operation
+
+- the operation to execute in context of the specified lookup.
+- lookupSupplier
+
+- secure supplier of the lookup
+
+**Returns:**
+- the return value of the action
+
+**Throws:**
+- NullPointerException
+
+- if either action or lookupSupplier are null.
+
+**See Also:**
+- GuardingTypeConverterFactory.convertToType(Class, Class, Supplier)
+
+**Type Parameters:**
+- T
+
+- the type of the return value provided by the passed-in supplier.
+
+---
+
+### Additional Sections
+
+#### Interface LinkerServices
+
+```java
+public interface
+LinkerServices
+```
+
+Interface for services provided to
+
+GuardingDynamicLinker
+
+instances by
+the
+
+DynamicLinker
+
+that owns them.
+
+public interface
+
+LinkerServices
+
+Interface for services provided to
+
+GuardingDynamicLinker
+
+instances by
+the
+
+DynamicLinker
+
+that owns them.
+
+========== METHOD SUMMARY ===========
+
+- Method Summary
+
+All Methods
+
+Instance Methods
+
+Abstract Methods
+
+Default Methods
+
+Modifier and Type
+
+Method
+
+Description
+
+MethodHandle
+
+asType
+
+​(
+
+MethodHandle
+
+handle,
+
+MethodType
+
+fromType)
+
+Similar to
+
+MethodHandle.asType(MethodType)
+
+except it also hooks
+in method handles produced by all available
+
+GuardingTypeConverterFactory
+
+implementations, providing for
+language-specific type coercing of parameters.
+
+default
+
+MethodHandle
+
+asTypeLosslessReturn
+
+​(
+
+MethodHandle
+
+handle,
+
+MethodType
+
+fromType)
+
+Similar to
+
+asType(MethodHandle, MethodType)
+
+except it treats
+return value type conversion specially.
+
+boolean
+
+canConvert
+
+​(
+
+Class
+
+<?> from,
+
+Class
+
+<?> to)
+
+Returns true if there might exist a conversion between the requested
+types (either an automatic JVM conversion, or one provided by any
+available
+
+GuardingTypeConverterFactory
+
+), or false if there
+definitely does not exist a conversion between the requested types.
+
+ConversionComparator.Comparison
+
+compareConversion
+
+​(
+
+Class
+
+<?> sourceType,
+
+Class
+
+<?> targetType1,
+
+Class
+
+<?> targetType2)
+
+Determines which of the two type conversions from a source type to the
+two target types is preferred.
+
+MethodHandle
+
+filterInternalObjects
+
+​(
+
+MethodHandle
+
+target)
+
+Modifies the method handle so that any parameters that can receive
+potentially internal language runtime objects will have a filter added on
+them to prevent them from escaping, potentially by wrapping them.
+
+GuardedInvocation
+
+getGuardedInvocation
+
+​(
+
+LinkRequest
+
+linkRequest)
+
+Creates a guarded invocation delegating back to the
+
+DynamicLinker
+
+that exposes this linker services object.
+
+MethodHandle
+
+getTypeConverter
+
+​(
+
+Class
+
+<?> sourceType,
+
+Class
+
+<?> targetType)
+
+Given a source and target type, returns a method handle that converts
+between them.
+
+<T> T
+
+getWithLookup
+
+​(
+
+Supplier
+
+<T> operation,
+
+SecureLookupSupplier
+
+lookupSupplier)
+
+Executes an operation within the context of a particular
+
+MethodHandles.Lookup
+
+lookup object.
+
+Method Summary
+
+All Methods
+
+Instance Methods
+
+Abstract Methods
+
+Default Methods
+
+Modifier and Type
+
+Method
+
+Description
+
+MethodHandle
+
+asType
+
+​(
+
+MethodHandle
+
+handle,
+
+MethodType
+
+fromType)
+
+Similar to
+
+MethodHandle.asType(MethodType)
+
+except it also hooks
+in method handles produced by all available
+
+GuardingTypeConverterFactory
+
+implementations, providing for
+language-specific type coercing of parameters.
+
+default
+
+MethodHandle
+
+asTypeLosslessReturn
+
+​(
+
+MethodHandle
+
+handle,
+
+MethodType
+
+fromType)
+
+Similar to
+
+asType(MethodHandle, MethodType)
+
+except it treats
+return value type conversion specially.
+
+boolean
+
+canConvert
+
+​(
+
+Class
+
+<?> from,
+
+Class
+
+<?> to)
+
+Returns true if there might exist a conversion between the requested
+types (either an automatic JVM conversion, or one provided by any
+available
+
+GuardingTypeConverterFactory
+
+), or false if there
+definitely does not exist a conversion between the requested types.
+
+ConversionComparator.Comparison
+
+compareConversion
+
+​(
+
+Class
+
+<?> sourceType,
+
+Class
+
+<?> targetType1,
+
+Class
+
+<?> targetType2)
+
+Determines which of the two type conversions from a source type to the
+two target types is preferred.
+
+MethodHandle
+
+filterInternalObjects
+
+​(
+
+MethodHandle
+
+target)
+
+Modifies the method handle so that any parameters that can receive
+potentially internal language runtime objects will have a filter added on
+them to prevent them from escaping, potentially by wrapping them.
+
+GuardedInvocation
+
+getGuardedInvocation
+
+​(
+
+LinkRequest
+
+linkRequest)
+
+Creates a guarded invocation delegating back to the
+
+DynamicLinker
+
+that exposes this linker services object.
+
+MethodHandle
+
+getTypeConverter
+
+​(
+
+Class
+
+<?> sourceType,
+
+Class
+
+<?> targetType)
+
+Given a source and target type, returns a method handle that converts
+between them.
+
+<T> T
+
+getWithLookup
+
+​(
+
+Supplier
+
+<T> operation,
+
+SecureLookupSupplier
+
+lookupSupplier)
+
+Executes an operation within the context of a particular
+
+MethodHandles.Lookup
+
+lookup object.
+
+---
+
+#### Method Summary
+
+Similar to
+
+MethodHandle.asType(MethodType)
+
+except it also hooks
+in method handles produced by all available
+
+GuardingTypeConverterFactory
+
+implementations, providing for
+language-specific type coercing of parameters.
+
+Similar to
+
+asType(MethodHandle, MethodType)
+
+except it treats
+return value type conversion specially.
+
+Returns true if there might exist a conversion between the requested
+types (either an automatic JVM conversion, or one provided by any
+available
+
+GuardingTypeConverterFactory
+
+), or false if there
+definitely does not exist a conversion between the requested types.
+
+Determines which of the two type conversions from a source type to the
+two target types is preferred.
+
+Modifies the method handle so that any parameters that can receive
+potentially internal language runtime objects will have a filter added on
+them to prevent them from escaping, potentially by wrapping them.
+
+Creates a guarded invocation delegating back to the
+
+DynamicLinker
+
+that exposes this linker services object.
+
+Given a source and target type, returns a method handle that converts
+between them.
+
+Executes an operation within the context of a particular
+
+MethodHandles.Lookup
+
+lookup object.
+
+============ METHOD DETAIL ==========
+
+- Method Detail
+
+- asType
+
+```java
+MethodHandle
+asType​(
+MethodHandle
+handle,
+
+MethodType
+fromType)
+```
+
+Similar to
+
+MethodHandle.asType(MethodType)
+
+except it also hooks
+in method handles produced by all available
+
+GuardingTypeConverterFactory
+
+implementations, providing for
+language-specific type coercing of parameters. It will apply
+
+MethodHandle.asType(MethodType)
+
+for all primitive-to-primitive,
+wrapper-to-primitive, primitive-to-wrapper conversions as well as for all
+upcasts. For all other conversions, it'll insert
+
+MethodHandles.filterArguments(MethodHandle, int, MethodHandle...)
+
+with composite filters provided by
+
+GuardingTypeConverterFactory
+
+implementations.
+
+**Parameters:** handle
+
+- target method handle
+**Parameters:** fromType
+
+- the types of source arguments
+**Returns:** a method handle that is a suitable combination of
+
+MethodHandle.asType(MethodType)
+
+,
+
+MethodHandles.filterArguments(MethodHandle, int, MethodHandle...)
+
+,
+and
+
+MethodHandles.filterReturnValue(MethodHandle, MethodHandle)
+
+with
+
+GuardingTypeConverterFactory
+
+-produced type converters as
+filters.
+
+- asTypeLosslessReturn
+
+```java
+default
+MethodHandle
+asTypeLosslessReturn​(
+MethodHandle
+handle,
+
+MethodType
+fromType)
+```
+
+Similar to
+
+asType(MethodHandle, MethodType)
+
+except it treats
+return value type conversion specially. It only converts the return type
+of the method handle when it can be done using a conversion that loses
+neither precision nor magnitude, otherwise it leaves it unchanged. These
+are the only return value conversions that should be performed by
+individual language-specific linkers, and
+
+pre-link transformer of the dynamic linker
+
+should implement the strategy
+for dealing with potentially lossy return type conversions in a manner
+specific to the language runtime where the call site is located.
+
+**Parameters:** handle
+
+- target method handle
+**Parameters:** fromType
+
+- the types of source arguments
+**Returns:** a method handle that is a suitable combination of
+
+MethodHandle.asType(MethodType)
+
+, and
+
+MethodHandles.filterArguments(MethodHandle, int, MethodHandle...)
+
+with
+
+GuardingTypeConverterFactory
+
+-produced type converters as filters.
+
+- getTypeConverter
+
+```java
+MethodHandle
+getTypeConverter​(
+Class
+<?> sourceType,
+
+Class
+<?> targetType)
+```
+
+Given a source and target type, returns a method handle that converts
+between them. Never returns null; in worst case it will return an
+identity conversion (that might fail for some values at runtime). You
+rarely need to use this method directly and should mostly rely on
+
+asType(MethodHandle, MethodType)
+
+instead. This method is needed
+when you need to reuse existing type conversion machinery outside the
+context of processing a link request.
+
+**Parameters:** sourceType
+
+- the type to convert from
+**Parameters:** targetType
+
+- the type to convert to
+**Returns:** a method handle performing the conversion.
+
+- canConvert
+
+```java
+boolean canConvert​(
+Class
+<?> from,
+
+Class
+<?> to)
+```
+
+Returns true if there might exist a conversion between the requested
+types (either an automatic JVM conversion, or one provided by any
+available
+
+GuardingTypeConverterFactory
+
+), or false if there
+definitely does not exist a conversion between the requested types. Note
+that returning true does not guarantee that the conversion will succeed
+at runtime for all values (especially if the "from" or "to" types are
+sufficiently generic), but returning false guarantees that it would fail.
+
+**Parameters:** from
+
+- the source type for the conversion
+**Parameters:** to
+
+- the target type for the conversion
+**Returns:** true if there can be a conversion, false if there can not.
+
+- getGuardedInvocation
+
+```java
+GuardedInvocation
+getGuardedInvocation​(
+LinkRequest
+linkRequest)
+throws
+Exception
+```
+
+Creates a guarded invocation delegating back to the
+
+DynamicLinker
+
+that exposes this linker services object. The dynamic linker will then
+itself delegate the linking to all of its managed
+
+GuardingDynamicLinker
+
+s including potentially this one if no
+linker responds earlier, so beware of infinite recursion. You'll
+typically craft the link request so that it will be different than the
+one you are currently trying to link.
+
+**Parameters:** linkRequest
+
+- a request for linking the invocation
+**Returns:** a guarded invocation linked by some of the guarding dynamic
+linkers managed by the top-level dynamic linker. Can be null if no
+available linker is able to link the invocation. You will typically use
+the elements of the returned invocation to compose your own invocation.
+**Throws:** Exception
+
+- in case the top-level linker throws an exception
+
+- compareConversion
+
+```java
+ConversionComparator.Comparison
+compareConversion​(
+Class
+<?> sourceType,
+
+Class
+<?> targetType1,
+
+Class
+<?> targetType2)
+```
+
+Determines which of the two type conversions from a source type to the
+two target types is preferred. This is used for dynamic overloaded method
+resolution. If the source type is convertible to exactly one target type
+with a method invocation conversion, it is chosen, otherwise available
+
+ConversionComparator
+
+s are consulted.
+
+**Parameters:** sourceType
+
+- the source type.
+**Parameters:** targetType1
+
+- one potential target type
+**Parameters:** targetType2
+
+- another potential target type.
+**Returns:** one of Comparison constants that establish which – if any
+– of the target types is preferable for the conversion.
+
+- filterInternalObjects
+
+```java
+MethodHandle
+filterInternalObjects​(
+MethodHandle
+target)
+```
+
+Modifies the method handle so that any parameters that can receive
+potentially internal language runtime objects will have a filter added on
+them to prevent them from escaping, potentially by wrapping them. It can
+also potentially add an unwrapping filter to the return value. Basically
+transforms the method handle using the transformer configured by
+
+DynamicLinkerFactory.setInternalObjectsFilter(MethodHandleTransformer)
+
+.
+
+**Parameters:** target
+
+- the target method handle
+**Returns:** a method handle with parameters and/or return type potentially
+filtered for wrapping and unwrapping.
+
+- getWithLookup
+
+```java
+<T> T getWithLookup​(
+Supplier
+<T> operation,
+
+SecureLookupSupplier
+lookupSupplier)
+```
+
+Executes an operation within the context of a particular
+
+MethodHandles.Lookup
+
+lookup object. Normally, methods on
+
+LinkerServices
+
+are invoked as part of the linking mechanism in
+which case Dynalink internally maintains a per-thread current lookup
+(the one belonging to the descriptor of the call site being linked). This
+lookup can be retrieved by any
+
+GuardingTypeConverterFactory
+
+involved in linking if it needs to generate lookup-sensitive converters.
+However, linker services' methods can be invoked outside the linking
+process too when implementing invocation-time dispatch schemes, invoking
+conversions at runtime, etc. If it becomes necessary to use any type
+converter in this situation, and it needs a lookup, it will normally only
+get
+
+MethodHandles.publicLookup()
+
+as the thread is not engaged in
+a linking operation. If there is a way to meaningfully associate the
+operation to the context of some caller class, consider performing it
+within an invocation of this method and passing a full-strength lookup
+for that class, as it will associate that lookup with the current thread
+for the duration of the operation. Note that since you are passing a
+
+SecureLookupSupplier
+
+, any invoked type converter factories will
+still need to hold the necessary runtime permission to be able to get the
+lookup should they need it.
+
+**Type Parameters:** T
+
+- the type of the return value provided by the passed-in supplier.
+**Parameters:** operation
+
+- the operation to execute in context of the specified lookup.
+**Parameters:** lookupSupplier
+
+- secure supplier of the lookup
+**Returns:** the return value of the action
+**Throws:** NullPointerException
+
+- if either action or lookupSupplier are null.
+**See Also:** GuardingTypeConverterFactory.convertToType(Class, Class, Supplier)
+
+Method Detail
+
+- asType
+
+```java
+MethodHandle
+asType​(
+MethodHandle
+handle,
+
+MethodType
+fromType)
+```
+
+Similar to
+
+MethodHandle.asType(MethodType)
+
+except it also hooks
+in method handles produced by all available
+
+GuardingTypeConverterFactory
+
+implementations, providing for
+language-specific type coercing of parameters. It will apply
+
+MethodHandle.asType(MethodType)
+
+for all primitive-to-primitive,
+wrapper-to-primitive, primitive-to-wrapper conversions as well as for all
+upcasts. For all other conversions, it'll insert
+
+MethodHandles.filterArguments(MethodHandle, int, MethodHandle...)
+
+with composite filters provided by
+
+GuardingTypeConverterFactory
+
+implementations.
+
+**Parameters:** handle
+
+- target method handle
+**Parameters:** fromType
+
+- the types of source arguments
+**Returns:** a method handle that is a suitable combination of
+
+MethodHandle.asType(MethodType)
+
+,
+
+MethodHandles.filterArguments(MethodHandle, int, MethodHandle...)
+
+,
+and
+
+MethodHandles.filterReturnValue(MethodHandle, MethodHandle)
+
+with
+
+GuardingTypeConverterFactory
+
+-produced type converters as
+filters.
+
+- asTypeLosslessReturn
+
+```java
+default
+MethodHandle
+asTypeLosslessReturn​(
+MethodHandle
+handle,
+
+MethodType
+fromType)
+```
+
+Similar to
+
+asType(MethodHandle, MethodType)
+
+except it treats
+return value type conversion specially. It only converts the return type
+of the method handle when it can be done using a conversion that loses
+neither precision nor magnitude, otherwise it leaves it unchanged. These
+are the only return value conversions that should be performed by
+individual language-specific linkers, and
+
+pre-link transformer of the dynamic linker
+
+should implement the strategy
+for dealing with potentially lossy return type conversions in a manner
+specific to the language runtime where the call site is located.
+
+**Parameters:** handle
+
+- target method handle
+**Parameters:** fromType
+
+- the types of source arguments
+**Returns:** a method handle that is a suitable combination of
+
+MethodHandle.asType(MethodType)
+
+, and
+
+MethodHandles.filterArguments(MethodHandle, int, MethodHandle...)
+
+with
+
+GuardingTypeConverterFactory
+
+-produced type converters as filters.
+
+- getTypeConverter
+
+```java
+MethodHandle
+getTypeConverter​(
+Class
+<?> sourceType,
+
+Class
+<?> targetType)
+```
+
+Given a source and target type, returns a method handle that converts
+between them. Never returns null; in worst case it will return an
+identity conversion (that might fail for some values at runtime). You
+rarely need to use this method directly and should mostly rely on
+
+asType(MethodHandle, MethodType)
+
+instead. This method is needed
+when you need to reuse existing type conversion machinery outside the
+context of processing a link request.
+
+**Parameters:** sourceType
+
+- the type to convert from
+**Parameters:** targetType
+
+- the type to convert to
+**Returns:** a method handle performing the conversion.
+
+- canConvert
+
+```java
+boolean canConvert​(
+Class
+<?> from,
+
+Class
+<?> to)
+```
+
+Returns true if there might exist a conversion between the requested
+types (either an automatic JVM conversion, or one provided by any
+available
+
+GuardingTypeConverterFactory
+
+), or false if there
+definitely does not exist a conversion between the requested types. Note
+that returning true does not guarantee that the conversion will succeed
+at runtime for all values (especially if the "from" or "to" types are
+sufficiently generic), but returning false guarantees that it would fail.
+
+**Parameters:** from
+
+- the source type for the conversion
+**Parameters:** to
+
+- the target type for the conversion
+**Returns:** true if there can be a conversion, false if there can not.
+
+- getGuardedInvocation
+
+```java
+GuardedInvocation
+getGuardedInvocation​(
+LinkRequest
+linkRequest)
+throws
+Exception
+```
+
+Creates a guarded invocation delegating back to the
+
+DynamicLinker
+
+that exposes this linker services object. The dynamic linker will then
+itself delegate the linking to all of its managed
+
+GuardingDynamicLinker
+
+s including potentially this one if no
+linker responds earlier, so beware of infinite recursion. You'll
+typically craft the link request so that it will be different than the
+one you are currently trying to link.
+
+**Parameters:** linkRequest
+
+- a request for linking the invocation
+**Returns:** a guarded invocation linked by some of the guarding dynamic
+linkers managed by the top-level dynamic linker. Can be null if no
+available linker is able to link the invocation. You will typically use
+the elements of the returned invocation to compose your own invocation.
+**Throws:** Exception
+
+- in case the top-level linker throws an exception
+
+- compareConversion
+
+```java
+ConversionComparator.Comparison
+compareConversion​(
+Class
+<?> sourceType,
+
+Class
+<?> targetType1,
+
+Class
+<?> targetType2)
+```
+
+Determines which of the two type conversions from a source type to the
+two target types is preferred. This is used for dynamic overloaded method
+resolution. If the source type is convertible to exactly one target type
+with a method invocation conversion, it is chosen, otherwise available
+
+ConversionComparator
+
+s are consulted.
+
+**Parameters:** sourceType
+
+- the source type.
+**Parameters:** targetType1
+
+- one potential target type
+**Parameters:** targetType2
+
+- another potential target type.
+**Returns:** one of Comparison constants that establish which – if any
+– of the target types is preferable for the conversion.
+
+- filterInternalObjects
+
+```java
+MethodHandle
+filterInternalObjects​(
+MethodHandle
+target)
+```
+
+Modifies the method handle so that any parameters that can receive
+potentially internal language runtime objects will have a filter added on
+them to prevent them from escaping, potentially by wrapping them. It can
+also potentially add an unwrapping filter to the return value. Basically
+transforms the method handle using the transformer configured by
+
+DynamicLinkerFactory.setInternalObjectsFilter(MethodHandleTransformer)
+
+.
+
+**Parameters:** target
+
+- the target method handle
+**Returns:** a method handle with parameters and/or return type potentially
+filtered for wrapping and unwrapping.
+
+- getWithLookup
+
+```java
+<T> T getWithLookup​(
+Supplier
+<T> operation,
+
+SecureLookupSupplier
+lookupSupplier)
+```
+
+Executes an operation within the context of a particular
+
+MethodHandles.Lookup
+
+lookup object. Normally, methods on
+
+LinkerServices
+
+are invoked as part of the linking mechanism in
+which case Dynalink internally maintains a per-thread current lookup
+(the one belonging to the descriptor of the call site being linked). This
+lookup can be retrieved by any
+
+GuardingTypeConverterFactory
+
+involved in linking if it needs to generate lookup-sensitive converters.
+However, linker services' methods can be invoked outside the linking
+process too when implementing invocation-time dispatch schemes, invoking
+conversions at runtime, etc. If it becomes necessary to use any type
+converter in this situation, and it needs a lookup, it will normally only
+get
+
+MethodHandles.publicLookup()
+
+as the thread is not engaged in
+a linking operation. If there is a way to meaningfully associate the
+operation to the context of some caller class, consider performing it
+within an invocation of this method and passing a full-strength lookup
+for that class, as it will associate that lookup with the current thread
+for the duration of the operation. Note that since you are passing a
+
+SecureLookupSupplier
+
+, any invoked type converter factories will
+still need to hold the necessary runtime permission to be able to get the
+lookup should they need it.
+
+**Type Parameters:** T
+
+- the type of the return value provided by the passed-in supplier.
+**Parameters:** operation
+
+- the operation to execute in context of the specified lookup.
+**Parameters:** lookupSupplier
+
+- secure supplier of the lookup
+**Returns:** the return value of the action
+**Throws:** NullPointerException
+
+- if either action or lookupSupplier are null.
+**See Also:** GuardingTypeConverterFactory.convertToType(Class, Class, Supplier)
+
+---
+
+#### Method Detail
+
+asType
+
+```java
+MethodHandle
+asType​(
+MethodHandle
+handle,
+
+MethodType
+fromType)
+```
+
+Similar to
+
+MethodHandle.asType(MethodType)
+
+except it also hooks
+in method handles produced by all available
+
+GuardingTypeConverterFactory
+
+implementations, providing for
+language-specific type coercing of parameters. It will apply
+
+MethodHandle.asType(MethodType)
+
+for all primitive-to-primitive,
+wrapper-to-primitive, primitive-to-wrapper conversions as well as for all
+upcasts. For all other conversions, it'll insert
+
+MethodHandles.filterArguments(MethodHandle, int, MethodHandle...)
+
+with composite filters provided by
+
+GuardingTypeConverterFactory
+
+implementations.
+
+**Parameters:** handle
+
+- target method handle
+**Parameters:** fromType
+
+- the types of source arguments
+**Returns:** a method handle that is a suitable combination of
+
+MethodHandle.asType(MethodType)
+
+,
+
+MethodHandles.filterArguments(MethodHandle, int, MethodHandle...)
+
+,
+and
+
+MethodHandles.filterReturnValue(MethodHandle, MethodHandle)
+
+with
+
+GuardingTypeConverterFactory
+
+-produced type converters as
+filters.
+
+---
+
+#### asType
+
+MethodHandle
+
+asType​(
+
+MethodHandle
+
+handle,
+
+MethodType
+
+fromType)
+
+Similar to
+
+MethodHandle.asType(MethodType)
+
+except it also hooks
+in method handles produced by all available
+
+GuardingTypeConverterFactory
+
+implementations, providing for
+language-specific type coercing of parameters. It will apply
+
+MethodHandle.asType(MethodType)
+
+for all primitive-to-primitive,
+wrapper-to-primitive, primitive-to-wrapper conversions as well as for all
+upcasts. For all other conversions, it'll insert
+
+MethodHandles.filterArguments(MethodHandle, int, MethodHandle...)
+
+with composite filters provided by
+
+GuardingTypeConverterFactory
+
+implementations.
+
+asTypeLosslessReturn
+
+```java
+default
+MethodHandle
+asTypeLosslessReturn​(
+MethodHandle
+handle,
+
+MethodType
+fromType)
+```
+
+Similar to
+
+asType(MethodHandle, MethodType)
+
+except it treats
+return value type conversion specially. It only converts the return type
+of the method handle when it can be done using a conversion that loses
+neither precision nor magnitude, otherwise it leaves it unchanged. These
+are the only return value conversions that should be performed by
+individual language-specific linkers, and
+
+pre-link transformer of the dynamic linker
+
+should implement the strategy
+for dealing with potentially lossy return type conversions in a manner
+specific to the language runtime where the call site is located.
+
+**Parameters:** handle
+
+- target method handle
+**Parameters:** fromType
+
+- the types of source arguments
+**Returns:** a method handle that is a suitable combination of
+
+MethodHandle.asType(MethodType)
+
+, and
+
+MethodHandles.filterArguments(MethodHandle, int, MethodHandle...)
+
+with
+
+GuardingTypeConverterFactory
+
+-produced type converters as filters.
+
+---
+
+#### asTypeLosslessReturn
+
+default
+
+MethodHandle
+
+asTypeLosslessReturn​(
+
+MethodHandle
+
+handle,
+
+MethodType
+
+fromType)
+
+Similar to
+
+asType(MethodHandle, MethodType)
+
+except it treats
+return value type conversion specially. It only converts the return type
+of the method handle when it can be done using a conversion that loses
+neither precision nor magnitude, otherwise it leaves it unchanged. These
+are the only return value conversions that should be performed by
+individual language-specific linkers, and
+
+pre-link transformer of the dynamic linker
+
+should implement the strategy
+for dealing with potentially lossy return type conversions in a manner
+specific to the language runtime where the call site is located.
+
+getTypeConverter
+
+```java
+MethodHandle
+getTypeConverter​(
+Class
+<?> sourceType,
+
+Class
+<?> targetType)
+```
+
+Given a source and target type, returns a method handle that converts
+between them. Never returns null; in worst case it will return an
+identity conversion (that might fail for some values at runtime). You
+rarely need to use this method directly and should mostly rely on
+
+asType(MethodHandle, MethodType)
+
+instead. This method is needed
+when you need to reuse existing type conversion machinery outside the
+context of processing a link request.
+
+**Parameters:** sourceType
+
+- the type to convert from
+**Parameters:** targetType
+
+- the type to convert to
+**Returns:** a method handle performing the conversion.
+
+---
+
+#### getTypeConverter
+
+MethodHandle
+
+getTypeConverter​(
+
+Class
+
+<?> sourceType,
+
+Class
+
+<?> targetType)
+
+Given a source and target type, returns a method handle that converts
+between them. Never returns null; in worst case it will return an
+identity conversion (that might fail for some values at runtime). You
+rarely need to use this method directly and should mostly rely on
+
+asType(MethodHandle, MethodType)
+
+instead. This method is needed
+when you need to reuse existing type conversion machinery outside the
+context of processing a link request.
+
+canConvert
+
+```java
+boolean canConvert​(
+Class
+<?> from,
+
+Class
+<?> to)
+```
+
+Returns true if there might exist a conversion between the requested
+types (either an automatic JVM conversion, or one provided by any
+available
+
+GuardingTypeConverterFactory
+
+), or false if there
+definitely does not exist a conversion between the requested types. Note
+that returning true does not guarantee that the conversion will succeed
+at runtime for all values (especially if the "from" or "to" types are
+sufficiently generic), but returning false guarantees that it would fail.
+
+**Parameters:** from
+
+- the source type for the conversion
+**Parameters:** to
+
+- the target type for the conversion
+**Returns:** true if there can be a conversion, false if there can not.
+
+---
+
+#### canConvert
+
+boolean canConvert​(
+
+Class
+
+<?> from,
+
+Class
+
+<?> to)
+
+Returns true if there might exist a conversion between the requested
+types (either an automatic JVM conversion, or one provided by any
+available
+
+GuardingTypeConverterFactory
+
+), or false if there
+definitely does not exist a conversion between the requested types. Note
+that returning true does not guarantee that the conversion will succeed
+at runtime for all values (especially if the "from" or "to" types are
+sufficiently generic), but returning false guarantees that it would fail.
+
+getGuardedInvocation
+
+```java
+GuardedInvocation
+getGuardedInvocation​(
+LinkRequest
+linkRequest)
+throws
+Exception
+```
+
+Creates a guarded invocation delegating back to the
+
+DynamicLinker
+
+that exposes this linker services object. The dynamic linker will then
+itself delegate the linking to all of its managed
+
+GuardingDynamicLinker
+
+s including potentially this one if no
+linker responds earlier, so beware of infinite recursion. You'll
+typically craft the link request so that it will be different than the
+one you are currently trying to link.
+
+**Parameters:** linkRequest
+
+- a request for linking the invocation
+**Returns:** a guarded invocation linked by some of the guarding dynamic
+linkers managed by the top-level dynamic linker. Can be null if no
+available linker is able to link the invocation. You will typically use
+the elements of the returned invocation to compose your own invocation.
+**Throws:** Exception
+
+- in case the top-level linker throws an exception
+
+---
+
+#### getGuardedInvocation
+
+GuardedInvocation
+
+getGuardedInvocation​(
+
+LinkRequest
+
+linkRequest)
+throws
+
+Exception
+
+Creates a guarded invocation delegating back to the
+
+DynamicLinker
+
+that exposes this linker services object. The dynamic linker will then
+itself delegate the linking to all of its managed
+
+GuardingDynamicLinker
+
+s including potentially this one if no
+linker responds earlier, so beware of infinite recursion. You'll
+typically craft the link request so that it will be different than the
+one you are currently trying to link.
+
+compareConversion
+
+```java
+ConversionComparator.Comparison
+compareConversion​(
+Class
+<?> sourceType,
+
+Class
+<?> targetType1,
+
+Class
+<?> targetType2)
+```
+
+Determines which of the two type conversions from a source type to the
+two target types is preferred. This is used for dynamic overloaded method
+resolution. If the source type is convertible to exactly one target type
+with a method invocation conversion, it is chosen, otherwise available
+
+ConversionComparator
+
+s are consulted.
+
+**Parameters:** sourceType
+
+- the source type.
+**Parameters:** targetType1
+
+- one potential target type
+**Parameters:** targetType2
+
+- another potential target type.
+**Returns:** one of Comparison constants that establish which – if any
+– of the target types is preferable for the conversion.
+
+---
+
+#### compareConversion
+
+ConversionComparator.Comparison
+
+compareConversion​(
+
+Class
+
+<?> sourceType,
+
+Class
+
+<?> targetType1,
+
+Class
+
+<?> targetType2)
+
+Determines which of the two type conversions from a source type to the
+two target types is preferred. This is used for dynamic overloaded method
+resolution. If the source type is convertible to exactly one target type
+with a method invocation conversion, it is chosen, otherwise available
+
+ConversionComparator
+
+s are consulted.
+
+filterInternalObjects
+
+```java
+MethodHandle
+filterInternalObjects​(
+MethodHandle
+target)
+```
+
+Modifies the method handle so that any parameters that can receive
+potentially internal language runtime objects will have a filter added on
+them to prevent them from escaping, potentially by wrapping them. It can
+also potentially add an unwrapping filter to the return value. Basically
+transforms the method handle using the transformer configured by
+
+DynamicLinkerFactory.setInternalObjectsFilter(MethodHandleTransformer)
+
+.
+
+**Parameters:** target
+
+- the target method handle
+**Returns:** a method handle with parameters and/or return type potentially
+filtered for wrapping and unwrapping.
+
+---
+
+#### filterInternalObjects
+
+MethodHandle
+
+filterInternalObjects​(
+
+MethodHandle
+
+target)
+
+Modifies the method handle so that any parameters that can receive
+potentially internal language runtime objects will have a filter added on
+them to prevent them from escaping, potentially by wrapping them. It can
+also potentially add an unwrapping filter to the return value. Basically
+transforms the method handle using the transformer configured by
+
+DynamicLinkerFactory.setInternalObjectsFilter(MethodHandleTransformer)
+
+.
+
+getWithLookup
+
+```java
+<T> T getWithLookup​(
+Supplier
+<T> operation,
+
+SecureLookupSupplier
+lookupSupplier)
+```
+
+Executes an operation within the context of a particular
+
+MethodHandles.Lookup
+
+lookup object. Normally, methods on
+
+LinkerServices
+
+are invoked as part of the linking mechanism in
+which case Dynalink internally maintains a per-thread current lookup
+(the one belonging to the descriptor of the call site being linked). This
+lookup can be retrieved by any
+
+GuardingTypeConverterFactory
+
+involved in linking if it needs to generate lookup-sensitive converters.
+However, linker services' methods can be invoked outside the linking
+process too when implementing invocation-time dispatch schemes, invoking
+conversions at runtime, etc. If it becomes necessary to use any type
+converter in this situation, and it needs a lookup, it will normally only
+get
+
+MethodHandles.publicLookup()
+
+as the thread is not engaged in
+a linking operation. If there is a way to meaningfully associate the
+operation to the context of some caller class, consider performing it
+within an invocation of this method and passing a full-strength lookup
+for that class, as it will associate that lookup with the current thread
+for the duration of the operation. Note that since you are passing a
+
+SecureLookupSupplier
+
+, any invoked type converter factories will
+still need to hold the necessary runtime permission to be able to get the
+lookup should they need it.
+
+**Type Parameters:** T
+
+- the type of the return value provided by the passed-in supplier.
+**Parameters:** operation
+
+- the operation to execute in context of the specified lookup.
+**Parameters:** lookupSupplier
+
+- secure supplier of the lookup
+**Returns:** the return value of the action
+**Throws:** NullPointerException
+
+- if either action or lookupSupplier are null.
+**See Also:** GuardingTypeConverterFactory.convertToType(Class, Class, Supplier)
+
+---
+
+#### getWithLookup
+
+<T> T getWithLookup​(
+
+Supplier
+
+<T> operation,
+
+SecureLookupSupplier
+
+lookupSupplier)
+
+Executes an operation within the context of a particular
+
+MethodHandles.Lookup
+
+lookup object. Normally, methods on
+
+LinkerServices
+
+are invoked as part of the linking mechanism in
+which case Dynalink internally maintains a per-thread current lookup
+(the one belonging to the descriptor of the call site being linked). This
+lookup can be retrieved by any
+
+GuardingTypeConverterFactory
+
+involved in linking if it needs to generate lookup-sensitive converters.
+However, linker services' methods can be invoked outside the linking
+process too when implementing invocation-time dispatch schemes, invoking
+conversions at runtime, etc. If it becomes necessary to use any type
+converter in this situation, and it needs a lookup, it will normally only
+get
+
+MethodHandles.publicLookup()
+
+as the thread is not engaged in
+a linking operation. If there is a way to meaningfully associate the
+operation to the context of some caller class, consider performing it
+within an invocation of this method and passing a full-strength lookup
+for that class, as it will associate that lookup with the current thread
+for the duration of the operation. Note that since you are passing a
+
+SecureLookupSupplier
+
+, any invoked type converter factories will
+still need to hold the necessary runtime permission to be able to get the
+lookup should they need it.
+
+---
+

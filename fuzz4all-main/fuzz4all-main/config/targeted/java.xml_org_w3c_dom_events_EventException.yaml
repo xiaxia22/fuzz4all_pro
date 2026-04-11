@@ -1,0 +1,35 @@
+﻿# Auto-generated targeted configuration for org.w3c.dom.events.EventException
+# Documentation source: config/documentation/java.xml_org_w3c_dom_events_EventException.md
+
+fuzzing:
+  output_folder: outputs/targeted/java.xml_org_w3c_dom_events_EventException
+  num: 10000
+  total_time: 24
+  log_level: 3
+  otf: true
+  resume: true
+  evaluate: false
+  use_hand_written_prompt: false
+  no_input_prompt: false
+  prompt_strategy: 2
+
+target:
+  language: java
+  path_documentation: config/documentation/java.xml_org_w3c_dom_events_EventException.md
+  path_example_code:
+  trigger_to_generate_input: "/* Please create a very short Java program that uses org.w3c.dom.events.EventException in diverse and tricky ways. Exercise realistic API calls, edge-case argument combinations, nested types when relevant, and error-prone usage patterns that still try to compile. */"
+  input_hint: "import org.w3c.dom.events.EventException;"
+  path_hand_written_prompt:
+  target_string: "EventException"
+
+llm:
+  temperature: 1
+  batch_size: 30
+  device: cuda
+  model_name: Qwen/Qwen2.5-Coder-7B-Instruct
+  max_length: 1024
+  autoprompt_model: deepseek-chat
+  autoprompt_candidates: 3
+  autoprompt_temperature: 0.9
+  autoprompt_greedy_temperature: 0.2
+  autoprompt_max_tokens: 256

@@ -1,0 +1,2241 @@
+# Class NumberUp
+
+**Source:** `java.desktop\javax\print\attribute\standard\NumberUp.html`
+
+### Class Description
+
+```java
+public final class
+NumberUp
+
+extends
+IntegerSyntax
+
+implements
+DocAttribute
+,
+PrintRequestAttribute
+,
+PrintJobAttribute
+```
+
+Class
+
+NumberUp
+
+is an integer valued printing attribute class that
+specifies the number of print-stream pages to impose upon a single side of an
+instance of a selected medium. That is, if the NumberUp value is
+
+n,
+
+the printer must place
+
+n
+
+print-stream pages on a single side of an
+instance of the selected medium. To accomplish this, the printer may add some
+sort of translation, scaling, or rotation. This attribute primarily controls
+the translation, scaling and rotation of print-stream pages.
+
+The effect of a
+
+NumberUp
+
+attribute on a multidoc print job (a job
+with multiple documents) depends on whether all the docs have the same number
+up values specified or whether different docs have different number up values
+specified, and on the (perhaps defaulted) value of the
+
+MultipleDocumentHandling
+
+attribute.
+
+- If all the docs have the same number up value
+
+n
+
+specified, then
+any value of
+
+MultipleDocumentHandling
+
+makes sense, and the printer's processing depends on the
+
+MultipleDocumentHandling
+
+value:
+
+- SINGLE_DOCUMENT
+
+-- All the input docs will be combined
+together into one output document. Each media impression will consist of
+
+n
+
+m print-stream pages from the output document.
+
+SINGLE_DOCUMENT_NEW_SHEET
+
+-- All the input docs will be
+combined together into one output document. Each media impression will
+consist of
+
+n
+
+print-stream pages from the output document. However,
+the first impression of each input doc will always start on a new media
+sheet; this means the last impression of an input doc may have fewer than
+
+n
+
+print-stream pages on it.
+
+SEPARATE_DOCUMENTS_UNCOLLATED_COPIES
+
+-- The input docs will
+remain separate. Each media impression will consist of
+
+n
+
+print-stream pages from the input doc. Since the input docs are separate,
+the first impression of each input doc will always start on a new media
+sheet; this means the last impression of an input doc may have fewer than
+
+n
+
+print-stream pages on it.
+
+SEPARATE_DOCUMENTS_COLLATED_COPIES
+
+-- The input docs will
+remain separate. Each media impression will consist of
+
+n
+
+print-stream pages from the input doc. Since the input docs are separate,
+the first impression of each input doc will always start on a new media
+sheet; this means the last impression of an input doc may have fewer than
+
+n
+
+print-stream pages on it.
+
+- SINGLE_DOCUMENT
+
+-- All the input docs will be combined
+together into one output document. Each media impression will consist of
+
+n
+
+i
+
+print-stream pages from the output document, where
+
+i
+
+is the number of the input doc corresponding to that point in
+the output document. When the next input doc has a different number up
+value from the previous input doc, the first print-stream page of the
+next input doc goes at the start of the next media impression, possibly
+leaving fewer than the full number of print-stream pages on the previous
+media impression.
+
+SINGLE_DOCUMENT_NEW_SHEET
+
+-- All the input docs will be
+combined together into one output document. Each media impression will
+consist of
+
+n
+
+print-stream pages from the output document. However,
+the first impression of each input doc will always start on a new media
+sheet; this means the last impression of an input doc may have fewer than
+
+n
+
+print-stream pages on it.
+
+SEPARATE_DOCUMENTS_UNCOLLATED_COPIES
+
+-- The input docs will
+remain separate. For input doc
+
+i,
+
+each media impression will
+consist of
+
+n
+
+i
+
+print-stream pages from the input doc.
+Since the input docs are separate, the first impression of each input doc
+will always start on a new media sheet; this means the last impression of
+an input doc may have fewer than
+
+n
+
+i
+
+print-stream pages
+on it.
+
+SEPARATE_DOCUMENTS_COLLATED_COPIES
+
+-- The input docs will
+remain separate. For input doc
+
+i,
+
+each media impression will
+consist of
+
+n
+
+i
+
+print-stream pages from the input doc.
+Since the input docs are separate, the first impression of each input doc
+will always start on a new media sheet; this means the last impression of
+an input doc may have fewer than
+
+n
+
+i
+
+print-stream pages
+on it.
+
+IPP Compatibility:
+
+The integer value gives the IPP integer value. The
+category name returned by
+
+getName()
+
+gives the IPP attribute name.
+
+**All Implemented Interfaces:** Serializable
+
+,
+
+Cloneable
+
+,
+
+Attribute
+
+,
+
+DocAttribute
+
+,
+
+PrintJobAttribute
+
+,
+
+PrintRequestAttribute
+
+---
+
+### Field Details
+
+*No entries found.*
+
+### Constructor Details
+
+#### public NumberUp​(int value)
+
+Construct a new number up attribute with the given integer value.
+
+**Parameters:**
+- value
+
+- Integer value
+
+**Throws:**
+- IllegalArgumentException
+
+- if
+
+value < 1
+
+---
+
+### Method Details
+
+#### public boolean equals​(
+Object
+object)
+
+Returns whether this number up attribute is equivalent to the passed in
+object. To be equivalent, all of the following conditions must be true:
+
+- object
+
+is not
+
+null
+
+.
+
+object
+
+is an instance of class
+
+NumberUp
+
+.
+
+This number up attribute's value and
+
+object
+
+'s value are
+equal.
+
+**Overrides:**
+- equals
+
+in class
+
+IntegerSyntax
+
+**Parameters:**
+- object
+
+-
+
+Object
+
+to compare to
+
+**Returns:**
+- true
+
+if
+
+object
+
+is equivalent to this number up
+attribute,
+
+false
+
+otherwise
+
+**See Also:**
+- Object.hashCode()
+
+,
+
+HashMap
+
+---
+
+#### public final
+Class
+<? extends
+Attribute
+> getCategory()
+
+Get the printing attribute class which is to be used as the "category"
+for this printing attribute value.
+
+For class
+
+NumberUp
+
+, the category is class
+
+NumberUp
+
+itself.
+
+**Specified by:**
+- getCategory
+
+in interface
+
+Attribute
+
+**Returns:**
+- printing attribute class (category), an instance of class
+
+java.lang.Class
+
+---
+
+#### public final
+String
+getName()
+
+Get the name of the category of which this attribute value is an
+instance.
+
+For class
+
+NumberUp
+
+, the category name is
+
+"number-up"
+
+.
+
+**Specified by:**
+- getName
+
+in interface
+
+Attribute
+
+**Returns:**
+- attribute category name
+
+---
+
+### Additional Sections
+
+#### Class NumberUp
+
+java.lang.Object
+
+- javax.print.attribute.IntegerSyntax
+- - javax.print.attribute.standard.NumberUp
+
+javax.print.attribute.IntegerSyntax
+
+- javax.print.attribute.standard.NumberUp
+
+javax.print.attribute.standard.NumberUp
+
+**All Implemented Interfaces:** Serializable
+
+,
+
+Cloneable
+
+,
+
+Attribute
+
+,
+
+DocAttribute
+
+,
+
+PrintJobAttribute
+
+,
+
+PrintRequestAttribute
+
+```java
+public final class
+NumberUp
+
+extends
+IntegerSyntax
+
+implements
+DocAttribute
+,
+PrintRequestAttribute
+,
+PrintJobAttribute
+```
+
+Class
+
+NumberUp
+
+is an integer valued printing attribute class that
+specifies the number of print-stream pages to impose upon a single side of an
+instance of a selected medium. That is, if the NumberUp value is
+
+n,
+
+the printer must place
+
+n
+
+print-stream pages on a single side of an
+instance of the selected medium. To accomplish this, the printer may add some
+sort of translation, scaling, or rotation. This attribute primarily controls
+the translation, scaling and rotation of print-stream pages.
+
+The effect of a
+
+NumberUp
+
+attribute on a multidoc print job (a job
+with multiple documents) depends on whether all the docs have the same number
+up values specified or whether different docs have different number up values
+specified, and on the (perhaps defaulted) value of the
+
+MultipleDocumentHandling
+
+attribute.
+
+- If all the docs have the same number up value
+
+n
+
+specified, then
+any value of
+
+MultipleDocumentHandling
+
+makes sense, and the printer's processing depends on the
+
+MultipleDocumentHandling
+
+value:
+
+- SINGLE_DOCUMENT
+
+-- All the input docs will be combined
+together into one output document. Each media impression will consist of
+
+n
+
+m print-stream pages from the output document.
+
+SINGLE_DOCUMENT_NEW_SHEET
+
+-- All the input docs will be
+combined together into one output document. Each media impression will
+consist of
+
+n
+
+print-stream pages from the output document. However,
+the first impression of each input doc will always start on a new media
+sheet; this means the last impression of an input doc may have fewer than
+
+n
+
+print-stream pages on it.
+
+SEPARATE_DOCUMENTS_UNCOLLATED_COPIES
+
+-- The input docs will
+remain separate. Each media impression will consist of
+
+n
+
+print-stream pages from the input doc. Since the input docs are separate,
+the first impression of each input doc will always start on a new media
+sheet; this means the last impression of an input doc may have fewer than
+
+n
+
+print-stream pages on it.
+
+SEPARATE_DOCUMENTS_COLLATED_COPIES
+
+-- The input docs will
+remain separate. Each media impression will consist of
+
+n
+
+print-stream pages from the input doc. Since the input docs are separate,
+the first impression of each input doc will always start on a new media
+sheet; this means the last impression of an input doc may have fewer than
+
+n
+
+print-stream pages on it.
+
+- SINGLE_DOCUMENT
+
+-- All the input docs will be combined
+together into one output document. Each media impression will consist of
+
+n
+
+i
+
+print-stream pages from the output document, where
+
+i
+
+is the number of the input doc corresponding to that point in
+the output document. When the next input doc has a different number up
+value from the previous input doc, the first print-stream page of the
+next input doc goes at the start of the next media impression, possibly
+leaving fewer than the full number of print-stream pages on the previous
+media impression.
+
+SINGLE_DOCUMENT_NEW_SHEET
+
+-- All the input docs will be
+combined together into one output document. Each media impression will
+consist of
+
+n
+
+print-stream pages from the output document. However,
+the first impression of each input doc will always start on a new media
+sheet; this means the last impression of an input doc may have fewer than
+
+n
+
+print-stream pages on it.
+
+SEPARATE_DOCUMENTS_UNCOLLATED_COPIES
+
+-- The input docs will
+remain separate. For input doc
+
+i,
+
+each media impression will
+consist of
+
+n
+
+i
+
+print-stream pages from the input doc.
+Since the input docs are separate, the first impression of each input doc
+will always start on a new media sheet; this means the last impression of
+an input doc may have fewer than
+
+n
+
+i
+
+print-stream pages
+on it.
+
+SEPARATE_DOCUMENTS_COLLATED_COPIES
+
+-- The input docs will
+remain separate. For input doc
+
+i,
+
+each media impression will
+consist of
+
+n
+
+i
+
+print-stream pages from the input doc.
+Since the input docs are separate, the first impression of each input doc
+will always start on a new media sheet; this means the last impression of
+an input doc may have fewer than
+
+n
+
+i
+
+print-stream pages
+on it.
+
+IPP Compatibility:
+
+The integer value gives the IPP integer value. The
+category name returned by
+
+getName()
+
+gives the IPP attribute name.
+
+**See Also:** Serialized Form
+
+public final class
+
+NumberUp
+
+extends
+
+IntegerSyntax
+
+implements
+
+DocAttribute
+
+,
+
+PrintRequestAttribute
+
+,
+
+PrintJobAttribute
+
+Class
+
+NumberUp
+
+is an integer valued printing attribute class that
+specifies the number of print-stream pages to impose upon a single side of an
+instance of a selected medium. That is, if the NumberUp value is
+
+n,
+
+the printer must place
+
+n
+
+print-stream pages on a single side of an
+instance of the selected medium. To accomplish this, the printer may add some
+sort of translation, scaling, or rotation. This attribute primarily controls
+the translation, scaling and rotation of print-stream pages.
+
+The effect of a
+
+NumberUp
+
+attribute on a multidoc print job (a job
+with multiple documents) depends on whether all the docs have the same number
+up values specified or whether different docs have different number up values
+specified, and on the (perhaps defaulted) value of the
+
+MultipleDocumentHandling
+
+attribute.
+
+- If all the docs have the same number up value
+
+n
+
+specified, then
+any value of
+
+MultipleDocumentHandling
+
+makes sense, and the printer's processing depends on the
+
+MultipleDocumentHandling
+
+value:
+
+- SINGLE_DOCUMENT
+
+-- All the input docs will be combined
+together into one output document. Each media impression will consist of
+
+n
+
+m print-stream pages from the output document.
+
+SINGLE_DOCUMENT_NEW_SHEET
+
+-- All the input docs will be
+combined together into one output document. Each media impression will
+consist of
+
+n
+
+print-stream pages from the output document. However,
+the first impression of each input doc will always start on a new media
+sheet; this means the last impression of an input doc may have fewer than
+
+n
+
+print-stream pages on it.
+
+SEPARATE_DOCUMENTS_UNCOLLATED_COPIES
+
+-- The input docs will
+remain separate. Each media impression will consist of
+
+n
+
+print-stream pages from the input doc. Since the input docs are separate,
+the first impression of each input doc will always start on a new media
+sheet; this means the last impression of an input doc may have fewer than
+
+n
+
+print-stream pages on it.
+
+SEPARATE_DOCUMENTS_COLLATED_COPIES
+
+-- The input docs will
+remain separate. Each media impression will consist of
+
+n
+
+print-stream pages from the input doc. Since the input docs are separate,
+the first impression of each input doc will always start on a new media
+sheet; this means the last impression of an input doc may have fewer than
+
+n
+
+print-stream pages on it.
+
+- SINGLE_DOCUMENT
+
+-- All the input docs will be combined
+together into one output document. Each media impression will consist of
+
+n
+
+i
+
+print-stream pages from the output document, where
+
+i
+
+is the number of the input doc corresponding to that point in
+the output document. When the next input doc has a different number up
+value from the previous input doc, the first print-stream page of the
+next input doc goes at the start of the next media impression, possibly
+leaving fewer than the full number of print-stream pages on the previous
+media impression.
+
+SINGLE_DOCUMENT_NEW_SHEET
+
+-- All the input docs will be
+combined together into one output document. Each media impression will
+consist of
+
+n
+
+print-stream pages from the output document. However,
+the first impression of each input doc will always start on a new media
+sheet; this means the last impression of an input doc may have fewer than
+
+n
+
+print-stream pages on it.
+
+SEPARATE_DOCUMENTS_UNCOLLATED_COPIES
+
+-- The input docs will
+remain separate. For input doc
+
+i,
+
+each media impression will
+consist of
+
+n
+
+i
+
+print-stream pages from the input doc.
+Since the input docs are separate, the first impression of each input doc
+will always start on a new media sheet; this means the last impression of
+an input doc may have fewer than
+
+n
+
+i
+
+print-stream pages
+on it.
+
+SEPARATE_DOCUMENTS_COLLATED_COPIES
+
+-- The input docs will
+remain separate. For input doc
+
+i,
+
+each media impression will
+consist of
+
+n
+
+i
+
+print-stream pages from the input doc.
+Since the input docs are separate, the first impression of each input doc
+will always start on a new media sheet; this means the last impression of
+an input doc may have fewer than
+
+n
+
+i
+
+print-stream pages
+on it.
+
+IPP Compatibility:
+
+The integer value gives the IPP integer value. The
+category name returned by
+
+getName()
+
+gives the IPP attribute name.
+
+The effect of a
+
+NumberUp
+
+attribute on a multidoc print job (a job
+with multiple documents) depends on whether all the docs have the same number
+up values specified or whether different docs have different number up values
+specified, and on the (perhaps defaulted) value of the
+
+MultipleDocumentHandling
+
+attribute.
+
+- If all the docs have the same number up value
+
+n
+
+specified, then
+any value of
+
+MultipleDocumentHandling
+
+makes sense, and the printer's processing depends on the
+
+MultipleDocumentHandling
+
+value:
+
+- SINGLE_DOCUMENT
+
+-- All the input docs will be combined
+together into one output document. Each media impression will consist of
+
+n
+
+m print-stream pages from the output document.
+
+SINGLE_DOCUMENT_NEW_SHEET
+
+-- All the input docs will be
+combined together into one output document. Each media impression will
+consist of
+
+n
+
+print-stream pages from the output document. However,
+the first impression of each input doc will always start on a new media
+sheet; this means the last impression of an input doc may have fewer than
+
+n
+
+print-stream pages on it.
+
+SEPARATE_DOCUMENTS_UNCOLLATED_COPIES
+
+-- The input docs will
+remain separate. Each media impression will consist of
+
+n
+
+print-stream pages from the input doc. Since the input docs are separate,
+the first impression of each input doc will always start on a new media
+sheet; this means the last impression of an input doc may have fewer than
+
+n
+
+print-stream pages on it.
+
+SEPARATE_DOCUMENTS_COLLATED_COPIES
+
+-- The input docs will
+remain separate. Each media impression will consist of
+
+n
+
+print-stream pages from the input doc. Since the input docs are separate,
+the first impression of each input doc will always start on a new media
+sheet; this means the last impression of an input doc may have fewer than
+
+n
+
+print-stream pages on it.
+
+- SINGLE_DOCUMENT
+
+-- All the input docs will be combined
+together into one output document. Each media impression will consist of
+
+n
+
+i
+
+print-stream pages from the output document, where
+
+i
+
+is the number of the input doc corresponding to that point in
+the output document. When the next input doc has a different number up
+value from the previous input doc, the first print-stream page of the
+next input doc goes at the start of the next media impression, possibly
+leaving fewer than the full number of print-stream pages on the previous
+media impression.
+
+SINGLE_DOCUMENT_NEW_SHEET
+
+-- All the input docs will be
+combined together into one output document. Each media impression will
+consist of
+
+n
+
+print-stream pages from the output document. However,
+the first impression of each input doc will always start on a new media
+sheet; this means the last impression of an input doc may have fewer than
+
+n
+
+print-stream pages on it.
+
+SEPARATE_DOCUMENTS_UNCOLLATED_COPIES
+
+-- The input docs will
+remain separate. For input doc
+
+i,
+
+each media impression will
+consist of
+
+n
+
+i
+
+print-stream pages from the input doc.
+Since the input docs are separate, the first impression of each input doc
+will always start on a new media sheet; this means the last impression of
+an input doc may have fewer than
+
+n
+
+i
+
+print-stream pages
+on it.
+
+SEPARATE_DOCUMENTS_COLLATED_COPIES
+
+-- The input docs will
+remain separate. For input doc
+
+i,
+
+each media impression will
+consist of
+
+n
+
+i
+
+print-stream pages from the input doc.
+Since the input docs are separate, the first impression of each input doc
+will always start on a new media sheet; this means the last impression of
+an input doc may have fewer than
+
+n
+
+i
+
+print-stream pages
+on it.
+
+IPP Compatibility:
+
+The integer value gives the IPP integer value. The
+category name returned by
+
+getName()
+
+gives the IPP attribute name.
+
+If all the docs have the same number up value
+
+n
+
+specified, then
+any value of
+
+MultipleDocumentHandling
+
+makes sense, and the printer's processing depends on the
+
+MultipleDocumentHandling
+
+value:
+
+- SINGLE_DOCUMENT
+
+-- All the input docs will be combined
+together into one output document. Each media impression will consist of
+
+n
+
+m print-stream pages from the output document.
+
+SINGLE_DOCUMENT_NEW_SHEET
+
+-- All the input docs will be
+combined together into one output document. Each media impression will
+consist of
+
+n
+
+print-stream pages from the output document. However,
+the first impression of each input doc will always start on a new media
+sheet; this means the last impression of an input doc may have fewer than
+
+n
+
+print-stream pages on it.
+
+SEPARATE_DOCUMENTS_UNCOLLATED_COPIES
+
+-- The input docs will
+remain separate. Each media impression will consist of
+
+n
+
+print-stream pages from the input doc. Since the input docs are separate,
+the first impression of each input doc will always start on a new media
+sheet; this means the last impression of an input doc may have fewer than
+
+n
+
+print-stream pages on it.
+
+SEPARATE_DOCUMENTS_COLLATED_COPIES
+
+-- The input docs will
+remain separate. Each media impression will consist of
+
+n
+
+print-stream pages from the input doc. Since the input docs are separate,
+the first impression of each input doc will always start on a new media
+sheet; this means the last impression of an input doc may have fewer than
+
+n
+
+print-stream pages on it.
+
+- SINGLE_DOCUMENT
+
+-- All the input docs will be combined
+together into one output document. Each media impression will consist of
+
+n
+
+i
+
+print-stream pages from the output document, where
+
+i
+
+is the number of the input doc corresponding to that point in
+the output document. When the next input doc has a different number up
+value from the previous input doc, the first print-stream page of the
+next input doc goes at the start of the next media impression, possibly
+leaving fewer than the full number of print-stream pages on the previous
+media impression.
+
+SINGLE_DOCUMENT_NEW_SHEET
+
+-- All the input docs will be
+combined together into one output document. Each media impression will
+consist of
+
+n
+
+print-stream pages from the output document. However,
+the first impression of each input doc will always start on a new media
+sheet; this means the last impression of an input doc may have fewer than
+
+n
+
+print-stream pages on it.
+
+SEPARATE_DOCUMENTS_UNCOLLATED_COPIES
+
+-- The input docs will
+remain separate. For input doc
+
+i,
+
+each media impression will
+consist of
+
+n
+
+i
+
+print-stream pages from the input doc.
+Since the input docs are separate, the first impression of each input doc
+will always start on a new media sheet; this means the last impression of
+an input doc may have fewer than
+
+n
+
+i
+
+print-stream pages
+on it.
+
+SEPARATE_DOCUMENTS_COLLATED_COPIES
+
+-- The input docs will
+remain separate. For input doc
+
+i,
+
+each media impression will
+consist of
+
+n
+
+i
+
+print-stream pages from the input doc.
+Since the input docs are separate, the first impression of each input doc
+will always start on a new media sheet; this means the last impression of
+an input doc may have fewer than
+
+n
+
+i
+
+print-stream pages
+on it.
+
+SINGLE_DOCUMENT
+
+-- All the input docs will be combined
+together into one output document. Each media impression will consist of
+
+n
+
+m print-stream pages from the output document.
+
+SINGLE_DOCUMENT_NEW_SHEET
+
+-- All the input docs will be
+combined together into one output document. Each media impression will
+consist of
+
+n
+
+print-stream pages from the output document. However,
+the first impression of each input doc will always start on a new media
+sheet; this means the last impression of an input doc may have fewer than
+
+n
+
+print-stream pages on it.
+
+SEPARATE_DOCUMENTS_UNCOLLATED_COPIES
+
+-- The input docs will
+remain separate. Each media impression will consist of
+
+n
+
+print-stream pages from the input doc. Since the input docs are separate,
+the first impression of each input doc will always start on a new media
+sheet; this means the last impression of an input doc may have fewer than
+
+n
+
+print-stream pages on it.
+
+SEPARATE_DOCUMENTS_COLLATED_COPIES
+
+-- The input docs will
+remain separate. Each media impression will consist of
+
+n
+
+print-stream pages from the input doc. Since the input docs are separate,
+the first impression of each input doc will always start on a new media
+sheet; this means the last impression of an input doc may have fewer than
+
+n
+
+print-stream pages on it.
+
+SINGLE_DOCUMENT
+
+-- All the input docs will be combined
+together into one output document. Each media impression will consist of
+
+n
+
+i
+
+print-stream pages from the output document, where
+
+i
+
+is the number of the input doc corresponding to that point in
+the output document. When the next input doc has a different number up
+value from the previous input doc, the first print-stream page of the
+next input doc goes at the start of the next media impression, possibly
+leaving fewer than the full number of print-stream pages on the previous
+media impression.
+
+SINGLE_DOCUMENT_NEW_SHEET
+
+-- All the input docs will be
+combined together into one output document. Each media impression will
+consist of
+
+n
+
+print-stream pages from the output document. However,
+the first impression of each input doc will always start on a new media
+sheet; this means the last impression of an input doc may have fewer than
+
+n
+
+print-stream pages on it.
+
+SEPARATE_DOCUMENTS_UNCOLLATED_COPIES
+
+-- The input docs will
+remain separate. For input doc
+
+i,
+
+each media impression will
+consist of
+
+n
+
+i
+
+print-stream pages from the input doc.
+Since the input docs are separate, the first impression of each input doc
+will always start on a new media sheet; this means the last impression of
+an input doc may have fewer than
+
+n
+
+i
+
+print-stream pages
+on it.
+
+SEPARATE_DOCUMENTS_COLLATED_COPIES
+
+-- The input docs will
+remain separate. For input doc
+
+i,
+
+each media impression will
+consist of
+
+n
+
+i
+
+print-stream pages from the input doc.
+Since the input docs are separate, the first impression of each input doc
+will always start on a new media sheet; this means the last impression of
+an input doc may have fewer than
+
+n
+
+i
+
+print-stream pages
+on it.
+
+======== CONSTRUCTOR SUMMARY ========
+
+- Constructor Summary
+
+Constructors
+
+Constructor
+
+Description
+
+NumberUp
+
+​(int value)
+
+Construct a new number up attribute with the given integer value.
+
+========== METHOD SUMMARY ===========
+
+- Method Summary
+
+All Methods
+
+Instance Methods
+
+Concrete Methods
+
+Modifier and Type
+
+Method
+
+Description
+
+boolean
+
+equals
+
+​(
+
+Object
+
+object)
+
+Returns whether this number up attribute is equivalent to the passed in
+object.
+
+Class
+
+<? extends
+
+Attribute
+
+>
+
+getCategory
+
+()
+
+Get the printing attribute class which is to be used as the "category"
+for this printing attribute value.
+
+String
+
+getName
+
+()
+
+Get the name of the category of which this attribute value is an
+instance.
+
+- Methods declared in class javax.print.attribute.
+
+IntegerSyntax
+
+getValue
+
+,
+
+hashCode
+
+,
+
+toString
+
+- Methods declared in class java.lang.
+
+Object
+
+clone
+
+,
+
+finalize
+
+,
+
+getClass
+
+,
+
+notify
+
+,
+
+notifyAll
+
+,
+
+wait
+
+,
+
+wait
+
+,
+
+wait
+
+Constructor Summary
+
+Constructors
+
+Constructor
+
+Description
+
+NumberUp
+
+​(int value)
+
+Construct a new number up attribute with the given integer value.
+
+---
+
+#### Constructor Summary
+
+Construct a new number up attribute with the given integer value.
+
+Method Summary
+
+All Methods
+
+Instance Methods
+
+Concrete Methods
+
+Modifier and Type
+
+Method
+
+Description
+
+boolean
+
+equals
+
+​(
+
+Object
+
+object)
+
+Returns whether this number up attribute is equivalent to the passed in
+object.
+
+Class
+
+<? extends
+
+Attribute
+
+>
+
+getCategory
+
+()
+
+Get the printing attribute class which is to be used as the "category"
+for this printing attribute value.
+
+String
+
+getName
+
+()
+
+Get the name of the category of which this attribute value is an
+instance.
+
+- Methods declared in class javax.print.attribute.
+
+IntegerSyntax
+
+getValue
+
+,
+
+hashCode
+
+,
+
+toString
+
+- Methods declared in class java.lang.
+
+Object
+
+clone
+
+,
+
+finalize
+
+,
+
+getClass
+
+,
+
+notify
+
+,
+
+notifyAll
+
+,
+
+wait
+
+,
+
+wait
+
+,
+
+wait
+
+---
+
+#### Method Summary
+
+Returns whether this number up attribute is equivalent to the passed in
+object.
+
+Get the printing attribute class which is to be used as the "category"
+for this printing attribute value.
+
+Get the name of the category of which this attribute value is an
+instance.
+
+Methods declared in class javax.print.attribute.
+
+IntegerSyntax
+
+getValue
+
+,
+
+hashCode
+
+,
+
+toString
+
+---
+
+#### Methods declared in class javax.print.attribute. IntegerSyntax
+
+Methods declared in class java.lang.
+
+Object
+
+clone
+
+,
+
+finalize
+
+,
+
+getClass
+
+,
+
+notify
+
+,
+
+notifyAll
+
+,
+
+wait
+
+,
+
+wait
+
+,
+
+wait
+
+---
+
+#### Methods declared in class java.lang. Object
+
+========= CONSTRUCTOR DETAIL ========
+
+- Constructor Detail
+
+- NumberUp
+
+```java
+public NumberUp​(int value)
+```
+
+Construct a new number up attribute with the given integer value.
+
+**Parameters:** value
+
+- Integer value
+**Throws:** IllegalArgumentException
+
+- if
+
+value < 1
+
+============ METHOD DETAIL ==========
+
+- Method Detail
+
+- equals
+
+```java
+public boolean equals​(
+Object
+object)
+```
+
+Returns whether this number up attribute is equivalent to the passed in
+object. To be equivalent, all of the following conditions must be true:
+
+- object
+
+is not
+
+null
+
+.
+
+object
+
+is an instance of class
+
+NumberUp
+
+.
+
+This number up attribute's value and
+
+object
+
+'s value are
+equal.
+
+**Overrides:** equals
+
+in class
+
+IntegerSyntax
+**Parameters:** object
+
+-
+
+Object
+
+to compare to
+**Returns:** true
+
+if
+
+object
+
+is equivalent to this number up
+attribute,
+
+false
+
+otherwise
+**See Also:** Object.hashCode()
+
+,
+
+HashMap
+
+- getCategory
+
+```java
+public final
+Class
+<? extends
+Attribute
+> getCategory()
+```
+
+Get the printing attribute class which is to be used as the "category"
+for this printing attribute value.
+
+For class
+
+NumberUp
+
+, the category is class
+
+NumberUp
+
+itself.
+
+**Specified by:** getCategory
+
+in interface
+
+Attribute
+**Returns:** printing attribute class (category), an instance of class
+
+java.lang.Class
+
+- getName
+
+```java
+public final
+String
+getName()
+```
+
+Get the name of the category of which this attribute value is an
+instance.
+
+For class
+
+NumberUp
+
+, the category name is
+
+"number-up"
+
+.
+
+**Specified by:** getName
+
+in interface
+
+Attribute
+**Returns:** attribute category name
+
+Constructor Detail
+
+- NumberUp
+
+```java
+public NumberUp​(int value)
+```
+
+Construct a new number up attribute with the given integer value.
+
+**Parameters:** value
+
+- Integer value
+**Throws:** IllegalArgumentException
+
+- if
+
+value < 1
+
+---
+
+#### Constructor Detail
+
+NumberUp
+
+```java
+public NumberUp​(int value)
+```
+
+Construct a new number up attribute with the given integer value.
+
+**Parameters:** value
+
+- Integer value
+**Throws:** IllegalArgumentException
+
+- if
+
+value < 1
+
+---
+
+#### NumberUp
+
+public NumberUp​(int value)
+
+Construct a new number up attribute with the given integer value.
+
+Method Detail
+
+- equals
+
+```java
+public boolean equals​(
+Object
+object)
+```
+
+Returns whether this number up attribute is equivalent to the passed in
+object. To be equivalent, all of the following conditions must be true:
+
+- object
+
+is not
+
+null
+
+.
+
+object
+
+is an instance of class
+
+NumberUp
+
+.
+
+This number up attribute's value and
+
+object
+
+'s value are
+equal.
+
+**Overrides:** equals
+
+in class
+
+IntegerSyntax
+**Parameters:** object
+
+-
+
+Object
+
+to compare to
+**Returns:** true
+
+if
+
+object
+
+is equivalent to this number up
+attribute,
+
+false
+
+otherwise
+**See Also:** Object.hashCode()
+
+,
+
+HashMap
+
+- getCategory
+
+```java
+public final
+Class
+<? extends
+Attribute
+> getCategory()
+```
+
+Get the printing attribute class which is to be used as the "category"
+for this printing attribute value.
+
+For class
+
+NumberUp
+
+, the category is class
+
+NumberUp
+
+itself.
+
+**Specified by:** getCategory
+
+in interface
+
+Attribute
+**Returns:** printing attribute class (category), an instance of class
+
+java.lang.Class
+
+- getName
+
+```java
+public final
+String
+getName()
+```
+
+Get the name of the category of which this attribute value is an
+instance.
+
+For class
+
+NumberUp
+
+, the category name is
+
+"number-up"
+
+.
+
+**Specified by:** getName
+
+in interface
+
+Attribute
+**Returns:** attribute category name
+
+---
+
+#### Method Detail
+
+equals
+
+```java
+public boolean equals​(
+Object
+object)
+```
+
+Returns whether this number up attribute is equivalent to the passed in
+object. To be equivalent, all of the following conditions must be true:
+
+- object
+
+is not
+
+null
+
+.
+
+object
+
+is an instance of class
+
+NumberUp
+
+.
+
+This number up attribute's value and
+
+object
+
+'s value are
+equal.
+
+**Overrides:** equals
+
+in class
+
+IntegerSyntax
+**Parameters:** object
+
+-
+
+Object
+
+to compare to
+**Returns:** true
+
+if
+
+object
+
+is equivalent to this number up
+attribute,
+
+false
+
+otherwise
+**See Also:** Object.hashCode()
+
+,
+
+HashMap
+
+---
+
+#### equals
+
+public boolean equals​(
+
+Object
+
+object)
+
+Returns whether this number up attribute is equivalent to the passed in
+object. To be equivalent, all of the following conditions must be true:
+
+- object
+
+is not
+
+null
+
+.
+
+object
+
+is an instance of class
+
+NumberUp
+
+.
+
+This number up attribute's value and
+
+object
+
+'s value are
+equal.
+
+object
+
+is not
+
+null
+
+.
+
+object
+
+is an instance of class
+
+NumberUp
+
+.
+
+This number up attribute's value and
+
+object
+
+'s value are
+equal.
+
+getCategory
+
+```java
+public final
+Class
+<? extends
+Attribute
+> getCategory()
+```
+
+Get the printing attribute class which is to be used as the "category"
+for this printing attribute value.
+
+For class
+
+NumberUp
+
+, the category is class
+
+NumberUp
+
+itself.
+
+**Specified by:** getCategory
+
+in interface
+
+Attribute
+**Returns:** printing attribute class (category), an instance of class
+
+java.lang.Class
+
+---
+
+#### getCategory
+
+public final
+
+Class
+
+<? extends
+
+Attribute
+
+> getCategory()
+
+Get the printing attribute class which is to be used as the "category"
+for this printing attribute value.
+
+For class
+
+NumberUp
+
+, the category is class
+
+NumberUp
+
+itself.
+
+For class
+
+NumberUp
+
+, the category is class
+
+NumberUp
+
+itself.
+
+getName
+
+```java
+public final
+String
+getName()
+```
+
+Get the name of the category of which this attribute value is an
+instance.
+
+For class
+
+NumberUp
+
+, the category name is
+
+"number-up"
+
+.
+
+**Specified by:** getName
+
+in interface
+
+Attribute
+**Returns:** attribute category name
+
+---
+
+#### getName
+
+public final
+
+String
+
+getName()
+
+Get the name of the category of which this attribute value is an
+instance.
+
+For class
+
+NumberUp
+
+, the category name is
+
+"number-up"
+
+.
+
+For class
+
+NumberUp
+
+, the category name is
+
+"number-up"
+
+.
+
+---
+

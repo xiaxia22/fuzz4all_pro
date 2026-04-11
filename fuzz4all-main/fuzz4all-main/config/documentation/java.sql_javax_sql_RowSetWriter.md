@@ -1,0 +1,446 @@
+# Interface RowSetWriter
+
+**Source:** `java.sql\javax\sql\RowSetWriter.html`
+
+### Class Description
+
+```java
+public interface
+RowSetWriter
+```
+
+An object that implements the
+
+RowSetWriter
+
+interface,
+called a
+
+writer
+
+. A writer may be registered with a
+
+RowSet
+
+object that supports the reader/writer paradigm.
+
+If a disconnected
+
+RowSet
+
+object modifies some of its data,
+and it has a writer associated with it, it may be implemented so that it
+calls on the writer's
+
+writeData
+
+method internally
+to write the updates back to the data source. In order to do this, the writer
+must first establish a connection with the rowset's data source.
+
+If the data to be updated has already been changed in the data source, there
+is a conflict, in which case the writer will not write
+the changes to the data source. The algorithm the writer uses for preventing
+or limiting conflicts depends entirely on its implementation.
+
+**All Known Subinterfaces:** TransactionalWriter
+
+,
+
+XmlWriter
+
+---
+
+### Field Details
+
+*No entries found.*
+
+### Constructor Details
+
+*No entries found.*
+
+### Method Details
+
+#### boolean writeData​(
+RowSetInternal
+caller)
+throws
+SQLException
+
+Writes the changes in this
+
+RowSetWriter
+
+object's
+rowset back to the data source from which it got its data.
+
+**Parameters:**
+- caller
+
+- the
+
+RowSet
+
+object (1) that has implemented the
+
+RowSetInternal
+
+interface, (2) with which this writer is
+registered, and (3) that called this method internally
+
+**Returns:**
+- true
+
+if the modified data was written;
+
+false
+
+if not, which will be the case if there is a conflict
+
+**Throws:**
+- SQLException
+
+- if a database access error occurs
+
+---
+
+### Additional Sections
+
+#### Interface RowSetWriter
+
+**All Known Subinterfaces:** TransactionalWriter
+
+,
+
+XmlWriter
+
+```java
+public interface
+RowSetWriter
+```
+
+An object that implements the
+
+RowSetWriter
+
+interface,
+called a
+
+writer
+
+. A writer may be registered with a
+
+RowSet
+
+object that supports the reader/writer paradigm.
+
+If a disconnected
+
+RowSet
+
+object modifies some of its data,
+and it has a writer associated with it, it may be implemented so that it
+calls on the writer's
+
+writeData
+
+method internally
+to write the updates back to the data source. In order to do this, the writer
+must first establish a connection with the rowset's data source.
+
+If the data to be updated has already been changed in the data source, there
+is a conflict, in which case the writer will not write
+the changes to the data source. The algorithm the writer uses for preventing
+or limiting conflicts depends entirely on its implementation.
+
+**Since:** 1.4
+
+public interface
+
+RowSetWriter
+
+An object that implements the
+
+RowSetWriter
+
+interface,
+called a
+
+writer
+
+. A writer may be registered with a
+
+RowSet
+
+object that supports the reader/writer paradigm.
+
+If a disconnected
+
+RowSet
+
+object modifies some of its data,
+and it has a writer associated with it, it may be implemented so that it
+calls on the writer's
+
+writeData
+
+method internally
+to write the updates back to the data source. In order to do this, the writer
+must first establish a connection with the rowset's data source.
+
+If the data to be updated has already been changed in the data source, there
+is a conflict, in which case the writer will not write
+the changes to the data source. The algorithm the writer uses for preventing
+or limiting conflicts depends entirely on its implementation.
+
+If a disconnected
+
+RowSet
+
+object modifies some of its data,
+and it has a writer associated with it, it may be implemented so that it
+calls on the writer's
+
+writeData
+
+method internally
+to write the updates back to the data source. In order to do this, the writer
+must first establish a connection with the rowset's data source.
+
+If the data to be updated has already been changed in the data source, there
+is a conflict, in which case the writer will not write
+the changes to the data source. The algorithm the writer uses for preventing
+or limiting conflicts depends entirely on its implementation.
+
+If the data to be updated has already been changed in the data source, there
+is a conflict, in which case the writer will not write
+the changes to the data source. The algorithm the writer uses for preventing
+or limiting conflicts depends entirely on its implementation.
+
+========== METHOD SUMMARY ===========
+
+- Method Summary
+
+All Methods
+
+Instance Methods
+
+Abstract Methods
+
+Modifier and Type
+
+Method
+
+Description
+
+boolean
+
+writeData
+
+​(
+
+RowSetInternal
+
+caller)
+
+Writes the changes in this
+
+RowSetWriter
+
+object's
+rowset back to the data source from which it got its data.
+
+Method Summary
+
+All Methods
+
+Instance Methods
+
+Abstract Methods
+
+Modifier and Type
+
+Method
+
+Description
+
+boolean
+
+writeData
+
+​(
+
+RowSetInternal
+
+caller)
+
+Writes the changes in this
+
+RowSetWriter
+
+object's
+rowset back to the data source from which it got its data.
+
+---
+
+#### Method Summary
+
+Writes the changes in this
+
+RowSetWriter
+
+object's
+rowset back to the data source from which it got its data.
+
+============ METHOD DETAIL ==========
+
+- Method Detail
+
+- writeData
+
+```java
+boolean writeData​(
+RowSetInternal
+caller)
+throws
+SQLException
+```
+
+Writes the changes in this
+
+RowSetWriter
+
+object's
+rowset back to the data source from which it got its data.
+
+**Parameters:** caller
+
+- the
+
+RowSet
+
+object (1) that has implemented the
+
+RowSetInternal
+
+interface, (2) with which this writer is
+registered, and (3) that called this method internally
+**Returns:** true
+
+if the modified data was written;
+
+false
+
+if not, which will be the case if there is a conflict
+**Throws:** SQLException
+
+- if a database access error occurs
+
+Method Detail
+
+- writeData
+
+```java
+boolean writeData​(
+RowSetInternal
+caller)
+throws
+SQLException
+```
+
+Writes the changes in this
+
+RowSetWriter
+
+object's
+rowset back to the data source from which it got its data.
+
+**Parameters:** caller
+
+- the
+
+RowSet
+
+object (1) that has implemented the
+
+RowSetInternal
+
+interface, (2) with which this writer is
+registered, and (3) that called this method internally
+**Returns:** true
+
+if the modified data was written;
+
+false
+
+if not, which will be the case if there is a conflict
+**Throws:** SQLException
+
+- if a database access error occurs
+
+---
+
+#### Method Detail
+
+writeData
+
+```java
+boolean writeData​(
+RowSetInternal
+caller)
+throws
+SQLException
+```
+
+Writes the changes in this
+
+RowSetWriter
+
+object's
+rowset back to the data source from which it got its data.
+
+**Parameters:** caller
+
+- the
+
+RowSet
+
+object (1) that has implemented the
+
+RowSetInternal
+
+interface, (2) with which this writer is
+registered, and (3) that called this method internally
+**Returns:** true
+
+if the modified data was written;
+
+false
+
+if not, which will be the case if there is a conflict
+**Throws:** SQLException
+
+- if a database access error occurs
+
+---
+
+#### writeData
+
+boolean writeData​(
+
+RowSetInternal
+
+caller)
+throws
+
+SQLException
+
+Writes the changes in this
+
+RowSetWriter
+
+object's
+rowset back to the data source from which it got its data.
+
+---
+

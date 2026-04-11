@@ -1,0 +1,43 @@
+# Example targeted configuration for API-documentation-driven fuzzing.
+# DeepSeek is used for auto-prompting from the API documentation and Qwen is
+# used for code generation.
+
+fuzzing:
+  output_folder: outputs/targeted/javax_crypto_cipher
+  num: 10000
+  total_time: 24
+  log_level: 3
+  otf: true
+  resume: true
+  evaluate: false
+  use_hand_written_prompt: false
+  no_input_prompt: false
+  prompt_strategy: 2
+
+target:
+  language: java
+  # Use a single API documentation file as the source material for autoprompting.
+  path_documentation: config/documentation/java.base_javax_crypto_Cipher.md
+  path_example_code:
+  # Ask the code model to exercise the API directly instead of a language keyword.
+  trigger_to_generate_input: "/* Please create a very short Java program that uses javax.crypto.Cipher in diverse and tricky ways, including different transformations, init modes, byte-array handling, and error-prone combinations that still try to compile. */"
+  # Keep imports minimal and leave the actual API usage to the generated body.
+  input_hint: "import javax.crypto.Cipher;"
+  path_hand_written_prompt:
+  # The filter checks generated code after removing input_hint, so this string
+  # must appear in the generated body rather than only in the import list.
+  target_string: "Cipher.getInstance"
+
+llm:
+  temperature: 1
+  batch_size: 30
+  device: cuda
+  # Qwen is the code generation model.
+  model_name: Qwen/Qwen2.5-Coder-7B-Instruct
+  max_length: 1024
+  # DeepSeek is the autoprompting model that reads the API documentation.
+  autoprompt_model: deepseek-chat
+  autoprompt_candidates: 3
+  autoprompt_temperature: 0.9
+  autoprompt_greedy_temperature: 0.2
+  autoprompt_max_tokens: 256

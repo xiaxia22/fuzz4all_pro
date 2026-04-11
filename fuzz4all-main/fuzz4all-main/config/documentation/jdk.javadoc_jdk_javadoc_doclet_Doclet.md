@@ -1,0 +1,847 @@
+# Interface Doclet
+
+**Source:** `jdk.javadoc\jdk\javadoc\doclet\Doclet.html`
+
+### Class Description
+
+```java
+public interface
+Doclet
+```
+
+The user doclet must implement this interface, as described in the
+
+package description
+
+.
+Each implementation of a Doclet must provide a public no-argument constructor
+to be used by tools to instantiate the doclet. The tool infrastructure will
+interact with classes implementing this interface as follows:
+
+- The tool will create an instance of a doclet using the no-arg constructor
+of the doclet class.
+
+Next, the tool calls the
+
+init
+
+method with an appropriate locale
+and reporter.
+
+Afterwards, the tool calls
+
+getSupportedOptions
+
+,
+and
+
+getSupportedSourceVersion
+
+.
+These methods are only called once.
+
+As appropriate, the tool calls the
+
+run
+
+method on the doclet
+object, giving it a DocletEnvironment object, from which the doclet can determine
+the elements to be included in the documentation.
+
+If a doclet object is created and used without the above protocol being followed,
+then the doclet's behavior is not defined by this interface specification.
+
+To start the doclet, pass
+
+-doclet
+
+followed by the fully-qualified
+name of the entry point class (i.e. the implementation of this interface) on
+the javadoc tool command line.
+
+**All Known Implementing Classes:** StandardDoclet
+
+---
+
+### Field Details
+
+*No entries found.*
+
+### Constructor Details
+
+*No entries found.*
+
+### Method Details
+
+#### void init​(
+Locale
+locale,
+
+Reporter
+reporter)
+
+Initializes this doclet with the given locale and error reporter.
+This locale will be used by the reporter and the doclet components.
+
+**Parameters:**
+- locale
+
+- the locale to be used
+- reporter
+
+- the reporter to be used
+
+---
+
+#### String
+getName()
+
+Returns a name identifying the doclet. A name is a simple identifier
+without white spaces, as defined in
+
+The Java™ Language Specification
+
+,
+section 6.2 "Names and Identifiers".
+
+**Returns:**
+- name of the Doclet
+
+---
+
+#### Set
+<? extends
+Doclet.Option
+> getSupportedOptions()
+
+Returns all the supported options.
+
+**Returns:**
+- a set containing all the supported options, an empty set if none
+
+---
+
+#### SourceVersion
+getSupportedSourceVersion()
+
+Returns the version of the Java Programming Language supported
+by this doclet.
+
+**Returns:**
+- the language version supported by this doclet, usually
+the latest version
+
+---
+
+#### boolean run​(
+DocletEnvironment
+environment)
+
+The entry point of the doclet. Further processing will commence as
+instructed by this method.
+
+**Parameters:**
+- environment
+
+- from which essential information can be extracted
+
+**Returns:**
+- true on success
+
+---
+
+### Additional Sections
+
+#### Interface Doclet
+
+**All Known Implementing Classes:** StandardDoclet
+
+```java
+public interface
+Doclet
+```
+
+The user doclet must implement this interface, as described in the
+
+package description
+
+.
+Each implementation of a Doclet must provide a public no-argument constructor
+to be used by tools to instantiate the doclet. The tool infrastructure will
+interact with classes implementing this interface as follows:
+
+- The tool will create an instance of a doclet using the no-arg constructor
+of the doclet class.
+
+Next, the tool calls the
+
+init
+
+method with an appropriate locale
+and reporter.
+
+Afterwards, the tool calls
+
+getSupportedOptions
+
+,
+and
+
+getSupportedSourceVersion
+
+.
+These methods are only called once.
+
+As appropriate, the tool calls the
+
+run
+
+method on the doclet
+object, giving it a DocletEnvironment object, from which the doclet can determine
+the elements to be included in the documentation.
+
+If a doclet object is created and used without the above protocol being followed,
+then the doclet's behavior is not defined by this interface specification.
+
+To start the doclet, pass
+
+-doclet
+
+followed by the fully-qualified
+name of the entry point class (i.e. the implementation of this interface) on
+the javadoc tool command line.
+
+**Since:** 9
+
+public interface
+
+Doclet
+
+The user doclet must implement this interface, as described in the
+
+package description
+
+.
+Each implementation of a Doclet must provide a public no-argument constructor
+to be used by tools to instantiate the doclet. The tool infrastructure will
+interact with classes implementing this interface as follows:
+
+- The tool will create an instance of a doclet using the no-arg constructor
+of the doclet class.
+
+Next, the tool calls the
+
+init
+
+method with an appropriate locale
+and reporter.
+
+Afterwards, the tool calls
+
+getSupportedOptions
+
+,
+and
+
+getSupportedSourceVersion
+
+.
+These methods are only called once.
+
+As appropriate, the tool calls the
+
+run
+
+method on the doclet
+object, giving it a DocletEnvironment object, from which the doclet can determine
+the elements to be included in the documentation.
+
+If a doclet object is created and used without the above protocol being followed,
+then the doclet's behavior is not defined by this interface specification.
+
+To start the doclet, pass
+
+-doclet
+
+followed by the fully-qualified
+name of the entry point class (i.e. the implementation of this interface) on
+the javadoc tool command line.
+
+The tool will create an instance of a doclet using the no-arg constructor
+of the doclet class.
+
+Next, the tool calls the
+
+init
+
+method with an appropriate locale
+and reporter.
+
+Afterwards, the tool calls
+
+getSupportedOptions
+
+,
+and
+
+getSupportedSourceVersion
+
+.
+These methods are only called once.
+
+As appropriate, the tool calls the
+
+run
+
+method on the doclet
+object, giving it a DocletEnvironment object, from which the doclet can determine
+the elements to be included in the documentation.
+
+If a doclet object is created and used without the above protocol being followed,
+then the doclet's behavior is not defined by this interface specification.
+
+To start the doclet, pass
+
+-doclet
+
+followed by the fully-qualified
+name of the entry point class (i.e. the implementation of this interface) on
+the javadoc tool command line.
+
+To start the doclet, pass
+
+-doclet
+
+followed by the fully-qualified
+name of the entry point class (i.e. the implementation of this interface) on
+the javadoc tool command line.
+
+======== NESTED CLASS SUMMARY ========
+
+- Nested Class Summary
+
+Nested Classes
+
+Modifier and Type
+
+Interface
+
+Description
+
+static interface
+
+Doclet.Option
+
+An encapsulation of option name, aliases, parameters and descriptions
+as used by the Doclet.
+
+========== METHOD SUMMARY ===========
+
+- Method Summary
+
+All Methods
+
+Instance Methods
+
+Abstract Methods
+
+Modifier and Type
+
+Method
+
+Description
+
+String
+
+getName
+
+()
+
+Returns a name identifying the doclet.
+
+Set
+
+<? extends
+
+Doclet.Option
+
+>
+
+getSupportedOptions
+
+()
+
+Returns all the supported options.
+
+SourceVersion
+
+getSupportedSourceVersion
+
+()
+
+Returns the version of the Java Programming Language supported
+by this doclet.
+
+void
+
+init
+
+​(
+
+Locale
+
+locale,
+
+Reporter
+
+reporter)
+
+Initializes this doclet with the given locale and error reporter.
+
+boolean
+
+run
+
+​(
+
+DocletEnvironment
+
+environment)
+
+The entry point of the doclet.
+
+Nested Class Summary
+
+Nested Classes
+
+Modifier and Type
+
+Interface
+
+Description
+
+static interface
+
+Doclet.Option
+
+An encapsulation of option name, aliases, parameters and descriptions
+as used by the Doclet.
+
+---
+
+#### Nested Class Summary
+
+An encapsulation of option name, aliases, parameters and descriptions
+as used by the Doclet.
+
+Method Summary
+
+All Methods
+
+Instance Methods
+
+Abstract Methods
+
+Modifier and Type
+
+Method
+
+Description
+
+String
+
+getName
+
+()
+
+Returns a name identifying the doclet.
+
+Set
+
+<? extends
+
+Doclet.Option
+
+>
+
+getSupportedOptions
+
+()
+
+Returns all the supported options.
+
+SourceVersion
+
+getSupportedSourceVersion
+
+()
+
+Returns the version of the Java Programming Language supported
+by this doclet.
+
+void
+
+init
+
+​(
+
+Locale
+
+locale,
+
+Reporter
+
+reporter)
+
+Initializes this doclet with the given locale and error reporter.
+
+boolean
+
+run
+
+​(
+
+DocletEnvironment
+
+environment)
+
+The entry point of the doclet.
+
+---
+
+#### Method Summary
+
+Returns a name identifying the doclet.
+
+Returns all the supported options.
+
+Returns the version of the Java Programming Language supported
+by this doclet.
+
+Initializes this doclet with the given locale and error reporter.
+
+The entry point of the doclet.
+
+============ METHOD DETAIL ==========
+
+- Method Detail
+
+- init
+
+```java
+void init​(
+Locale
+locale,
+
+Reporter
+reporter)
+```
+
+Initializes this doclet with the given locale and error reporter.
+This locale will be used by the reporter and the doclet components.
+
+**Parameters:** locale
+
+- the locale to be used
+**Parameters:** reporter
+
+- the reporter to be used
+
+- getName
+
+```java
+String
+getName()
+```
+
+Returns a name identifying the doclet. A name is a simple identifier
+without white spaces, as defined in
+
+The Java™ Language Specification
+
+,
+section 6.2 "Names and Identifiers".
+
+**Returns:** name of the Doclet
+
+- getSupportedOptions
+
+```java
+Set
+<? extends
+Doclet.Option
+> getSupportedOptions()
+```
+
+Returns all the supported options.
+
+**Returns:** a set containing all the supported options, an empty set if none
+
+- getSupportedSourceVersion
+
+```java
+SourceVersion
+getSupportedSourceVersion()
+```
+
+Returns the version of the Java Programming Language supported
+by this doclet.
+
+**Returns:** the language version supported by this doclet, usually
+the latest version
+
+- run
+
+```java
+boolean run​(
+DocletEnvironment
+environment)
+```
+
+The entry point of the doclet. Further processing will commence as
+instructed by this method.
+
+**Parameters:** environment
+
+- from which essential information can be extracted
+**Returns:** true on success
+
+Method Detail
+
+- init
+
+```java
+void init​(
+Locale
+locale,
+
+Reporter
+reporter)
+```
+
+Initializes this doclet with the given locale and error reporter.
+This locale will be used by the reporter and the doclet components.
+
+**Parameters:** locale
+
+- the locale to be used
+**Parameters:** reporter
+
+- the reporter to be used
+
+- getName
+
+```java
+String
+getName()
+```
+
+Returns a name identifying the doclet. A name is a simple identifier
+without white spaces, as defined in
+
+The Java™ Language Specification
+
+,
+section 6.2 "Names and Identifiers".
+
+**Returns:** name of the Doclet
+
+- getSupportedOptions
+
+```java
+Set
+<? extends
+Doclet.Option
+> getSupportedOptions()
+```
+
+Returns all the supported options.
+
+**Returns:** a set containing all the supported options, an empty set if none
+
+- getSupportedSourceVersion
+
+```java
+SourceVersion
+getSupportedSourceVersion()
+```
+
+Returns the version of the Java Programming Language supported
+by this doclet.
+
+**Returns:** the language version supported by this doclet, usually
+the latest version
+
+- run
+
+```java
+boolean run​(
+DocletEnvironment
+environment)
+```
+
+The entry point of the doclet. Further processing will commence as
+instructed by this method.
+
+**Parameters:** environment
+
+- from which essential information can be extracted
+**Returns:** true on success
+
+---
+
+#### Method Detail
+
+init
+
+```java
+void init​(
+Locale
+locale,
+
+Reporter
+reporter)
+```
+
+Initializes this doclet with the given locale and error reporter.
+This locale will be used by the reporter and the doclet components.
+
+**Parameters:** locale
+
+- the locale to be used
+**Parameters:** reporter
+
+- the reporter to be used
+
+---
+
+#### init
+
+void init​(
+
+Locale
+
+locale,
+
+Reporter
+
+reporter)
+
+Initializes this doclet with the given locale and error reporter.
+This locale will be used by the reporter and the doclet components.
+
+getName
+
+```java
+String
+getName()
+```
+
+Returns a name identifying the doclet. A name is a simple identifier
+without white spaces, as defined in
+
+The Java™ Language Specification
+
+,
+section 6.2 "Names and Identifiers".
+
+**Returns:** name of the Doclet
+
+---
+
+#### getName
+
+String
+
+getName()
+
+Returns a name identifying the doclet. A name is a simple identifier
+without white spaces, as defined in
+
+The Java™ Language Specification
+
+,
+section 6.2 "Names and Identifiers".
+
+getSupportedOptions
+
+```java
+Set
+<? extends
+Doclet.Option
+> getSupportedOptions()
+```
+
+Returns all the supported options.
+
+**Returns:** a set containing all the supported options, an empty set if none
+
+---
+
+#### getSupportedOptions
+
+Set
+
+<? extends
+
+Doclet.Option
+
+> getSupportedOptions()
+
+Returns all the supported options.
+
+getSupportedSourceVersion
+
+```java
+SourceVersion
+getSupportedSourceVersion()
+```
+
+Returns the version of the Java Programming Language supported
+by this doclet.
+
+**Returns:** the language version supported by this doclet, usually
+the latest version
+
+---
+
+#### getSupportedSourceVersion
+
+SourceVersion
+
+getSupportedSourceVersion()
+
+Returns the version of the Java Programming Language supported
+by this doclet.
+
+run
+
+```java
+boolean run​(
+DocletEnvironment
+environment)
+```
+
+The entry point of the doclet. Further processing will commence as
+instructed by this method.
+
+**Parameters:** environment
+
+- from which essential information can be extracted
+**Returns:** true on success
+
+---
+
+#### run
+
+boolean run​(
+
+DocletEnvironment
+
+environment)
+
+The entry point of the doclet. Further processing will commence as
+instructed by this method.
+
+---
+

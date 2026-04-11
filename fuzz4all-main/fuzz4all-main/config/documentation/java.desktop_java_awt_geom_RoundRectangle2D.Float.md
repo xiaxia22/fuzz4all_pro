@@ -1,0 +1,4231 @@
+# Class RoundRectangle2D.Float
+
+**Source:** `java.desktop\java\awt\geom\RoundRectangle2D.Float.html`
+
+### Class Description
+
+```java
+public static class
+RoundRectangle2D.Float
+
+extends
+RoundRectangle2D
+
+implements
+Serializable
+```
+
+The
+
+Float
+
+class defines a rectangle with rounded
+corners all specified in
+
+float
+
+coordinates.
+
+**All Implemented Interfaces:** Shape
+
+,
+
+Serializable
+
+,
+
+Cloneable
+
+---
+
+### Field Details
+
+#### public float x
+
+The X coordinate of this
+
+RoundRectangle2D
+
+.
+
+**Since:**
+- 1.2
+
+---
+
+#### public float y
+
+The Y coordinate of this
+
+RoundRectangle2D
+
+.
+
+**Since:**
+- 1.2
+
+---
+
+#### public float width
+
+The width of this
+
+RoundRectangle2D
+
+.
+
+**Since:**
+- 1.2
+
+---
+
+#### public float height
+
+The height of this
+
+RoundRectangle2D
+
+.
+
+**Since:**
+- 1.2
+
+---
+
+#### public float arcwidth
+
+The width of the arc that rounds off the corners.
+
+**Since:**
+- 1.2
+
+---
+
+#### public float archeight
+
+The height of the arc that rounds off the corners.
+
+**Since:**
+- 1.2
+
+---
+
+### Constructor Details
+
+#### public Float()
+
+Constructs a new
+
+RoundRectangle2D
+
+, initialized to
+location (0.0, 0.0), size (0.0, 0.0), and corner arcs
+of radius 0.0.
+
+**Since:**
+- 1.2
+
+---
+
+#### public Float​(float x,
+float y,
+float w,
+float h,
+float arcw,
+float arch)
+
+Constructs and initializes a
+
+RoundRectangle2D
+
+from the specified
+
+float
+
+coordinates.
+
+**Parameters:**
+- x
+
+- the X coordinate of the newly
+constructed
+
+RoundRectangle2D
+- y
+
+- the Y coordinate of the newly
+constructed
+
+RoundRectangle2D
+- w
+
+- the width to which to set the newly
+constructed
+
+RoundRectangle2D
+- h
+
+- the height to which to set the newly
+constructed
+
+RoundRectangle2D
+- arcw
+
+- the width of the arc to use to round off the
+corners of the newly constructed
+
+RoundRectangle2D
+- arch
+
+- the height of the arc to use to round off the
+corners of the newly constructed
+
+RoundRectangle2D
+
+**Since:**
+- 1.2
+
+---
+
+### Method Details
+
+#### public double getX()
+
+Returns the X coordinate of the upper-left corner of
+the framing rectangle in
+
+double
+
+precision.
+
+**Specified by:**
+- getX
+
+in class
+
+RectangularShape
+
+**Returns:**
+- the X coordinate of the upper-left corner of
+the framing rectangle.
+
+**Since:**
+- 1.2
+
+---
+
+#### public double getY()
+
+Returns the Y coordinate of the upper-left corner of
+the framing rectangle in
+
+double
+
+precision.
+
+**Specified by:**
+- getY
+
+in class
+
+RectangularShape
+
+**Returns:**
+- the Y coordinate of the upper-left corner of
+the framing rectangle.
+
+**Since:**
+- 1.2
+
+---
+
+#### public double getWidth()
+
+Returns the width of the framing rectangle in
+
+double
+
+precision.
+
+**Specified by:**
+- getWidth
+
+in class
+
+RectangularShape
+
+**Returns:**
+- the width of the framing rectangle.
+
+**Since:**
+- 1.2
+
+---
+
+#### public double getHeight()
+
+Returns the height of the framing rectangle
+in
+
+double
+
+precision.
+
+**Specified by:**
+- getHeight
+
+in class
+
+RectangularShape
+
+**Returns:**
+- the height of the framing rectangle.
+
+**Since:**
+- 1.2
+
+---
+
+#### public double getArcWidth()
+
+Gets the width of the arc that rounds off the corners.
+
+**Specified by:**
+- getArcWidth
+
+in class
+
+RoundRectangle2D
+
+**Returns:**
+- the width of the arc that rounds off the corners
+of this
+
+RoundRectangle2D
+
+.
+
+**Since:**
+- 1.2
+
+---
+
+#### public double getArcHeight()
+
+Gets the height of the arc that rounds off the corners.
+
+**Specified by:**
+- getArcHeight
+
+in class
+
+RoundRectangle2D
+
+**Returns:**
+- the height of the arc that rounds off the corners
+of this
+
+RoundRectangle2D
+
+.
+
+**Since:**
+- 1.2
+
+---
+
+#### public boolean isEmpty()
+
+Determines whether the
+
+RectangularShape
+
+is empty.
+When the
+
+RectangularShape
+
+is empty, it encloses no
+area.
+
+**Specified by:**
+- isEmpty
+
+in class
+
+RectangularShape
+
+**Returns:**
+- true
+
+if the
+
+RectangularShape
+
+is empty;
+
+false
+
+otherwise.
+
+**Since:**
+- 1.2
+
+---
+
+#### public void setRoundRect​(float x,
+float y,
+float w,
+float h,
+float arcw,
+float arch)
+
+Sets the location, size, and corner radii of this
+
+RoundRectangle2D
+
+to the specified
+
+float
+
+values.
+
+**Parameters:**
+- x
+
+- the X coordinate to which to set the
+location of this
+
+RoundRectangle2D
+- y
+
+- the Y coordinate to which to set the
+location of this
+
+RoundRectangle2D
+- w
+
+- the width to which to set this
+
+RoundRectangle2D
+- h
+
+- the height to which to set this
+
+RoundRectangle2D
+- arcw
+
+- the width to which to set the arc of this
+
+RoundRectangle2D
+- arch
+
+- the height to which to set the arc of this
+
+RoundRectangle2D
+
+**Since:**
+- 1.2
+
+---
+
+#### public void setRoundRect​(double x,
+double y,
+double w,
+double h,
+double arcw,
+double arch)
+
+Sets the location, size, and corner radii of this
+
+RoundRectangle2D
+
+to the specified
+
+double
+
+values.
+
+**Specified by:**
+- setRoundRect
+
+in class
+
+RoundRectangle2D
+
+**Parameters:**
+- x
+
+- the X coordinate to which to set the
+location of this
+
+RoundRectangle2D
+- y
+
+- the Y coordinate to which to set the
+location of this
+
+RoundRectangle2D
+- w
+
+- the width to which to set this
+
+RoundRectangle2D
+- h
+
+- the height to which to set this
+
+RoundRectangle2D
+- arcw
+
+- the width to which to set the arc of this
+
+RoundRectangle2D
+- arch
+
+- the height to which to set the arc of this
+
+RoundRectangle2D
+
+**Since:**
+- 1.2
+
+---
+
+#### public void setRoundRect​(
+RoundRectangle2D
+rr)
+
+Sets this
+
+RoundRectangle2D
+
+to be the same as the
+specified
+
+RoundRectangle2D
+
+.
+
+**Overrides:**
+- setRoundRect
+
+in class
+
+RoundRectangle2D
+
+**Parameters:**
+- rr
+
+- the specified
+
+RoundRectangle2D
+
+**Since:**
+- 1.2
+
+---
+
+#### public
+Rectangle2D
+getBounds2D()
+
+Returns a high precision and more accurate bounding box of
+the
+
+Shape
+
+than the
+
+getBounds
+
+method.
+Note that there is no guarantee that the returned
+
+Rectangle2D
+
+is the smallest bounding box that encloses
+the
+
+Shape
+
+, only that the
+
+Shape
+
+lies
+entirely within the indicated
+
+Rectangle2D
+
+. The
+bounding box returned by this method is usually tighter than that
+returned by the
+
+getBounds
+
+method and never fails due
+to overflow problems since the return value can be an instance of
+the
+
+Rectangle2D
+
+that uses double precision values to
+store the dimensions.
+
+Note that the
+
+definition of insideness
+
+can lead to situations where points
+on the defining outline of the
+
+shape
+
+may not be considered
+contained in the returned
+
+bounds
+
+object, but only in cases
+where those points are also not considered contained in the original
+
+shape
+
+.
+
+If a
+
+point
+
+is inside the
+
+shape
+
+according to the
+
+contains(point)
+
+method, then it must
+be inside the returned
+
+Rectangle2D
+
+bounds object according
+to the
+
+contains(point)
+
+method of the
+
+bounds
+
+. Specifically:
+
+shape.contains(p)
+
+requires
+
+bounds.contains(p)
+
+If a
+
+point
+
+is not inside the
+
+shape
+
+, then it might
+still be contained in the
+
+bounds
+
+object:
+
+bounds.contains(p)
+
+does not imply
+
+shape.contains(p)
+
+**Specified by:**
+- getBounds2D
+
+in interface
+
+Shape
+
+**Returns:**
+- an instance of
+
+Rectangle2D
+
+that is a
+high-precision bounding box of the
+
+Shape
+
+.
+
+**See Also:**
+- Shape.getBounds()
+
+**Since:**
+- 1.2
+
+---
+
+### Additional Sections
+
+#### Class RoundRectangle2D.Float
+
+java.lang.Object
+
+- java.awt.geom.RectangularShape
+- - java.awt.geom.RoundRectangle2D
+- - java.awt.geom.RoundRectangle2D.Float
+
+java.awt.geom.RectangularShape
+
+- java.awt.geom.RoundRectangle2D
+- - java.awt.geom.RoundRectangle2D.Float
+
+java.awt.geom.RoundRectangle2D
+
+- java.awt.geom.RoundRectangle2D.Float
+
+java.awt.geom.RoundRectangle2D.Float
+
+**All Implemented Interfaces:** Shape
+
+,
+
+Serializable
+
+,
+
+Cloneable
+
+**Enclosing class:** RoundRectangle2D
+
+```java
+public static class
+RoundRectangle2D.Float
+
+extends
+RoundRectangle2D
+
+implements
+Serializable
+```
+
+The
+
+Float
+
+class defines a rectangle with rounded
+corners all specified in
+
+float
+
+coordinates.
+
+**Since:** 1.2
+**See Also:** Serialized Form
+
+public static class
+
+RoundRectangle2D.Float
+
+extends
+
+RoundRectangle2D
+
+implements
+
+Serializable
+
+The
+
+Float
+
+class defines a rectangle with rounded
+corners all specified in
+
+float
+
+coordinates.
+
+======== NESTED CLASS SUMMARY ========
+
+- Nested Class Summary
+
+- Nested classes/interfaces declared in class java.awt.geom.
+
+RoundRectangle2D
+
+RoundRectangle2D.Double
+
+,
+
+RoundRectangle2D.Float
+
+=========== FIELD SUMMARY ===========
+
+- Field Summary
+
+Fields
+
+Modifier and Type
+
+Field
+
+Description
+
+float
+
+archeight
+
+The height of the arc that rounds off the corners.
+
+float
+
+arcwidth
+
+The width of the arc that rounds off the corners.
+
+float
+
+height
+
+The height of this
+
+RoundRectangle2D
+
+.
+
+float
+
+width
+
+The width of this
+
+RoundRectangle2D
+
+.
+
+float
+
+x
+
+The X coordinate of this
+
+RoundRectangle2D
+
+.
+
+float
+
+y
+
+The Y coordinate of this
+
+RoundRectangle2D
+
+.
+
+======== CONSTRUCTOR SUMMARY ========
+
+- Constructor Summary
+
+Constructors
+
+Constructor
+
+Description
+
+Float
+
+()
+
+Constructs a new
+
+RoundRectangle2D
+
+, initialized to
+location (0.0, 0.0), size (0.0, 0.0), and corner arcs
+of radius 0.0.
+
+Float
+
+​(float x,
+float y,
+float w,
+float h,
+float arcw,
+float arch)
+
+Constructs and initializes a
+
+RoundRectangle2D
+
+from the specified
+
+float
+
+coordinates.
+
+========== METHOD SUMMARY ===========
+
+- Method Summary
+
+All Methods
+
+Instance Methods
+
+Concrete Methods
+
+Modifier and Type
+
+Method
+
+Description
+
+double
+
+getArcHeight
+
+()
+
+Gets the height of the arc that rounds off the corners.
+
+double
+
+getArcWidth
+
+()
+
+Gets the width of the arc that rounds off the corners.
+
+Rectangle2D
+
+getBounds2D
+
+()
+
+Returns a high precision and more accurate bounding box of
+the
+
+Shape
+
+than the
+
+getBounds
+
+method.
+
+double
+
+getHeight
+
+()
+
+Returns the height of the framing rectangle
+in
+
+double
+
+precision.
+
+double
+
+getWidth
+
+()
+
+Returns the width of the framing rectangle in
+
+double
+
+precision.
+
+double
+
+getX
+
+()
+
+Returns the X coordinate of the upper-left corner of
+the framing rectangle in
+
+double
+
+precision.
+
+double
+
+getY
+
+()
+
+Returns the Y coordinate of the upper-left corner of
+the framing rectangle in
+
+double
+
+precision.
+
+boolean
+
+isEmpty
+
+()
+
+Determines whether the
+
+RectangularShape
+
+is empty.
+
+void
+
+setRoundRect
+
+​(double x,
+double y,
+double w,
+double h,
+double arcw,
+double arch)
+
+Sets the location, size, and corner radii of this
+
+RoundRectangle2D
+
+to the specified
+
+double
+
+values.
+
+void
+
+setRoundRect
+
+​(float x,
+float y,
+float w,
+float h,
+float arcw,
+float arch)
+
+Sets the location, size, and corner radii of this
+
+RoundRectangle2D
+
+to the specified
+
+float
+
+values.
+
+void
+
+setRoundRect
+
+​(
+
+RoundRectangle2D
+
+rr)
+
+Sets this
+
+RoundRectangle2D
+
+to be the same as the
+specified
+
+RoundRectangle2D
+
+.
+
+- Methods declared in class java.awt.geom.
+
+RoundRectangle2D
+
+contains
+
+,
+
+contains
+
+,
+
+equals
+
+,
+
+getPathIterator
+
+,
+
+hashCode
+
+,
+
+intersects
+
+,
+
+setFrame
+
+- Methods declared in class java.awt.geom.
+
+RectangularShape
+
+clone
+
+,
+
+contains
+
+,
+
+contains
+
+,
+
+getBounds
+
+,
+
+getCenterX
+
+,
+
+getCenterY
+
+,
+
+getFrame
+
+,
+
+getMaxX
+
+,
+
+getMaxY
+
+,
+
+getMinX
+
+,
+
+getMinY
+
+,
+
+getPathIterator
+
+,
+
+intersects
+
+,
+
+setFrame
+
+,
+
+setFrame
+
+,
+
+setFrameFromCenter
+
+,
+
+setFrameFromCenter
+
+,
+
+setFrameFromDiagonal
+
+,
+
+setFrameFromDiagonal
+
+- Methods declared in class java.lang.
+
+Object
+
+finalize
+
+,
+
+getClass
+
+,
+
+notify
+
+,
+
+notifyAll
+
+,
+
+toString
+
+,
+
+wait
+
+,
+
+wait
+
+,
+
+wait
+
+Nested Class Summary
+
+- Nested classes/interfaces declared in class java.awt.geom.
+
+RoundRectangle2D
+
+RoundRectangle2D.Double
+
+,
+
+RoundRectangle2D.Float
+
+---
+
+#### Nested Class Summary
+
+Nested classes/interfaces declared in class java.awt.geom.
+
+RoundRectangle2D
+
+RoundRectangle2D.Double
+
+,
+
+RoundRectangle2D.Float
+
+---
+
+#### Nested classes/interfaces declared in class java.awt.geom. RoundRectangle2D
+
+Field Summary
+
+Fields
+
+Modifier and Type
+
+Field
+
+Description
+
+float
+
+archeight
+
+The height of the arc that rounds off the corners.
+
+float
+
+arcwidth
+
+The width of the arc that rounds off the corners.
+
+float
+
+height
+
+The height of this
+
+RoundRectangle2D
+
+.
+
+float
+
+width
+
+The width of this
+
+RoundRectangle2D
+
+.
+
+float
+
+x
+
+The X coordinate of this
+
+RoundRectangle2D
+
+.
+
+float
+
+y
+
+The Y coordinate of this
+
+RoundRectangle2D
+
+.
+
+---
+
+#### Field Summary
+
+The height of the arc that rounds off the corners.
+
+The width of the arc that rounds off the corners.
+
+The height of this
+
+RoundRectangle2D
+
+.
+
+The width of this
+
+RoundRectangle2D
+
+.
+
+The X coordinate of this
+
+RoundRectangle2D
+
+.
+
+The Y coordinate of this
+
+RoundRectangle2D
+
+.
+
+Constructor Summary
+
+Constructors
+
+Constructor
+
+Description
+
+Float
+
+()
+
+Constructs a new
+
+RoundRectangle2D
+
+, initialized to
+location (0.0, 0.0), size (0.0, 0.0), and corner arcs
+of radius 0.0.
+
+Float
+
+​(float x,
+float y,
+float w,
+float h,
+float arcw,
+float arch)
+
+Constructs and initializes a
+
+RoundRectangle2D
+
+from the specified
+
+float
+
+coordinates.
+
+---
+
+#### Constructor Summary
+
+Constructs a new
+
+RoundRectangle2D
+
+, initialized to
+location (0.0, 0.0), size (0.0, 0.0), and corner arcs
+of radius 0.0.
+
+Constructs and initializes a
+
+RoundRectangle2D
+
+from the specified
+
+float
+
+coordinates.
+
+Method Summary
+
+All Methods
+
+Instance Methods
+
+Concrete Methods
+
+Modifier and Type
+
+Method
+
+Description
+
+double
+
+getArcHeight
+
+()
+
+Gets the height of the arc that rounds off the corners.
+
+double
+
+getArcWidth
+
+()
+
+Gets the width of the arc that rounds off the corners.
+
+Rectangle2D
+
+getBounds2D
+
+()
+
+Returns a high precision and more accurate bounding box of
+the
+
+Shape
+
+than the
+
+getBounds
+
+method.
+
+double
+
+getHeight
+
+()
+
+Returns the height of the framing rectangle
+in
+
+double
+
+precision.
+
+double
+
+getWidth
+
+()
+
+Returns the width of the framing rectangle in
+
+double
+
+precision.
+
+double
+
+getX
+
+()
+
+Returns the X coordinate of the upper-left corner of
+the framing rectangle in
+
+double
+
+precision.
+
+double
+
+getY
+
+()
+
+Returns the Y coordinate of the upper-left corner of
+the framing rectangle in
+
+double
+
+precision.
+
+boolean
+
+isEmpty
+
+()
+
+Determines whether the
+
+RectangularShape
+
+is empty.
+
+void
+
+setRoundRect
+
+​(double x,
+double y,
+double w,
+double h,
+double arcw,
+double arch)
+
+Sets the location, size, and corner radii of this
+
+RoundRectangle2D
+
+to the specified
+
+double
+
+values.
+
+void
+
+setRoundRect
+
+​(float x,
+float y,
+float w,
+float h,
+float arcw,
+float arch)
+
+Sets the location, size, and corner radii of this
+
+RoundRectangle2D
+
+to the specified
+
+float
+
+values.
+
+void
+
+setRoundRect
+
+​(
+
+RoundRectangle2D
+
+rr)
+
+Sets this
+
+RoundRectangle2D
+
+to be the same as the
+specified
+
+RoundRectangle2D
+
+.
+
+- Methods declared in class java.awt.geom.
+
+RoundRectangle2D
+
+contains
+
+,
+
+contains
+
+,
+
+equals
+
+,
+
+getPathIterator
+
+,
+
+hashCode
+
+,
+
+intersects
+
+,
+
+setFrame
+
+- Methods declared in class java.awt.geom.
+
+RectangularShape
+
+clone
+
+,
+
+contains
+
+,
+
+contains
+
+,
+
+getBounds
+
+,
+
+getCenterX
+
+,
+
+getCenterY
+
+,
+
+getFrame
+
+,
+
+getMaxX
+
+,
+
+getMaxY
+
+,
+
+getMinX
+
+,
+
+getMinY
+
+,
+
+getPathIterator
+
+,
+
+intersects
+
+,
+
+setFrame
+
+,
+
+setFrame
+
+,
+
+setFrameFromCenter
+
+,
+
+setFrameFromCenter
+
+,
+
+setFrameFromDiagonal
+
+,
+
+setFrameFromDiagonal
+
+- Methods declared in class java.lang.
+
+Object
+
+finalize
+
+,
+
+getClass
+
+,
+
+notify
+
+,
+
+notifyAll
+
+,
+
+toString
+
+,
+
+wait
+
+,
+
+wait
+
+,
+
+wait
+
+---
+
+#### Method Summary
+
+Gets the height of the arc that rounds off the corners.
+
+Gets the width of the arc that rounds off the corners.
+
+Returns a high precision and more accurate bounding box of
+the
+
+Shape
+
+than the
+
+getBounds
+
+method.
+
+Returns the height of the framing rectangle
+in
+
+double
+
+precision.
+
+Returns the width of the framing rectangle in
+
+double
+
+precision.
+
+Returns the X coordinate of the upper-left corner of
+the framing rectangle in
+
+double
+
+precision.
+
+Returns the Y coordinate of the upper-left corner of
+the framing rectangle in
+
+double
+
+precision.
+
+Determines whether the
+
+RectangularShape
+
+is empty.
+
+Sets the location, size, and corner radii of this
+
+RoundRectangle2D
+
+to the specified
+
+double
+
+values.
+
+Sets the location, size, and corner radii of this
+
+RoundRectangle2D
+
+to the specified
+
+float
+
+values.
+
+Sets this
+
+RoundRectangle2D
+
+to be the same as the
+specified
+
+RoundRectangle2D
+
+.
+
+Methods declared in class java.awt.geom.
+
+RoundRectangle2D
+
+contains
+
+,
+
+contains
+
+,
+
+equals
+
+,
+
+getPathIterator
+
+,
+
+hashCode
+
+,
+
+intersects
+
+,
+
+setFrame
+
+---
+
+#### Methods declared in class java.awt.geom. RoundRectangle2D
+
+Methods declared in class java.awt.geom.
+
+RectangularShape
+
+clone
+
+,
+
+contains
+
+,
+
+contains
+
+,
+
+getBounds
+
+,
+
+getCenterX
+
+,
+
+getCenterY
+
+,
+
+getFrame
+
+,
+
+getMaxX
+
+,
+
+getMaxY
+
+,
+
+getMinX
+
+,
+
+getMinY
+
+,
+
+getPathIterator
+
+,
+
+intersects
+
+,
+
+setFrame
+
+,
+
+setFrame
+
+,
+
+setFrameFromCenter
+
+,
+
+setFrameFromCenter
+
+,
+
+setFrameFromDiagonal
+
+,
+
+setFrameFromDiagonal
+
+---
+
+#### Methods declared in class java.awt.geom. RectangularShape
+
+Methods declared in class java.lang.
+
+Object
+
+finalize
+
+,
+
+getClass
+
+,
+
+notify
+
+,
+
+notifyAll
+
+,
+
+toString
+
+,
+
+wait
+
+,
+
+wait
+
+,
+
+wait
+
+---
+
+#### Methods declared in class java.lang. Object
+
+============ FIELD DETAIL ===========
+
+- Field Detail
+
+- x
+
+```java
+public float x
+```
+
+The X coordinate of this
+
+RoundRectangle2D
+
+.
+
+**Since:** 1.2
+
+- y
+
+```java
+public float y
+```
+
+The Y coordinate of this
+
+RoundRectangle2D
+
+.
+
+**Since:** 1.2
+
+- width
+
+```java
+public float width
+```
+
+The width of this
+
+RoundRectangle2D
+
+.
+
+**Since:** 1.2
+
+- height
+
+```java
+public float height
+```
+
+The height of this
+
+RoundRectangle2D
+
+.
+
+**Since:** 1.2
+
+- arcwidth
+
+```java
+public float arcwidth
+```
+
+The width of the arc that rounds off the corners.
+
+**Since:** 1.2
+
+- archeight
+
+```java
+public float archeight
+```
+
+The height of the arc that rounds off the corners.
+
+**Since:** 1.2
+
+========= CONSTRUCTOR DETAIL ========
+
+- Constructor Detail
+
+- Float
+
+```java
+public Float()
+```
+
+Constructs a new
+
+RoundRectangle2D
+
+, initialized to
+location (0.0, 0.0), size (0.0, 0.0), and corner arcs
+of radius 0.0.
+
+**Since:** 1.2
+
+- Float
+
+```java
+public Float​(float x,
+float y,
+float w,
+float h,
+float arcw,
+float arch)
+```
+
+Constructs and initializes a
+
+RoundRectangle2D
+
+from the specified
+
+float
+
+coordinates.
+
+**Parameters:** x
+
+- the X coordinate of the newly
+constructed
+
+RoundRectangle2D
+**Parameters:** y
+
+- the Y coordinate of the newly
+constructed
+
+RoundRectangle2D
+**Parameters:** w
+
+- the width to which to set the newly
+constructed
+
+RoundRectangle2D
+**Parameters:** h
+
+- the height to which to set the newly
+constructed
+
+RoundRectangle2D
+**Parameters:** arcw
+
+- the width of the arc to use to round off the
+corners of the newly constructed
+
+RoundRectangle2D
+**Parameters:** arch
+
+- the height of the arc to use to round off the
+corners of the newly constructed
+
+RoundRectangle2D
+**Since:** 1.2
+
+============ METHOD DETAIL ==========
+
+- Method Detail
+
+- getX
+
+```java
+public double getX()
+```
+
+Returns the X coordinate of the upper-left corner of
+the framing rectangle in
+
+double
+
+precision.
+
+**Specified by:** getX
+
+in class
+
+RectangularShape
+**Returns:** the X coordinate of the upper-left corner of
+the framing rectangle.
+**Since:** 1.2
+
+- getY
+
+```java
+public double getY()
+```
+
+Returns the Y coordinate of the upper-left corner of
+the framing rectangle in
+
+double
+
+precision.
+
+**Specified by:** getY
+
+in class
+
+RectangularShape
+**Returns:** the Y coordinate of the upper-left corner of
+the framing rectangle.
+**Since:** 1.2
+
+- getWidth
+
+```java
+public double getWidth()
+```
+
+Returns the width of the framing rectangle in
+
+double
+
+precision.
+
+**Specified by:** getWidth
+
+in class
+
+RectangularShape
+**Returns:** the width of the framing rectangle.
+**Since:** 1.2
+
+- getHeight
+
+```java
+public double getHeight()
+```
+
+Returns the height of the framing rectangle
+in
+
+double
+
+precision.
+
+**Specified by:** getHeight
+
+in class
+
+RectangularShape
+**Returns:** the height of the framing rectangle.
+**Since:** 1.2
+
+- getArcWidth
+
+```java
+public double getArcWidth()
+```
+
+Gets the width of the arc that rounds off the corners.
+
+**Specified by:** getArcWidth
+
+in class
+
+RoundRectangle2D
+**Returns:** the width of the arc that rounds off the corners
+of this
+
+RoundRectangle2D
+
+.
+**Since:** 1.2
+
+- getArcHeight
+
+```java
+public double getArcHeight()
+```
+
+Gets the height of the arc that rounds off the corners.
+
+**Specified by:** getArcHeight
+
+in class
+
+RoundRectangle2D
+**Returns:** the height of the arc that rounds off the corners
+of this
+
+RoundRectangle2D
+
+.
+**Since:** 1.2
+
+- isEmpty
+
+```java
+public boolean isEmpty()
+```
+
+Determines whether the
+
+RectangularShape
+
+is empty.
+When the
+
+RectangularShape
+
+is empty, it encloses no
+area.
+
+**Specified by:** isEmpty
+
+in class
+
+RectangularShape
+**Returns:** true
+
+if the
+
+RectangularShape
+
+is empty;
+
+false
+
+otherwise.
+**Since:** 1.2
+
+- setRoundRect
+
+```java
+public void setRoundRect​(float x,
+float y,
+float w,
+float h,
+float arcw,
+float arch)
+```
+
+Sets the location, size, and corner radii of this
+
+RoundRectangle2D
+
+to the specified
+
+float
+
+values.
+
+**Parameters:** x
+
+- the X coordinate to which to set the
+location of this
+
+RoundRectangle2D
+**Parameters:** y
+
+- the Y coordinate to which to set the
+location of this
+
+RoundRectangle2D
+**Parameters:** w
+
+- the width to which to set this
+
+RoundRectangle2D
+**Parameters:** h
+
+- the height to which to set this
+
+RoundRectangle2D
+**Parameters:** arcw
+
+- the width to which to set the arc of this
+
+RoundRectangle2D
+**Parameters:** arch
+
+- the height to which to set the arc of this
+
+RoundRectangle2D
+**Since:** 1.2
+
+- setRoundRect
+
+```java
+public void setRoundRect​(double x,
+double y,
+double w,
+double h,
+double arcw,
+double arch)
+```
+
+Sets the location, size, and corner radii of this
+
+RoundRectangle2D
+
+to the specified
+
+double
+
+values.
+
+**Specified by:** setRoundRect
+
+in class
+
+RoundRectangle2D
+**Parameters:** x
+
+- the X coordinate to which to set the
+location of this
+
+RoundRectangle2D
+**Parameters:** y
+
+- the Y coordinate to which to set the
+location of this
+
+RoundRectangle2D
+**Parameters:** w
+
+- the width to which to set this
+
+RoundRectangle2D
+**Parameters:** h
+
+- the height to which to set this
+
+RoundRectangle2D
+**Parameters:** arcw
+
+- the width to which to set the arc of this
+
+RoundRectangle2D
+**Parameters:** arch
+
+- the height to which to set the arc of this
+
+RoundRectangle2D
+**Since:** 1.2
+
+- setRoundRect
+
+```java
+public void setRoundRect​(
+RoundRectangle2D
+rr)
+```
+
+Sets this
+
+RoundRectangle2D
+
+to be the same as the
+specified
+
+RoundRectangle2D
+
+.
+
+**Overrides:** setRoundRect
+
+in class
+
+RoundRectangle2D
+**Parameters:** rr
+
+- the specified
+
+RoundRectangle2D
+**Since:** 1.2
+
+- getBounds2D
+
+```java
+public
+Rectangle2D
+getBounds2D()
+```
+
+Returns a high precision and more accurate bounding box of
+the
+
+Shape
+
+than the
+
+getBounds
+
+method.
+Note that there is no guarantee that the returned
+
+Rectangle2D
+
+is the smallest bounding box that encloses
+the
+
+Shape
+
+, only that the
+
+Shape
+
+lies
+entirely within the indicated
+
+Rectangle2D
+
+. The
+bounding box returned by this method is usually tighter than that
+returned by the
+
+getBounds
+
+method and never fails due
+to overflow problems since the return value can be an instance of
+the
+
+Rectangle2D
+
+that uses double precision values to
+store the dimensions.
+
+Note that the
+
+definition of insideness
+
+can lead to situations where points
+on the defining outline of the
+
+shape
+
+may not be considered
+contained in the returned
+
+bounds
+
+object, but only in cases
+where those points are also not considered contained in the original
+
+shape
+
+.
+
+If a
+
+point
+
+is inside the
+
+shape
+
+according to the
+
+contains(point)
+
+method, then it must
+be inside the returned
+
+Rectangle2D
+
+bounds object according
+to the
+
+contains(point)
+
+method of the
+
+bounds
+
+. Specifically:
+
+shape.contains(p)
+
+requires
+
+bounds.contains(p)
+
+If a
+
+point
+
+is not inside the
+
+shape
+
+, then it might
+still be contained in the
+
+bounds
+
+object:
+
+bounds.contains(p)
+
+does not imply
+
+shape.contains(p)
+
+**Specified by:** getBounds2D
+
+in interface
+
+Shape
+**Returns:** an instance of
+
+Rectangle2D
+
+that is a
+high-precision bounding box of the
+
+Shape
+
+.
+**Since:** 1.2
+**See Also:** Shape.getBounds()
+
+Field Detail
+
+- x
+
+```java
+public float x
+```
+
+The X coordinate of this
+
+RoundRectangle2D
+
+.
+
+**Since:** 1.2
+
+- y
+
+```java
+public float y
+```
+
+The Y coordinate of this
+
+RoundRectangle2D
+
+.
+
+**Since:** 1.2
+
+- width
+
+```java
+public float width
+```
+
+The width of this
+
+RoundRectangle2D
+
+.
+
+**Since:** 1.2
+
+- height
+
+```java
+public float height
+```
+
+The height of this
+
+RoundRectangle2D
+
+.
+
+**Since:** 1.2
+
+- arcwidth
+
+```java
+public float arcwidth
+```
+
+The width of the arc that rounds off the corners.
+
+**Since:** 1.2
+
+- archeight
+
+```java
+public float archeight
+```
+
+The height of the arc that rounds off the corners.
+
+**Since:** 1.2
+
+---
+
+#### Field Detail
+
+x
+
+```java
+public float x
+```
+
+The X coordinate of this
+
+RoundRectangle2D
+
+.
+
+**Since:** 1.2
+
+---
+
+#### x
+
+public float x
+
+The X coordinate of this
+
+RoundRectangle2D
+
+.
+
+y
+
+```java
+public float y
+```
+
+The Y coordinate of this
+
+RoundRectangle2D
+
+.
+
+**Since:** 1.2
+
+---
+
+#### y
+
+public float y
+
+The Y coordinate of this
+
+RoundRectangle2D
+
+.
+
+width
+
+```java
+public float width
+```
+
+The width of this
+
+RoundRectangle2D
+
+.
+
+**Since:** 1.2
+
+---
+
+#### width
+
+public float width
+
+The width of this
+
+RoundRectangle2D
+
+.
+
+height
+
+```java
+public float height
+```
+
+The height of this
+
+RoundRectangle2D
+
+.
+
+**Since:** 1.2
+
+---
+
+#### height
+
+public float height
+
+The height of this
+
+RoundRectangle2D
+
+.
+
+arcwidth
+
+```java
+public float arcwidth
+```
+
+The width of the arc that rounds off the corners.
+
+**Since:** 1.2
+
+---
+
+#### arcwidth
+
+public float arcwidth
+
+The width of the arc that rounds off the corners.
+
+archeight
+
+```java
+public float archeight
+```
+
+The height of the arc that rounds off the corners.
+
+**Since:** 1.2
+
+---
+
+#### archeight
+
+public float archeight
+
+The height of the arc that rounds off the corners.
+
+Constructor Detail
+
+- Float
+
+```java
+public Float()
+```
+
+Constructs a new
+
+RoundRectangle2D
+
+, initialized to
+location (0.0, 0.0), size (0.0, 0.0), and corner arcs
+of radius 0.0.
+
+**Since:** 1.2
+
+- Float
+
+```java
+public Float​(float x,
+float y,
+float w,
+float h,
+float arcw,
+float arch)
+```
+
+Constructs and initializes a
+
+RoundRectangle2D
+
+from the specified
+
+float
+
+coordinates.
+
+**Parameters:** x
+
+- the X coordinate of the newly
+constructed
+
+RoundRectangle2D
+**Parameters:** y
+
+- the Y coordinate of the newly
+constructed
+
+RoundRectangle2D
+**Parameters:** w
+
+- the width to which to set the newly
+constructed
+
+RoundRectangle2D
+**Parameters:** h
+
+- the height to which to set the newly
+constructed
+
+RoundRectangle2D
+**Parameters:** arcw
+
+- the width of the arc to use to round off the
+corners of the newly constructed
+
+RoundRectangle2D
+**Parameters:** arch
+
+- the height of the arc to use to round off the
+corners of the newly constructed
+
+RoundRectangle2D
+**Since:** 1.2
+
+---
+
+#### Constructor Detail
+
+Float
+
+```java
+public Float()
+```
+
+Constructs a new
+
+RoundRectangle2D
+
+, initialized to
+location (0.0, 0.0), size (0.0, 0.0), and corner arcs
+of radius 0.0.
+
+**Since:** 1.2
+
+---
+
+#### Float
+
+public Float()
+
+Constructs a new
+
+RoundRectangle2D
+
+, initialized to
+location (0.0, 0.0), size (0.0, 0.0), and corner arcs
+of radius 0.0.
+
+Float
+
+```java
+public Float​(float x,
+float y,
+float w,
+float h,
+float arcw,
+float arch)
+```
+
+Constructs and initializes a
+
+RoundRectangle2D
+
+from the specified
+
+float
+
+coordinates.
+
+**Parameters:** x
+
+- the X coordinate of the newly
+constructed
+
+RoundRectangle2D
+**Parameters:** y
+
+- the Y coordinate of the newly
+constructed
+
+RoundRectangle2D
+**Parameters:** w
+
+- the width to which to set the newly
+constructed
+
+RoundRectangle2D
+**Parameters:** h
+
+- the height to which to set the newly
+constructed
+
+RoundRectangle2D
+**Parameters:** arcw
+
+- the width of the arc to use to round off the
+corners of the newly constructed
+
+RoundRectangle2D
+**Parameters:** arch
+
+- the height of the arc to use to round off the
+corners of the newly constructed
+
+RoundRectangle2D
+**Since:** 1.2
+
+---
+
+#### Float
+
+public Float​(float x,
+float y,
+float w,
+float h,
+float arcw,
+float arch)
+
+Constructs and initializes a
+
+RoundRectangle2D
+
+from the specified
+
+float
+
+coordinates.
+
+Method Detail
+
+- getX
+
+```java
+public double getX()
+```
+
+Returns the X coordinate of the upper-left corner of
+the framing rectangle in
+
+double
+
+precision.
+
+**Specified by:** getX
+
+in class
+
+RectangularShape
+**Returns:** the X coordinate of the upper-left corner of
+the framing rectangle.
+**Since:** 1.2
+
+- getY
+
+```java
+public double getY()
+```
+
+Returns the Y coordinate of the upper-left corner of
+the framing rectangle in
+
+double
+
+precision.
+
+**Specified by:** getY
+
+in class
+
+RectangularShape
+**Returns:** the Y coordinate of the upper-left corner of
+the framing rectangle.
+**Since:** 1.2
+
+- getWidth
+
+```java
+public double getWidth()
+```
+
+Returns the width of the framing rectangle in
+
+double
+
+precision.
+
+**Specified by:** getWidth
+
+in class
+
+RectangularShape
+**Returns:** the width of the framing rectangle.
+**Since:** 1.2
+
+- getHeight
+
+```java
+public double getHeight()
+```
+
+Returns the height of the framing rectangle
+in
+
+double
+
+precision.
+
+**Specified by:** getHeight
+
+in class
+
+RectangularShape
+**Returns:** the height of the framing rectangle.
+**Since:** 1.2
+
+- getArcWidth
+
+```java
+public double getArcWidth()
+```
+
+Gets the width of the arc that rounds off the corners.
+
+**Specified by:** getArcWidth
+
+in class
+
+RoundRectangle2D
+**Returns:** the width of the arc that rounds off the corners
+of this
+
+RoundRectangle2D
+
+.
+**Since:** 1.2
+
+- getArcHeight
+
+```java
+public double getArcHeight()
+```
+
+Gets the height of the arc that rounds off the corners.
+
+**Specified by:** getArcHeight
+
+in class
+
+RoundRectangle2D
+**Returns:** the height of the arc that rounds off the corners
+of this
+
+RoundRectangle2D
+
+.
+**Since:** 1.2
+
+- isEmpty
+
+```java
+public boolean isEmpty()
+```
+
+Determines whether the
+
+RectangularShape
+
+is empty.
+When the
+
+RectangularShape
+
+is empty, it encloses no
+area.
+
+**Specified by:** isEmpty
+
+in class
+
+RectangularShape
+**Returns:** true
+
+if the
+
+RectangularShape
+
+is empty;
+
+false
+
+otherwise.
+**Since:** 1.2
+
+- setRoundRect
+
+```java
+public void setRoundRect​(float x,
+float y,
+float w,
+float h,
+float arcw,
+float arch)
+```
+
+Sets the location, size, and corner radii of this
+
+RoundRectangle2D
+
+to the specified
+
+float
+
+values.
+
+**Parameters:** x
+
+- the X coordinate to which to set the
+location of this
+
+RoundRectangle2D
+**Parameters:** y
+
+- the Y coordinate to which to set the
+location of this
+
+RoundRectangle2D
+**Parameters:** w
+
+- the width to which to set this
+
+RoundRectangle2D
+**Parameters:** h
+
+- the height to which to set this
+
+RoundRectangle2D
+**Parameters:** arcw
+
+- the width to which to set the arc of this
+
+RoundRectangle2D
+**Parameters:** arch
+
+- the height to which to set the arc of this
+
+RoundRectangle2D
+**Since:** 1.2
+
+- setRoundRect
+
+```java
+public void setRoundRect​(double x,
+double y,
+double w,
+double h,
+double arcw,
+double arch)
+```
+
+Sets the location, size, and corner radii of this
+
+RoundRectangle2D
+
+to the specified
+
+double
+
+values.
+
+**Specified by:** setRoundRect
+
+in class
+
+RoundRectangle2D
+**Parameters:** x
+
+- the X coordinate to which to set the
+location of this
+
+RoundRectangle2D
+**Parameters:** y
+
+- the Y coordinate to which to set the
+location of this
+
+RoundRectangle2D
+**Parameters:** w
+
+- the width to which to set this
+
+RoundRectangle2D
+**Parameters:** h
+
+- the height to which to set this
+
+RoundRectangle2D
+**Parameters:** arcw
+
+- the width to which to set the arc of this
+
+RoundRectangle2D
+**Parameters:** arch
+
+- the height to which to set the arc of this
+
+RoundRectangle2D
+**Since:** 1.2
+
+- setRoundRect
+
+```java
+public void setRoundRect​(
+RoundRectangle2D
+rr)
+```
+
+Sets this
+
+RoundRectangle2D
+
+to be the same as the
+specified
+
+RoundRectangle2D
+
+.
+
+**Overrides:** setRoundRect
+
+in class
+
+RoundRectangle2D
+**Parameters:** rr
+
+- the specified
+
+RoundRectangle2D
+**Since:** 1.2
+
+- getBounds2D
+
+```java
+public
+Rectangle2D
+getBounds2D()
+```
+
+Returns a high precision and more accurate bounding box of
+the
+
+Shape
+
+than the
+
+getBounds
+
+method.
+Note that there is no guarantee that the returned
+
+Rectangle2D
+
+is the smallest bounding box that encloses
+the
+
+Shape
+
+, only that the
+
+Shape
+
+lies
+entirely within the indicated
+
+Rectangle2D
+
+. The
+bounding box returned by this method is usually tighter than that
+returned by the
+
+getBounds
+
+method and never fails due
+to overflow problems since the return value can be an instance of
+the
+
+Rectangle2D
+
+that uses double precision values to
+store the dimensions.
+
+Note that the
+
+definition of insideness
+
+can lead to situations where points
+on the defining outline of the
+
+shape
+
+may not be considered
+contained in the returned
+
+bounds
+
+object, but only in cases
+where those points are also not considered contained in the original
+
+shape
+
+.
+
+If a
+
+point
+
+is inside the
+
+shape
+
+according to the
+
+contains(point)
+
+method, then it must
+be inside the returned
+
+Rectangle2D
+
+bounds object according
+to the
+
+contains(point)
+
+method of the
+
+bounds
+
+. Specifically:
+
+shape.contains(p)
+
+requires
+
+bounds.contains(p)
+
+If a
+
+point
+
+is not inside the
+
+shape
+
+, then it might
+still be contained in the
+
+bounds
+
+object:
+
+bounds.contains(p)
+
+does not imply
+
+shape.contains(p)
+
+**Specified by:** getBounds2D
+
+in interface
+
+Shape
+**Returns:** an instance of
+
+Rectangle2D
+
+that is a
+high-precision bounding box of the
+
+Shape
+
+.
+**Since:** 1.2
+**See Also:** Shape.getBounds()
+
+---
+
+#### Method Detail
+
+getX
+
+```java
+public double getX()
+```
+
+Returns the X coordinate of the upper-left corner of
+the framing rectangle in
+
+double
+
+precision.
+
+**Specified by:** getX
+
+in class
+
+RectangularShape
+**Returns:** the X coordinate of the upper-left corner of
+the framing rectangle.
+**Since:** 1.2
+
+---
+
+#### getX
+
+public double getX()
+
+Returns the X coordinate of the upper-left corner of
+the framing rectangle in
+
+double
+
+precision.
+
+getY
+
+```java
+public double getY()
+```
+
+Returns the Y coordinate of the upper-left corner of
+the framing rectangle in
+
+double
+
+precision.
+
+**Specified by:** getY
+
+in class
+
+RectangularShape
+**Returns:** the Y coordinate of the upper-left corner of
+the framing rectangle.
+**Since:** 1.2
+
+---
+
+#### getY
+
+public double getY()
+
+Returns the Y coordinate of the upper-left corner of
+the framing rectangle in
+
+double
+
+precision.
+
+getWidth
+
+```java
+public double getWidth()
+```
+
+Returns the width of the framing rectangle in
+
+double
+
+precision.
+
+**Specified by:** getWidth
+
+in class
+
+RectangularShape
+**Returns:** the width of the framing rectangle.
+**Since:** 1.2
+
+---
+
+#### getWidth
+
+public double getWidth()
+
+Returns the width of the framing rectangle in
+
+double
+
+precision.
+
+getHeight
+
+```java
+public double getHeight()
+```
+
+Returns the height of the framing rectangle
+in
+
+double
+
+precision.
+
+**Specified by:** getHeight
+
+in class
+
+RectangularShape
+**Returns:** the height of the framing rectangle.
+**Since:** 1.2
+
+---
+
+#### getHeight
+
+public double getHeight()
+
+Returns the height of the framing rectangle
+in
+
+double
+
+precision.
+
+getArcWidth
+
+```java
+public double getArcWidth()
+```
+
+Gets the width of the arc that rounds off the corners.
+
+**Specified by:** getArcWidth
+
+in class
+
+RoundRectangle2D
+**Returns:** the width of the arc that rounds off the corners
+of this
+
+RoundRectangle2D
+
+.
+**Since:** 1.2
+
+---
+
+#### getArcWidth
+
+public double getArcWidth()
+
+Gets the width of the arc that rounds off the corners.
+
+getArcHeight
+
+```java
+public double getArcHeight()
+```
+
+Gets the height of the arc that rounds off the corners.
+
+**Specified by:** getArcHeight
+
+in class
+
+RoundRectangle2D
+**Returns:** the height of the arc that rounds off the corners
+of this
+
+RoundRectangle2D
+
+.
+**Since:** 1.2
+
+---
+
+#### getArcHeight
+
+public double getArcHeight()
+
+Gets the height of the arc that rounds off the corners.
+
+isEmpty
+
+```java
+public boolean isEmpty()
+```
+
+Determines whether the
+
+RectangularShape
+
+is empty.
+When the
+
+RectangularShape
+
+is empty, it encloses no
+area.
+
+**Specified by:** isEmpty
+
+in class
+
+RectangularShape
+**Returns:** true
+
+if the
+
+RectangularShape
+
+is empty;
+
+false
+
+otherwise.
+**Since:** 1.2
+
+---
+
+#### isEmpty
+
+public boolean isEmpty()
+
+Determines whether the
+
+RectangularShape
+
+is empty.
+When the
+
+RectangularShape
+
+is empty, it encloses no
+area.
+
+setRoundRect
+
+```java
+public void setRoundRect​(float x,
+float y,
+float w,
+float h,
+float arcw,
+float arch)
+```
+
+Sets the location, size, and corner radii of this
+
+RoundRectangle2D
+
+to the specified
+
+float
+
+values.
+
+**Parameters:** x
+
+- the X coordinate to which to set the
+location of this
+
+RoundRectangle2D
+**Parameters:** y
+
+- the Y coordinate to which to set the
+location of this
+
+RoundRectangle2D
+**Parameters:** w
+
+- the width to which to set this
+
+RoundRectangle2D
+**Parameters:** h
+
+- the height to which to set this
+
+RoundRectangle2D
+**Parameters:** arcw
+
+- the width to which to set the arc of this
+
+RoundRectangle2D
+**Parameters:** arch
+
+- the height to which to set the arc of this
+
+RoundRectangle2D
+**Since:** 1.2
+
+---
+
+#### setRoundRect
+
+public void setRoundRect​(float x,
+float y,
+float w,
+float h,
+float arcw,
+float arch)
+
+Sets the location, size, and corner radii of this
+
+RoundRectangle2D
+
+to the specified
+
+float
+
+values.
+
+setRoundRect
+
+```java
+public void setRoundRect​(double x,
+double y,
+double w,
+double h,
+double arcw,
+double arch)
+```
+
+Sets the location, size, and corner radii of this
+
+RoundRectangle2D
+
+to the specified
+
+double
+
+values.
+
+**Specified by:** setRoundRect
+
+in class
+
+RoundRectangle2D
+**Parameters:** x
+
+- the X coordinate to which to set the
+location of this
+
+RoundRectangle2D
+**Parameters:** y
+
+- the Y coordinate to which to set the
+location of this
+
+RoundRectangle2D
+**Parameters:** w
+
+- the width to which to set this
+
+RoundRectangle2D
+**Parameters:** h
+
+- the height to which to set this
+
+RoundRectangle2D
+**Parameters:** arcw
+
+- the width to which to set the arc of this
+
+RoundRectangle2D
+**Parameters:** arch
+
+- the height to which to set the arc of this
+
+RoundRectangle2D
+**Since:** 1.2
+
+---
+
+#### setRoundRect
+
+public void setRoundRect​(double x,
+double y,
+double w,
+double h,
+double arcw,
+double arch)
+
+Sets the location, size, and corner radii of this
+
+RoundRectangle2D
+
+to the specified
+
+double
+
+values.
+
+setRoundRect
+
+```java
+public void setRoundRect​(
+RoundRectangle2D
+rr)
+```
+
+Sets this
+
+RoundRectangle2D
+
+to be the same as the
+specified
+
+RoundRectangle2D
+
+.
+
+**Overrides:** setRoundRect
+
+in class
+
+RoundRectangle2D
+**Parameters:** rr
+
+- the specified
+
+RoundRectangle2D
+**Since:** 1.2
+
+---
+
+#### setRoundRect
+
+public void setRoundRect​(
+
+RoundRectangle2D
+
+rr)
+
+Sets this
+
+RoundRectangle2D
+
+to be the same as the
+specified
+
+RoundRectangle2D
+
+.
+
+getBounds2D
+
+```java
+public
+Rectangle2D
+getBounds2D()
+```
+
+Returns a high precision and more accurate bounding box of
+the
+
+Shape
+
+than the
+
+getBounds
+
+method.
+Note that there is no guarantee that the returned
+
+Rectangle2D
+
+is the smallest bounding box that encloses
+the
+
+Shape
+
+, only that the
+
+Shape
+
+lies
+entirely within the indicated
+
+Rectangle2D
+
+. The
+bounding box returned by this method is usually tighter than that
+returned by the
+
+getBounds
+
+method and never fails due
+to overflow problems since the return value can be an instance of
+the
+
+Rectangle2D
+
+that uses double precision values to
+store the dimensions.
+
+Note that the
+
+definition of insideness
+
+can lead to situations where points
+on the defining outline of the
+
+shape
+
+may not be considered
+contained in the returned
+
+bounds
+
+object, but only in cases
+where those points are also not considered contained in the original
+
+shape
+
+.
+
+If a
+
+point
+
+is inside the
+
+shape
+
+according to the
+
+contains(point)
+
+method, then it must
+be inside the returned
+
+Rectangle2D
+
+bounds object according
+to the
+
+contains(point)
+
+method of the
+
+bounds
+
+. Specifically:
+
+shape.contains(p)
+
+requires
+
+bounds.contains(p)
+
+If a
+
+point
+
+is not inside the
+
+shape
+
+, then it might
+still be contained in the
+
+bounds
+
+object:
+
+bounds.contains(p)
+
+does not imply
+
+shape.contains(p)
+
+**Specified by:** getBounds2D
+
+in interface
+
+Shape
+**Returns:** an instance of
+
+Rectangle2D
+
+that is a
+high-precision bounding box of the
+
+Shape
+
+.
+**Since:** 1.2
+**See Also:** Shape.getBounds()
+
+---
+
+#### getBounds2D
+
+public
+
+Rectangle2D
+
+getBounds2D()
+
+Returns a high precision and more accurate bounding box of
+the
+
+Shape
+
+than the
+
+getBounds
+
+method.
+Note that there is no guarantee that the returned
+
+Rectangle2D
+
+is the smallest bounding box that encloses
+the
+
+Shape
+
+, only that the
+
+Shape
+
+lies
+entirely within the indicated
+
+Rectangle2D
+
+. The
+bounding box returned by this method is usually tighter than that
+returned by the
+
+getBounds
+
+method and never fails due
+to overflow problems since the return value can be an instance of
+the
+
+Rectangle2D
+
+that uses double precision values to
+store the dimensions.
+
+Note that the
+
+definition of insideness
+
+can lead to situations where points
+on the defining outline of the
+
+shape
+
+may not be considered
+contained in the returned
+
+bounds
+
+object, but only in cases
+where those points are also not considered contained in the original
+
+shape
+
+.
+
+If a
+
+point
+
+is inside the
+
+shape
+
+according to the
+
+contains(point)
+
+method, then it must
+be inside the returned
+
+Rectangle2D
+
+bounds object according
+to the
+
+contains(point)
+
+method of the
+
+bounds
+
+. Specifically:
+
+shape.contains(p)
+
+requires
+
+bounds.contains(p)
+
+If a
+
+point
+
+is not inside the
+
+shape
+
+, then it might
+still be contained in the
+
+bounds
+
+object:
+
+bounds.contains(p)
+
+does not imply
+
+shape.contains(p)
+
+Note that the
+
+definition of insideness
+
+can lead to situations where points
+on the defining outline of the
+
+shape
+
+may not be considered
+contained in the returned
+
+bounds
+
+object, but only in cases
+where those points are also not considered contained in the original
+
+shape
+
+.
+
+If a
+
+point
+
+is inside the
+
+shape
+
+according to the
+
+contains(point)
+
+method, then it must
+be inside the returned
+
+Rectangle2D
+
+bounds object according
+to the
+
+contains(point)
+
+method of the
+
+bounds
+
+. Specifically:
+
+shape.contains(p)
+
+requires
+
+bounds.contains(p)
+
+If a
+
+point
+
+is not inside the
+
+shape
+
+, then it might
+still be contained in the
+
+bounds
+
+object:
+
+bounds.contains(p)
+
+does not imply
+
+shape.contains(p)
+
+---
+

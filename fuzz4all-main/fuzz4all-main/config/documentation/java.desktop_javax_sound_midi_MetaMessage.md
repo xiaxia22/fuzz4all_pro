@@ -1,0 +1,1953 @@
+# Class MetaMessage
+
+**Source:** `java.desktop\javax\sound\midi\MetaMessage.html`
+
+### Class Description
+
+```java
+public class
+MetaMessage
+
+extends
+MidiMessage
+```
+
+A
+
+MetaMessage
+
+is a
+
+MidiMessage
+
+that is not meaningful to
+synthesizers, but that can be stored in a MIDI file and interpreted by a
+sequencer program. (See the discussion in the
+
+MidiMessage
+
+class
+description.) The Standard MIDI Files specification defines various types of
+meta-events, such as sequence number, lyric, cue point, and set tempo. There
+are also meta-events for such information as lyrics, copyrights, tempo
+indications, time and key signatures, markers, etc. For more information, see
+the Standard MIDI Files 1.0 specification, which is part of the Complete MIDI
+1.0 Detailed Specification published by the MIDI Manufacturer's Association
+(
+
+http://www.midi.org
+
+).
+
+When data is being transported using MIDI wire protocol, a
+
+ShortMessage
+
+with the status value
+
+0xFF
+
+represents a system
+reset message. In MIDI files, this same status value denotes a
+
+MetaMessage
+
+. The types of meta-message are distinguished from each
+other by the first byte that follows the status byte
+
+0xFF
+
+. The
+subsequent bytes are data bytes. As with system exclusive messages, there are
+an arbitrary number of data bytes, depending on the type of
+
+MetaMessage
+
+.
+
+**All Implemented Interfaces:** Cloneable
+
+---
+
+### Field Details
+
+#### public static final int META
+
+Status byte for
+
+MetaMessage
+
+(0xFF, or 255), which is used in MIDI
+files. It has the same value as
+
+ShortMessage.SYSTEM_RESET
+
+, which
+is used in the real-time "MIDI wire" protocol.
+
+**See Also:**
+- MidiMessage.getStatus()
+
+,
+
+Constant Field Values
+
+---
+
+### Constructor Details
+
+#### public MetaMessage()
+
+Constructs a new
+
+MetaMessage
+
+. The contents of the message are not
+set here; use
+
+setMessage
+
+to set
+them subsequently.
+
+---
+
+#### public MetaMessage​(int type,
+byte[] data,
+int length)
+throws
+InvalidMidiDataException
+
+Constructs a new
+
+MetaMessage
+
+and sets the message parameters. The
+contents of the message can be changed by using the
+
+setMessage
+
+method.
+
+**Parameters:**
+- type
+
+- meta-message type (must be less than 128)
+- data
+
+- the data bytes in the MIDI message
+- length
+
+- an amount of bytes in the
+
+data
+
+byte array; it
+should be non-negative and less than or equal to
+
+data.length
+
+**Throws:**
+- InvalidMidiDataException
+
+- if the parameter values do not specify a
+valid MIDI meta message
+
+**See Also:**
+- setMessage(int, byte[], int)
+
+,
+
+getType()
+
+,
+
+getData()
+
+**Since:**
+- 1.7
+
+---
+
+#### protected MetaMessage​(byte[] data)
+
+Constructs a new
+
+MetaMessage
+
+.
+
+**Parameters:**
+- data
+
+- an array of bytes containing the complete message. The
+message data may be changed using the
+
+setMessage
+
+method.
+
+**See Also:**
+- setMessage(int, byte[], int)
+
+---
+
+### Method Details
+
+#### public void setMessage​(int type,
+byte[] data,
+int length)
+throws
+InvalidMidiDataException
+
+Sets the message parameters for a
+
+MetaMessage
+
+. Since only one
+status byte value,
+
+0xFF
+
+, is allowed for meta-messages, it does
+not need to be specified here. Calls to
+
+getStatus
+
+return
+
+0xFF
+
+for all
+meta-messages.
+
+The
+
+type
+
+argument should be a valid value for the byte that
+follows the status byte in the
+
+MetaMessage
+
+. The
+
+data
+
+argument should contain all the subsequent bytes of the
+
+MetaMessage
+
+. In other words, the byte that specifies the type of
+
+MetaMessage
+
+is not considered a data byte.
+
+**Parameters:**
+- type
+
+- meta-message type (must be less than 128)
+- data
+
+- the data bytes in the MIDI message
+- length
+
+- the number of bytes in the
+
+data
+
+byte array
+
+**Throws:**
+- InvalidMidiDataException
+
+- if the parameter values do not specify a
+valid MIDI meta message
+
+---
+
+#### public int getType()
+
+Obtains the type of the
+
+MetaMessage
+
+.
+
+**Returns:**
+- an integer representing the
+
+MetaMessage
+
+type
+
+---
+
+#### public byte[] getData()
+
+Obtains a copy of the data for the meta message. The returned array of
+bytes does not include the status byte or the message length data. The
+length of the data for the meta message is the length of the array. Note
+that the length of the entire message includes the status byte and the
+meta message type byte, and therefore may be longer than the returned
+array.
+
+**Returns:**
+- array containing the meta message data
+
+**See Also:**
+- MidiMessage.getLength()
+
+---
+
+#### public
+Object
+clone()
+
+Creates a new object of the same class and with the same contents as this
+object.
+
+**Specified by:**
+- clone
+
+in class
+
+MidiMessage
+
+**Returns:**
+- a clone of this instance
+
+**See Also:**
+- Cloneable
+
+---
+
+### Additional Sections
+
+#### Class MetaMessage
+
+java.lang.Object
+
+- javax.sound.midi.MidiMessage
+- - javax.sound.midi.MetaMessage
+
+javax.sound.midi.MidiMessage
+
+- javax.sound.midi.MetaMessage
+
+javax.sound.midi.MetaMessage
+
+**All Implemented Interfaces:** Cloneable
+
+```java
+public class
+MetaMessage
+
+extends
+MidiMessage
+```
+
+A
+
+MetaMessage
+
+is a
+
+MidiMessage
+
+that is not meaningful to
+synthesizers, but that can be stored in a MIDI file and interpreted by a
+sequencer program. (See the discussion in the
+
+MidiMessage
+
+class
+description.) The Standard MIDI Files specification defines various types of
+meta-events, such as sequence number, lyric, cue point, and set tempo. There
+are also meta-events for such information as lyrics, copyrights, tempo
+indications, time and key signatures, markers, etc. For more information, see
+the Standard MIDI Files 1.0 specification, which is part of the Complete MIDI
+1.0 Detailed Specification published by the MIDI Manufacturer's Association
+(
+
+http://www.midi.org
+
+).
+
+When data is being transported using MIDI wire protocol, a
+
+ShortMessage
+
+with the status value
+
+0xFF
+
+represents a system
+reset message. In MIDI files, this same status value denotes a
+
+MetaMessage
+
+. The types of meta-message are distinguished from each
+other by the first byte that follows the status byte
+
+0xFF
+
+. The
+subsequent bytes are data bytes. As with system exclusive messages, there are
+an arbitrary number of data bytes, depending on the type of
+
+MetaMessage
+
+.
+
+**See Also:** MetaEventListener
+
+public class
+
+MetaMessage
+
+extends
+
+MidiMessage
+
+A
+
+MetaMessage
+
+is a
+
+MidiMessage
+
+that is not meaningful to
+synthesizers, but that can be stored in a MIDI file and interpreted by a
+sequencer program. (See the discussion in the
+
+MidiMessage
+
+class
+description.) The Standard MIDI Files specification defines various types of
+meta-events, such as sequence number, lyric, cue point, and set tempo. There
+are also meta-events for such information as lyrics, copyrights, tempo
+indications, time and key signatures, markers, etc. For more information, see
+the Standard MIDI Files 1.0 specification, which is part of the Complete MIDI
+1.0 Detailed Specification published by the MIDI Manufacturer's Association
+(
+
+http://www.midi.org
+
+).
+
+When data is being transported using MIDI wire protocol, a
+
+ShortMessage
+
+with the status value
+
+0xFF
+
+represents a system
+reset message. In MIDI files, this same status value denotes a
+
+MetaMessage
+
+. The types of meta-message are distinguished from each
+other by the first byte that follows the status byte
+
+0xFF
+
+. The
+subsequent bytes are data bytes. As with system exclusive messages, there are
+an arbitrary number of data bytes, depending on the type of
+
+MetaMessage
+
+.
+
+When data is being transported using MIDI wire protocol, a
+
+ShortMessage
+
+with the status value
+
+0xFF
+
+represents a system
+reset message. In MIDI files, this same status value denotes a
+
+MetaMessage
+
+. The types of meta-message are distinguished from each
+other by the first byte that follows the status byte
+
+0xFF
+
+. The
+subsequent bytes are data bytes. As with system exclusive messages, there are
+an arbitrary number of data bytes, depending on the type of
+
+MetaMessage
+
+.
+
+=========== FIELD SUMMARY ===========
+
+- Field Summary
+
+Fields
+
+Modifier and Type
+
+Field
+
+Description
+
+static int
+
+META
+
+Status byte for
+
+MetaMessage
+
+(0xFF, or 255), which is used in MIDI
+files.
+
+- Fields declared in class javax.sound.midi.
+
+MidiMessage
+
+data
+
+,
+
+length
+
+======== CONSTRUCTOR SUMMARY ========
+
+- Constructor Summary
+
+Constructors
+
+Modifier
+
+Constructor
+
+Description
+
+MetaMessage
+
+()
+
+Constructs a new
+
+MetaMessage
+
+.
+
+protected
+
+MetaMessage
+
+​(byte[] data)
+
+Constructs a new
+
+MetaMessage
+
+.
+
+MetaMessage
+
+​(int type,
+byte[] data,
+int length)
+
+Constructs a new
+
+MetaMessage
+
+and sets the message parameters.
+
+========== METHOD SUMMARY ===========
+
+- Method Summary
+
+All Methods
+
+Instance Methods
+
+Concrete Methods
+
+Modifier and Type
+
+Method
+
+Description
+
+Object
+
+clone
+
+()
+
+Creates a new object of the same class and with the same contents as this
+object.
+
+byte[]
+
+getData
+
+()
+
+Obtains a copy of the data for the meta message.
+
+int
+
+getType
+
+()
+
+Obtains the type of the
+
+MetaMessage
+
+.
+
+void
+
+setMessage
+
+​(int type,
+byte[] data,
+int length)
+
+Sets the message parameters for a
+
+MetaMessage
+
+.
+
+- Methods declared in class javax.sound.midi.
+
+MidiMessage
+
+getLength
+
+,
+
+getMessage
+
+,
+
+getStatus
+
+,
+
+setMessage
+
+- Methods declared in class java.lang.
+
+Object
+
+equals
+
+,
+
+finalize
+
+,
+
+getClass
+
+,
+
+hashCode
+
+,
+
+notify
+
+,
+
+notifyAll
+
+,
+
+toString
+
+,
+
+wait
+
+,
+
+wait
+
+,
+
+wait
+
+Field Summary
+
+Fields
+
+Modifier and Type
+
+Field
+
+Description
+
+static int
+
+META
+
+Status byte for
+
+MetaMessage
+
+(0xFF, or 255), which is used in MIDI
+files.
+
+- Fields declared in class javax.sound.midi.
+
+MidiMessage
+
+data
+
+,
+
+length
+
+---
+
+#### Field Summary
+
+Status byte for
+
+MetaMessage
+
+(0xFF, or 255), which is used in MIDI
+files.
+
+Fields declared in class javax.sound.midi.
+
+MidiMessage
+
+data
+
+,
+
+length
+
+---
+
+#### Fields declared in class javax.sound.midi. MidiMessage
+
+Constructor Summary
+
+Constructors
+
+Modifier
+
+Constructor
+
+Description
+
+MetaMessage
+
+()
+
+Constructs a new
+
+MetaMessage
+
+.
+
+protected
+
+MetaMessage
+
+​(byte[] data)
+
+Constructs a new
+
+MetaMessage
+
+.
+
+MetaMessage
+
+​(int type,
+byte[] data,
+int length)
+
+Constructs a new
+
+MetaMessage
+
+and sets the message parameters.
+
+---
+
+#### Constructor Summary
+
+Constructs a new
+
+MetaMessage
+
+.
+
+Constructs a new
+
+MetaMessage
+
+and sets the message parameters.
+
+Method Summary
+
+All Methods
+
+Instance Methods
+
+Concrete Methods
+
+Modifier and Type
+
+Method
+
+Description
+
+Object
+
+clone
+
+()
+
+Creates a new object of the same class and with the same contents as this
+object.
+
+byte[]
+
+getData
+
+()
+
+Obtains a copy of the data for the meta message.
+
+int
+
+getType
+
+()
+
+Obtains the type of the
+
+MetaMessage
+
+.
+
+void
+
+setMessage
+
+​(int type,
+byte[] data,
+int length)
+
+Sets the message parameters for a
+
+MetaMessage
+
+.
+
+- Methods declared in class javax.sound.midi.
+
+MidiMessage
+
+getLength
+
+,
+
+getMessage
+
+,
+
+getStatus
+
+,
+
+setMessage
+
+- Methods declared in class java.lang.
+
+Object
+
+equals
+
+,
+
+finalize
+
+,
+
+getClass
+
+,
+
+hashCode
+
+,
+
+notify
+
+,
+
+notifyAll
+
+,
+
+toString
+
+,
+
+wait
+
+,
+
+wait
+
+,
+
+wait
+
+---
+
+#### Method Summary
+
+Creates a new object of the same class and with the same contents as this
+object.
+
+Obtains a copy of the data for the meta message.
+
+Obtains the type of the
+
+MetaMessage
+
+.
+
+Sets the message parameters for a
+
+MetaMessage
+
+.
+
+Methods declared in class javax.sound.midi.
+
+MidiMessage
+
+getLength
+
+,
+
+getMessage
+
+,
+
+getStatus
+
+,
+
+setMessage
+
+---
+
+#### Methods declared in class javax.sound.midi. MidiMessage
+
+Methods declared in class java.lang.
+
+Object
+
+equals
+
+,
+
+finalize
+
+,
+
+getClass
+
+,
+
+hashCode
+
+,
+
+notify
+
+,
+
+notifyAll
+
+,
+
+toString
+
+,
+
+wait
+
+,
+
+wait
+
+,
+
+wait
+
+---
+
+#### Methods declared in class java.lang. Object
+
+============ FIELD DETAIL ===========
+
+- Field Detail
+
+- META
+
+```java
+public static final int META
+```
+
+Status byte for
+
+MetaMessage
+
+(0xFF, or 255), which is used in MIDI
+files. It has the same value as
+
+ShortMessage.SYSTEM_RESET
+
+, which
+is used in the real-time "MIDI wire" protocol.
+
+**See Also:** MidiMessage.getStatus()
+
+,
+
+Constant Field Values
+
+========= CONSTRUCTOR DETAIL ========
+
+- Constructor Detail
+
+- MetaMessage
+
+```java
+public MetaMessage()
+```
+
+Constructs a new
+
+MetaMessage
+
+. The contents of the message are not
+set here; use
+
+setMessage
+
+to set
+them subsequently.
+
+- MetaMessage
+
+```java
+public MetaMessage​(int type,
+byte[] data,
+int length)
+throws
+InvalidMidiDataException
+```
+
+Constructs a new
+
+MetaMessage
+
+and sets the message parameters. The
+contents of the message can be changed by using the
+
+setMessage
+
+method.
+
+**Parameters:** type
+
+- meta-message type (must be less than 128)
+**Parameters:** data
+
+- the data bytes in the MIDI message
+**Parameters:** length
+
+- an amount of bytes in the
+
+data
+
+byte array; it
+should be non-negative and less than or equal to
+
+data.length
+**Throws:** InvalidMidiDataException
+
+- if the parameter values do not specify a
+valid MIDI meta message
+**Since:** 1.7
+**See Also:** setMessage(int, byte[], int)
+
+,
+
+getType()
+
+,
+
+getData()
+
+- MetaMessage
+
+```java
+protected MetaMessage​(byte[] data)
+```
+
+Constructs a new
+
+MetaMessage
+
+.
+
+**Parameters:** data
+
+- an array of bytes containing the complete message. The
+message data may be changed using the
+
+setMessage
+
+method.
+**See Also:** setMessage(int, byte[], int)
+
+============ METHOD DETAIL ==========
+
+- Method Detail
+
+- setMessage
+
+```java
+public void setMessage​(int type,
+byte[] data,
+int length)
+throws
+InvalidMidiDataException
+```
+
+Sets the message parameters for a
+
+MetaMessage
+
+. Since only one
+status byte value,
+
+0xFF
+
+, is allowed for meta-messages, it does
+not need to be specified here. Calls to
+
+getStatus
+
+return
+
+0xFF
+
+for all
+meta-messages.
+
+The
+
+type
+
+argument should be a valid value for the byte that
+follows the status byte in the
+
+MetaMessage
+
+. The
+
+data
+
+argument should contain all the subsequent bytes of the
+
+MetaMessage
+
+. In other words, the byte that specifies the type of
+
+MetaMessage
+
+is not considered a data byte.
+
+**Parameters:** type
+
+- meta-message type (must be less than 128)
+**Parameters:** data
+
+- the data bytes in the MIDI message
+**Parameters:** length
+
+- the number of bytes in the
+
+data
+
+byte array
+**Throws:** InvalidMidiDataException
+
+- if the parameter values do not specify a
+valid MIDI meta message
+
+- getType
+
+```java
+public int getType()
+```
+
+Obtains the type of the
+
+MetaMessage
+
+.
+
+**Returns:** an integer representing the
+
+MetaMessage
+
+type
+
+- getData
+
+```java
+public byte[] getData()
+```
+
+Obtains a copy of the data for the meta message. The returned array of
+bytes does not include the status byte or the message length data. The
+length of the data for the meta message is the length of the array. Note
+that the length of the entire message includes the status byte and the
+meta message type byte, and therefore may be longer than the returned
+array.
+
+**Returns:** array containing the meta message data
+**See Also:** MidiMessage.getLength()
+
+- clone
+
+```java
+public
+Object
+clone()
+```
+
+Creates a new object of the same class and with the same contents as this
+object.
+
+**Specified by:** clone
+
+in class
+
+MidiMessage
+**Returns:** a clone of this instance
+**See Also:** Cloneable
+
+Field Detail
+
+- META
+
+```java
+public static final int META
+```
+
+Status byte for
+
+MetaMessage
+
+(0xFF, or 255), which is used in MIDI
+files. It has the same value as
+
+ShortMessage.SYSTEM_RESET
+
+, which
+is used in the real-time "MIDI wire" protocol.
+
+**See Also:** MidiMessage.getStatus()
+
+,
+
+Constant Field Values
+
+---
+
+#### Field Detail
+
+META
+
+```java
+public static final int META
+```
+
+Status byte for
+
+MetaMessage
+
+(0xFF, or 255), which is used in MIDI
+files. It has the same value as
+
+ShortMessage.SYSTEM_RESET
+
+, which
+is used in the real-time "MIDI wire" protocol.
+
+**See Also:** MidiMessage.getStatus()
+
+,
+
+Constant Field Values
+
+---
+
+#### META
+
+public static final int META
+
+Status byte for
+
+MetaMessage
+
+(0xFF, or 255), which is used in MIDI
+files. It has the same value as
+
+ShortMessage.SYSTEM_RESET
+
+, which
+is used in the real-time "MIDI wire" protocol.
+
+Constructor Detail
+
+- MetaMessage
+
+```java
+public MetaMessage()
+```
+
+Constructs a new
+
+MetaMessage
+
+. The contents of the message are not
+set here; use
+
+setMessage
+
+to set
+them subsequently.
+
+- MetaMessage
+
+```java
+public MetaMessage​(int type,
+byte[] data,
+int length)
+throws
+InvalidMidiDataException
+```
+
+Constructs a new
+
+MetaMessage
+
+and sets the message parameters. The
+contents of the message can be changed by using the
+
+setMessage
+
+method.
+
+**Parameters:** type
+
+- meta-message type (must be less than 128)
+**Parameters:** data
+
+- the data bytes in the MIDI message
+**Parameters:** length
+
+- an amount of bytes in the
+
+data
+
+byte array; it
+should be non-negative and less than or equal to
+
+data.length
+**Throws:** InvalidMidiDataException
+
+- if the parameter values do not specify a
+valid MIDI meta message
+**Since:** 1.7
+**See Also:** setMessage(int, byte[], int)
+
+,
+
+getType()
+
+,
+
+getData()
+
+- MetaMessage
+
+```java
+protected MetaMessage​(byte[] data)
+```
+
+Constructs a new
+
+MetaMessage
+
+.
+
+**Parameters:** data
+
+- an array of bytes containing the complete message. The
+message data may be changed using the
+
+setMessage
+
+method.
+**See Also:** setMessage(int, byte[], int)
+
+---
+
+#### Constructor Detail
+
+MetaMessage
+
+```java
+public MetaMessage()
+```
+
+Constructs a new
+
+MetaMessage
+
+. The contents of the message are not
+set here; use
+
+setMessage
+
+to set
+them subsequently.
+
+---
+
+#### MetaMessage
+
+public MetaMessage()
+
+Constructs a new
+
+MetaMessage
+
+. The contents of the message are not
+set here; use
+
+setMessage
+
+to set
+them subsequently.
+
+MetaMessage
+
+```java
+public MetaMessage​(int type,
+byte[] data,
+int length)
+throws
+InvalidMidiDataException
+```
+
+Constructs a new
+
+MetaMessage
+
+and sets the message parameters. The
+contents of the message can be changed by using the
+
+setMessage
+
+method.
+
+**Parameters:** type
+
+- meta-message type (must be less than 128)
+**Parameters:** data
+
+- the data bytes in the MIDI message
+**Parameters:** length
+
+- an amount of bytes in the
+
+data
+
+byte array; it
+should be non-negative and less than or equal to
+
+data.length
+**Throws:** InvalidMidiDataException
+
+- if the parameter values do not specify a
+valid MIDI meta message
+**Since:** 1.7
+**See Also:** setMessage(int, byte[], int)
+
+,
+
+getType()
+
+,
+
+getData()
+
+---
+
+#### MetaMessage
+
+public MetaMessage​(int type,
+byte[] data,
+int length)
+throws
+
+InvalidMidiDataException
+
+Constructs a new
+
+MetaMessage
+
+and sets the message parameters. The
+contents of the message can be changed by using the
+
+setMessage
+
+method.
+
+MetaMessage
+
+```java
+protected MetaMessage​(byte[] data)
+```
+
+Constructs a new
+
+MetaMessage
+
+.
+
+**Parameters:** data
+
+- an array of bytes containing the complete message. The
+message data may be changed using the
+
+setMessage
+
+method.
+**See Also:** setMessage(int, byte[], int)
+
+---
+
+#### MetaMessage
+
+protected MetaMessage​(byte[] data)
+
+Constructs a new
+
+MetaMessage
+
+.
+
+Method Detail
+
+- setMessage
+
+```java
+public void setMessage​(int type,
+byte[] data,
+int length)
+throws
+InvalidMidiDataException
+```
+
+Sets the message parameters for a
+
+MetaMessage
+
+. Since only one
+status byte value,
+
+0xFF
+
+, is allowed for meta-messages, it does
+not need to be specified here. Calls to
+
+getStatus
+
+return
+
+0xFF
+
+for all
+meta-messages.
+
+The
+
+type
+
+argument should be a valid value for the byte that
+follows the status byte in the
+
+MetaMessage
+
+. The
+
+data
+
+argument should contain all the subsequent bytes of the
+
+MetaMessage
+
+. In other words, the byte that specifies the type of
+
+MetaMessage
+
+is not considered a data byte.
+
+**Parameters:** type
+
+- meta-message type (must be less than 128)
+**Parameters:** data
+
+- the data bytes in the MIDI message
+**Parameters:** length
+
+- the number of bytes in the
+
+data
+
+byte array
+**Throws:** InvalidMidiDataException
+
+- if the parameter values do not specify a
+valid MIDI meta message
+
+- getType
+
+```java
+public int getType()
+```
+
+Obtains the type of the
+
+MetaMessage
+
+.
+
+**Returns:** an integer representing the
+
+MetaMessage
+
+type
+
+- getData
+
+```java
+public byte[] getData()
+```
+
+Obtains a copy of the data for the meta message. The returned array of
+bytes does not include the status byte or the message length data. The
+length of the data for the meta message is the length of the array. Note
+that the length of the entire message includes the status byte and the
+meta message type byte, and therefore may be longer than the returned
+array.
+
+**Returns:** array containing the meta message data
+**See Also:** MidiMessage.getLength()
+
+- clone
+
+```java
+public
+Object
+clone()
+```
+
+Creates a new object of the same class and with the same contents as this
+object.
+
+**Specified by:** clone
+
+in class
+
+MidiMessage
+**Returns:** a clone of this instance
+**See Also:** Cloneable
+
+---
+
+#### Method Detail
+
+setMessage
+
+```java
+public void setMessage​(int type,
+byte[] data,
+int length)
+throws
+InvalidMidiDataException
+```
+
+Sets the message parameters for a
+
+MetaMessage
+
+. Since only one
+status byte value,
+
+0xFF
+
+, is allowed for meta-messages, it does
+not need to be specified here. Calls to
+
+getStatus
+
+return
+
+0xFF
+
+for all
+meta-messages.
+
+The
+
+type
+
+argument should be a valid value for the byte that
+follows the status byte in the
+
+MetaMessage
+
+. The
+
+data
+
+argument should contain all the subsequent bytes of the
+
+MetaMessage
+
+. In other words, the byte that specifies the type of
+
+MetaMessage
+
+is not considered a data byte.
+
+**Parameters:** type
+
+- meta-message type (must be less than 128)
+**Parameters:** data
+
+- the data bytes in the MIDI message
+**Parameters:** length
+
+- the number of bytes in the
+
+data
+
+byte array
+**Throws:** InvalidMidiDataException
+
+- if the parameter values do not specify a
+valid MIDI meta message
+
+---
+
+#### setMessage
+
+public void setMessage​(int type,
+byte[] data,
+int length)
+throws
+
+InvalidMidiDataException
+
+Sets the message parameters for a
+
+MetaMessage
+
+. Since only one
+status byte value,
+
+0xFF
+
+, is allowed for meta-messages, it does
+not need to be specified here. Calls to
+
+getStatus
+
+return
+
+0xFF
+
+for all
+meta-messages.
+
+The
+
+type
+
+argument should be a valid value for the byte that
+follows the status byte in the
+
+MetaMessage
+
+. The
+
+data
+
+argument should contain all the subsequent bytes of the
+
+MetaMessage
+
+. In other words, the byte that specifies the type of
+
+MetaMessage
+
+is not considered a data byte.
+
+The
+
+type
+
+argument should be a valid value for the byte that
+follows the status byte in the
+
+MetaMessage
+
+. The
+
+data
+
+argument should contain all the subsequent bytes of the
+
+MetaMessage
+
+. In other words, the byte that specifies the type of
+
+MetaMessage
+
+is not considered a data byte.
+
+getType
+
+```java
+public int getType()
+```
+
+Obtains the type of the
+
+MetaMessage
+
+.
+
+**Returns:** an integer representing the
+
+MetaMessage
+
+type
+
+---
+
+#### getType
+
+public int getType()
+
+Obtains the type of the
+
+MetaMessage
+
+.
+
+getData
+
+```java
+public byte[] getData()
+```
+
+Obtains a copy of the data for the meta message. The returned array of
+bytes does not include the status byte or the message length data. The
+length of the data for the meta message is the length of the array. Note
+that the length of the entire message includes the status byte and the
+meta message type byte, and therefore may be longer than the returned
+array.
+
+**Returns:** array containing the meta message data
+**See Also:** MidiMessage.getLength()
+
+---
+
+#### getData
+
+public byte[] getData()
+
+Obtains a copy of the data for the meta message. The returned array of
+bytes does not include the status byte or the message length data. The
+length of the data for the meta message is the length of the array. Note
+that the length of the entire message includes the status byte and the
+meta message type byte, and therefore may be longer than the returned
+array.
+
+clone
+
+```java
+public
+Object
+clone()
+```
+
+Creates a new object of the same class and with the same contents as this
+object.
+
+**Specified by:** clone
+
+in class
+
+MidiMessage
+**Returns:** a clone of this instance
+**See Also:** Cloneable
+
+---
+
+#### clone
+
+public
+
+Object
+
+clone()
+
+Creates a new object of the same class and with the same contents as this
+object.
+
+---
+

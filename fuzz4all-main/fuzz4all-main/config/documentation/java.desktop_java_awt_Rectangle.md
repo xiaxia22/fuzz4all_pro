@@ -1,0 +1,15974 @@
+# Class Rectangle
+
+**Source:** `java.desktop\java\awt\Rectangle.html`
+
+### Class Description
+
+```java
+public class
+Rectangle
+
+extends
+Rectangle2D
+
+implements
+Shape
+,
+Serializable
+```
+
+A
+
+Rectangle
+
+specifies an area in a coordinate space that is
+enclosed by the
+
+Rectangle
+
+object's upper-left point
+
+(x,y)
+
+in the coordinate space, its width, and its height.
+
+A
+
+Rectangle
+
+object's
+
+width
+
+and
+
+height
+
+are
+
+public
+
+fields. The constructors
+that create a
+
+Rectangle
+
+, and the methods that can modify
+one, do not prevent setting a negative value for width or height.
+
+A
+
+Rectangle
+
+whose width or height is exactly zero has location
+along those axes with zero dimension, but is otherwise considered empty.
+
+The
+
+isEmpty()
+
+method will return true for such a
+
+Rectangle
+
+.
+Methods which test if an empty
+
+Rectangle
+
+contains or intersects
+a point or rectangle will always return false if either dimension is zero.
+Methods which combine such a
+
+Rectangle
+
+with a point or rectangle
+will include the location of the
+
+Rectangle
+
+on that axis in the
+result as if the
+
+add(Point)
+
+method were being called.
+
+A
+
+Rectangle
+
+whose width or height is negative has neither
+location nor dimension along those axes with negative dimensions.
+Such a
+
+Rectangle
+
+is treated as non-existent along those axes.
+Such a
+
+Rectangle
+
+is also empty with respect to containment
+calculations and methods which test if it contains or intersects a
+point or rectangle will always return false.
+Methods which combine such a
+
+Rectangle
+
+with a point or rectangle
+will ignore the
+
+Rectangle
+
+entirely in generating the result.
+If two
+
+Rectangle
+
+objects are combined and each has a negative
+dimension, the result will have at least one negative dimension.
+
+Methods which affect only the location of a
+
+Rectangle
+
+will
+operate on its location regardless of whether or not it has a negative
+or zero dimension along either axis.
+
+Note that a
+
+Rectangle
+
+constructed with the default no-argument
+constructor will have dimensions of
+
+0x0
+
+and therefore be empty.
+That
+
+Rectangle
+
+will still have a location of
+
+(0,0)
+
+and
+will contribute that location to the union and add operations.
+Code attempting to accumulate the bounds of a set of points should
+therefore initially construct the
+
+Rectangle
+
+with a specifically
+negative width and height or it should use the first point in the set
+to construct the
+
+Rectangle
+
+.
+For example:
+
+```java
+Rectangle bounds = new Rectangle(0, 0, -1, -1);
+for (int i = 0; i < points.length; i++) {
+bounds.add(points[i]);
+}
+```
+
+or if we know that the points array contains at least one point:
+
+```java
+Rectangle bounds = new Rectangle(points[0]);
+for (int i = 1; i < points.length; i++) {
+bounds.add(points[i]);
+}
+```
+
+This class uses 32-bit integers to store its location and dimensions.
+Frequently operations may produce a result that exceeds the range of
+a 32-bit integer.
+The methods will calculate their results in a way that avoids any
+32-bit overflow for intermediate results and then choose the best
+representation to store the final results back into the 32-bit fields
+which hold the location and dimensions.
+The location of the result will be stored into the
+
+x
+
+and
+
+y
+
+fields by clipping the true result to the nearest 32-bit value.
+The values stored into the
+
+width
+
+and
+
+height
+
+dimension
+fields will be chosen as the 32-bit values that encompass the largest
+part of the true result as possible.
+Generally this means that the dimension will be clipped independently
+to the range of 32-bit integers except that if the location had to be
+moved to store it into its pair of 32-bit fields then the dimensions
+will be adjusted relative to the "best representation" of the location.
+If the true result had a negative dimension and was therefore
+non-existent along one or both axes, the stored dimensions will be
+negative numbers in those axes.
+If the true result had a location that could be represented within
+the range of 32-bit integers, but zero dimension along one or both
+axes, then the stored dimensions will be zero in those axes.
+
+**All Implemented Interfaces:** Shape
+
+,
+
+Serializable
+
+,
+
+Cloneable
+
+---
+
+### Field Details
+
+#### public int x
+
+The X coordinate of the upper-left corner of the
+
+Rectangle
+
+.
+
+**See Also:**
+- setLocation(int, int)
+
+,
+
+getLocation()
+
+**Since:**
+- 1.0
+
+---
+
+#### public int y
+
+The Y coordinate of the upper-left corner of the
+
+Rectangle
+
+.
+
+**See Also:**
+- setLocation(int, int)
+
+,
+
+getLocation()
+
+**Since:**
+- 1.0
+
+---
+
+#### public int width
+
+The width of the
+
+Rectangle
+
+.
+
+**See Also:**
+- setSize(int, int)
+
+,
+
+getSize()
+
+**Since:**
+- 1.0
+
+---
+
+#### public int height
+
+The height of the
+
+Rectangle
+
+.
+
+**See Also:**
+- setSize(int, int)
+
+,
+
+getSize()
+
+**Since:**
+- 1.0
+
+---
+
+### Constructor Details
+
+#### public Rectangle()
+
+Constructs a new
+
+Rectangle
+
+whose upper-left corner
+is at (0, 0) in the coordinate space, and whose width and
+height are both zero.
+
+---
+
+#### public Rectangle​(
+Rectangle
+r)
+
+Constructs a new
+
+Rectangle
+
+, initialized to match
+the values of the specified
+
+Rectangle
+
+.
+
+**Parameters:**
+- r
+
+- the
+
+Rectangle
+
+from which to copy initial values
+to a newly constructed
+
+Rectangle
+
+**Since:**
+- 1.1
+
+---
+
+#### public Rectangle​(int x,
+int y,
+int width,
+int height)
+
+Constructs a new
+
+Rectangle
+
+whose upper-left corner is
+specified as
+
+(x,y)
+
+and whose width and height
+are specified by the arguments of the same name.
+
+**Parameters:**
+- x
+
+- the specified X coordinate
+- y
+
+- the specified Y coordinate
+- width
+
+- the width of the
+
+Rectangle
+- height
+
+- the height of the
+
+Rectangle
+
+**Since:**
+- 1.0
+
+---
+
+#### public Rectangle​(int width,
+int height)
+
+Constructs a new
+
+Rectangle
+
+whose upper-left corner
+is at (0, 0) in the coordinate space, and whose width and
+height are specified by the arguments of the same name.
+
+**Parameters:**
+- width
+
+- the width of the
+
+Rectangle
+- height
+
+- the height of the
+
+Rectangle
+
+---
+
+#### public Rectangle​(
+Point
+p,
+
+Dimension
+d)
+
+Constructs a new
+
+Rectangle
+
+whose upper-left corner is
+specified by the
+
+Point
+
+argument, and
+whose width and height are specified by the
+
+Dimension
+
+argument.
+
+**Parameters:**
+- p
+
+- a
+
+Point
+
+that is the upper-left corner of
+the
+
+Rectangle
+- d
+
+- a
+
+Dimension
+
+, representing the
+width and height of the
+
+Rectangle
+
+---
+
+#### public Rectangle​(
+Point
+p)
+
+Constructs a new
+
+Rectangle
+
+whose upper-left corner is the
+specified
+
+Point
+
+, and whose width and height are both zero.
+
+**Parameters:**
+- p
+
+- a
+
+Point
+
+that is the top left corner
+of the
+
+Rectangle
+
+---
+
+#### public Rectangle​(
+Dimension
+d)
+
+Constructs a new
+
+Rectangle
+
+whose top left corner is
+(0, 0) and whose width and height are specified
+by the
+
+Dimension
+
+argument.
+
+**Parameters:**
+- d
+
+- a
+
+Dimension
+
+, specifying width and height
+
+---
+
+### Method Details
+
+#### public double getX()
+
+Returns the X coordinate of the bounding
+
+Rectangle
+
+in
+
+double
+
+precision.
+
+**Specified by:**
+- getX
+
+in class
+
+RectangularShape
+
+**Returns:**
+- the X coordinate of the bounding
+
+Rectangle
+
+.
+
+---
+
+#### public double getY()
+
+Returns the Y coordinate of the bounding
+
+Rectangle
+
+in
+
+double
+
+precision.
+
+**Specified by:**
+- getY
+
+in class
+
+RectangularShape
+
+**Returns:**
+- the Y coordinate of the bounding
+
+Rectangle
+
+.
+
+---
+
+#### public double getWidth()
+
+Returns the width of the bounding
+
+Rectangle
+
+in
+
+double
+
+precision.
+
+**Specified by:**
+- getWidth
+
+in class
+
+RectangularShape
+
+**Returns:**
+- the width of the bounding
+
+Rectangle
+
+.
+
+---
+
+#### public double getHeight()
+
+Returns the height of the bounding
+
+Rectangle
+
+in
+
+double
+
+precision.
+
+**Specified by:**
+- getHeight
+
+in class
+
+RectangularShape
+
+**Returns:**
+- the height of the bounding
+
+Rectangle
+
+.
+
+---
+
+#### public
+Rectangle
+getBounds()
+
+Gets the bounding
+
+Rectangle
+
+of this
+
+Rectangle
+
+.
+
+This method is included for completeness, to parallel the
+
+getBounds
+
+method of
+
+Component
+
+.
+
+**Specified by:**
+- getBounds
+
+in interface
+
+Shape
+
+**Overrides:**
+- getBounds
+
+in class
+
+RectangularShape
+
+**Returns:**
+- a new
+
+Rectangle
+
+, equal to the
+bounding
+
+Rectangle
+
+for this
+
+Rectangle
+
+.
+
+**See Also:**
+- Component.getBounds()
+
+,
+
+setBounds(Rectangle)
+
+,
+
+setBounds(int, int, int, int)
+
+**Since:**
+- 1.1
+
+---
+
+#### public
+Rectangle2D
+getBounds2D()
+
+Returns a high precision and more accurate bounding box of
+the
+
+Shape
+
+than the
+
+getBounds
+
+method.
+Note that there is no guarantee that the returned
+
+Rectangle2D
+
+is the smallest bounding box that encloses
+the
+
+Shape
+
+, only that the
+
+Shape
+
+lies
+entirely within the indicated
+
+Rectangle2D
+
+. The
+bounding box returned by this method is usually tighter than that
+returned by the
+
+getBounds
+
+method and never fails due
+to overflow problems since the return value can be an instance of
+the
+
+Rectangle2D
+
+that uses double precision values to
+store the dimensions.
+
+Note that the
+
+definition of insideness
+
+can lead to situations where points
+on the defining outline of the
+
+shape
+
+may not be considered
+contained in the returned
+
+bounds
+
+object, but only in cases
+where those points are also not considered contained in the original
+
+shape
+
+.
+
+If a
+
+point
+
+is inside the
+
+shape
+
+according to the
+
+contains(point)
+
+method, then it must
+be inside the returned
+
+Rectangle2D
+
+bounds object according
+to the
+
+contains(point)
+
+method of the
+
+bounds
+
+. Specifically:
+
+shape.contains(p)
+
+requires
+
+bounds.contains(p)
+
+If a
+
+point
+
+is not inside the
+
+shape
+
+, then it might
+still be contained in the
+
+bounds
+
+object:
+
+bounds.contains(p)
+
+does not imply
+
+shape.contains(p)
+
+**Specified by:**
+- getBounds2D
+
+in interface
+
+Shape
+
+**Overrides:**
+- getBounds2D
+
+in class
+
+Rectangle2D
+
+**Returns:**
+- an instance of
+
+Rectangle2D
+
+that is a
+high-precision bounding box of the
+
+Shape
+
+.
+
+**See Also:**
+- Shape.getBounds()
+
+**Since:**
+- 1.2
+
+---
+
+#### public void setBounds​(
+Rectangle
+r)
+
+Sets the bounding
+
+Rectangle
+
+of this
+
+Rectangle
+
+to match the specified
+
+Rectangle
+
+.
+
+This method is included for completeness, to parallel the
+
+setBounds
+
+method of
+
+Component
+
+.
+
+**Parameters:**
+- r
+
+- the specified
+
+Rectangle
+
+**See Also:**
+- getBounds()
+
+,
+
+Component.setBounds(java.awt.Rectangle)
+
+**Since:**
+- 1.1
+
+---
+
+#### public void setBounds​(int x,
+int y,
+int width,
+int height)
+
+Sets the bounding
+
+Rectangle
+
+of this
+
+Rectangle
+
+to the specified
+
+x
+
+,
+
+y
+
+,
+
+width
+
+,
+and
+
+height
+
+.
+
+This method is included for completeness, to parallel the
+
+setBounds
+
+method of
+
+Component
+
+.
+
+**Parameters:**
+- x
+
+- the new X coordinate for the upper-left
+corner of this
+
+Rectangle
+- y
+
+- the new Y coordinate for the upper-left
+corner of this
+
+Rectangle
+- width
+
+- the new width for this
+
+Rectangle
+- height
+
+- the new height for this
+
+Rectangle
+
+**See Also:**
+- getBounds()
+
+,
+
+Component.setBounds(int, int, int, int)
+
+**Since:**
+- 1.1
+
+---
+
+#### public void setRect​(double x,
+double y,
+double width,
+double height)
+
+Sets the bounds of this
+
+Rectangle
+
+to the integer bounds
+which encompass the specified
+
+x
+
+,
+
+y
+
+,
+
+width
+
+,
+and
+
+height
+
+.
+If the parameters specify a
+
+Rectangle
+
+that exceeds the
+maximum range of integers, the result will be the best
+representation of the specified
+
+Rectangle
+
+intersected
+with the maximum integer bounds.
+
+**Specified by:**
+- setRect
+
+in class
+
+Rectangle2D
+
+**Parameters:**
+- x
+
+- the X coordinate of the upper-left corner of
+the specified rectangle
+- y
+
+- the Y coordinate of the upper-left corner of
+the specified rectangle
+- width
+
+- the width of the specified rectangle
+- height
+
+- the new height of the specified rectangle
+
+---
+
+#### @Deprecated
+
+public void reshape​(int x,
+int y,
+int width,
+int height)
+
+Sets the bounding
+
+Rectangle
+
+of this
+
+Rectangle
+
+to the specified
+
+x
+
+,
+
+y
+
+,
+
+width
+
+,
+and
+
+height
+
+.
+
+**Parameters:**
+- x
+
+- the new X coordinate for the upper-left
+corner of this
+
+Rectangle
+- y
+
+- the new Y coordinate for the upper-left
+corner of this
+
+Rectangle
+- width
+
+- the new width for this
+
+Rectangle
+- height
+
+- the new height for this
+
+Rectangle
+
+---
+
+#### public
+Point
+getLocation()
+
+Returns the location of this
+
+Rectangle
+
+.
+
+This method is included for completeness, to parallel the
+
+getLocation
+
+method of
+
+Component
+
+.
+
+**Returns:**
+- the
+
+Point
+
+that is the upper-left corner of
+this
+
+Rectangle
+
+.
+
+**See Also:**
+- Component.getLocation()
+
+,
+
+setLocation(Point)
+
+,
+
+setLocation(int, int)
+
+**Since:**
+- 1.1
+
+---
+
+#### public void setLocation​(
+Point
+p)
+
+Moves this
+
+Rectangle
+
+to the specified location.
+
+This method is included for completeness, to parallel the
+
+setLocation
+
+method of
+
+Component
+
+.
+
+**Parameters:**
+- p
+
+- the
+
+Point
+
+specifying the new location
+for this
+
+Rectangle
+
+**See Also:**
+- Component.setLocation(java.awt.Point)
+
+,
+
+getLocation()
+
+**Since:**
+- 1.1
+
+---
+
+#### public void setLocation​(int x,
+int y)
+
+Moves this
+
+Rectangle
+
+to the specified location.
+
+This method is included for completeness, to parallel the
+
+setLocation
+
+method of
+
+Component
+
+.
+
+**Parameters:**
+- x
+
+- the X coordinate of the new location
+- y
+
+- the Y coordinate of the new location
+
+**See Also:**
+- getLocation()
+
+,
+
+Component.setLocation(int, int)
+
+**Since:**
+- 1.1
+
+---
+
+#### @Deprecated
+
+public void move​(int x,
+int y)
+
+Moves this
+
+Rectangle
+
+to the specified location.
+
+**Parameters:**
+- x
+
+- the X coordinate of the new location
+- y
+
+- the Y coordinate of the new location
+
+---
+
+#### public void translate​(int dx,
+int dy)
+
+Translates this
+
+Rectangle
+
+the indicated distance,
+to the right along the X coordinate axis, and
+downward along the Y coordinate axis.
+
+**Parameters:**
+- dx
+
+- the distance to move this
+
+Rectangle
+
+along the X axis
+- dy
+
+- the distance to move this
+
+Rectangle
+
+along the Y axis
+
+**See Also:**
+- setLocation(int, int)
+
+,
+
+setLocation(java.awt.Point)
+
+---
+
+#### public
+Dimension
+getSize()
+
+Gets the size of this
+
+Rectangle
+
+, represented by
+the returned
+
+Dimension
+
+.
+
+This method is included for completeness, to parallel the
+
+getSize
+
+method of
+
+Component
+
+.
+
+**Returns:**
+- a
+
+Dimension
+
+, representing the size of
+this
+
+Rectangle
+
+.
+
+**See Also:**
+- Component.getSize()
+
+,
+
+setSize(Dimension)
+
+,
+
+setSize(int, int)
+
+**Since:**
+- 1.1
+
+---
+
+#### public void setSize​(
+Dimension
+d)
+
+Sets the size of this
+
+Rectangle
+
+to match the
+specified
+
+Dimension
+
+.
+
+This method is included for completeness, to parallel the
+
+setSize
+
+method of
+
+Component
+
+.
+
+**Parameters:**
+- d
+
+- the new size for the
+
+Dimension
+
+object
+
+**See Also:**
+- Component.setSize(java.awt.Dimension)
+
+,
+
+getSize()
+
+**Since:**
+- 1.1
+
+---
+
+#### public void setSize​(int width,
+int height)
+
+Sets the size of this
+
+Rectangle
+
+to the specified
+width and height.
+
+This method is included for completeness, to parallel the
+
+setSize
+
+method of
+
+Component
+
+.
+
+**Parameters:**
+- width
+
+- the new width for this
+
+Rectangle
+- height
+
+- the new height for this
+
+Rectangle
+
+**See Also:**
+- Component.setSize(int, int)
+
+,
+
+getSize()
+
+**Since:**
+- 1.1
+
+---
+
+#### @Deprecated
+
+public void resize​(int width,
+int height)
+
+Sets the size of this
+
+Rectangle
+
+to the specified
+width and height.
+
+**Parameters:**
+- width
+
+- the new width for this
+
+Rectangle
+- height
+
+- the new height for this
+
+Rectangle
+
+---
+
+#### public boolean contains​(
+Point
+p)
+
+Checks whether or not this
+
+Rectangle
+
+contains the
+specified
+
+Point
+
+.
+
+**Parameters:**
+- p
+
+- the
+
+Point
+
+to test
+
+**Returns:**
+- true
+
+if the specified
+
+Point
+
+is inside this
+
+Rectangle
+
+;
+
+false
+
+otherwise.
+
+**Since:**
+- 1.1
+
+---
+
+#### public boolean contains​(int x,
+int y)
+
+Checks whether or not this
+
+Rectangle
+
+contains the
+point at the specified location
+
+(x,y)
+
+.
+
+**Parameters:**
+- x
+
+- the specified X coordinate
+- y
+
+- the specified Y coordinate
+
+**Returns:**
+- true
+
+if the point
+
+(x,y)
+
+is inside this
+
+Rectangle
+
+;
+
+false
+
+otherwise.
+
+**Since:**
+- 1.1
+
+---
+
+#### public boolean contains​(
+Rectangle
+r)
+
+Checks whether or not this
+
+Rectangle
+
+entirely contains
+the specified
+
+Rectangle
+
+.
+
+**Parameters:**
+- r
+
+- the specified
+
+Rectangle
+
+**Returns:**
+- true
+
+if the
+
+Rectangle
+
+is contained entirely inside this
+
+Rectangle
+
+;
+
+false
+
+otherwise
+
+**Since:**
+- 1.2
+
+---
+
+#### public boolean contains​(int X,
+int Y,
+int W,
+int H)
+
+Checks whether this
+
+Rectangle
+
+entirely contains
+the
+
+Rectangle
+
+at the specified location
+
+(X,Y)
+
+with the
+specified dimensions
+
+(W,H)
+
+.
+
+**Parameters:**
+- X
+
+- the specified X coordinate
+- Y
+
+- the specified Y coordinate
+- W
+
+- the width of the
+
+Rectangle
+- H
+
+- the height of the
+
+Rectangle
+
+**Returns:**
+- true
+
+if the
+
+Rectangle
+
+specified by
+
+(X, Y, W, H)
+
+is entirely enclosed inside this
+
+Rectangle
+
+;
+
+false
+
+otherwise.
+
+**Since:**
+- 1.1
+
+---
+
+#### @Deprecated
+
+public boolean inside​(int X,
+int Y)
+
+Checks whether or not this
+
+Rectangle
+
+contains the
+point at the specified location
+
+(X,Y)
+
+.
+
+**Parameters:**
+- X
+
+- the specified X coordinate
+- Y
+
+- the specified Y coordinate
+
+**Returns:**
+- true
+
+if the point
+
+(X,Y)
+
+is inside this
+
+Rectangle
+
+;
+
+false
+
+otherwise.
+
+---
+
+#### public boolean intersects​(
+Rectangle
+r)
+
+Determines whether or not this
+
+Rectangle
+
+and the specified
+
+Rectangle
+
+intersect. Two rectangles intersect if
+their intersection is nonempty.
+
+**Parameters:**
+- r
+
+- the specified
+
+Rectangle
+
+**Returns:**
+- true
+
+if the specified
+
+Rectangle
+
+and this
+
+Rectangle
+
+intersect;
+
+false
+
+otherwise.
+
+---
+
+#### public
+Rectangle
+intersection​(
+Rectangle
+r)
+
+Computes the intersection of this
+
+Rectangle
+
+with the
+specified
+
+Rectangle
+
+. Returns a new
+
+Rectangle
+
+that represents the intersection of the two rectangles.
+If the two rectangles do not intersect, the result will be
+an empty rectangle.
+
+**Parameters:**
+- r
+
+- the specified
+
+Rectangle
+
+**Returns:**
+- the largest
+
+Rectangle
+
+contained in both the
+specified
+
+Rectangle
+
+and in
+this
+
+Rectangle
+
+; or if the rectangles
+do not intersect, an empty rectangle.
+
+---
+
+#### public
+Rectangle
+union​(
+Rectangle
+r)
+
+Computes the union of this
+
+Rectangle
+
+with the
+specified
+
+Rectangle
+
+. Returns a new
+
+Rectangle
+
+that
+represents the union of the two rectangles.
+
+If either
+
+Rectangle
+
+has any dimension less than zero
+the rules for
+
+non-existent
+
+rectangles
+apply.
+If only one has a dimension less than zero, then the result
+will be a copy of the other
+
+Rectangle
+
+.
+If both have dimension less than zero, then the result will
+have at least one dimension less than zero.
+
+If the resulting
+
+Rectangle
+
+would have a dimension
+too large to be expressed as an
+
+int
+
+, the result
+will have a dimension of
+
+Integer.MAX_VALUE
+
+along
+that dimension.
+
+**Parameters:**
+- r
+
+- the specified
+
+Rectangle
+
+**Returns:**
+- the smallest
+
+Rectangle
+
+containing both
+the specified
+
+Rectangle
+
+and this
+
+Rectangle
+
+.
+
+---
+
+#### public void add​(int newx,
+int newy)
+
+Adds a point, specified by the integer arguments
+
+newx,newy
+
+to the bounds of this
+
+Rectangle
+
+.
+
+If this
+
+Rectangle
+
+has any dimension less than zero,
+the rules for
+
+non-existent
+
+rectangles apply.
+In that case, the new bounds of this
+
+Rectangle
+
+will
+have a location equal to the specified coordinates and
+width and height equal to zero.
+
+After adding a point, a call to
+
+contains
+
+with the
+added point as an argument does not necessarily return
+
+true
+
+. The
+
+contains
+
+method does not
+return
+
+true
+
+for points on the right or bottom
+edges of a
+
+Rectangle
+
+. Therefore, if the added point
+falls on the right or bottom edge of the enlarged
+
+Rectangle
+
+,
+
+contains
+
+returns
+
+false
+
+for that point.
+If the specified point must be contained within the new
+
+Rectangle
+
+, a 1x1 rectangle should be added instead:
+
+```java
+r.add(newx, newy, 1, 1);
+```
+
+**Parameters:**
+- newx
+
+- the X coordinate of the new point
+- newy
+
+- the Y coordinate of the new point
+
+---
+
+#### public void add​(
+Point
+pt)
+
+Adds the specified
+
+Point
+
+to the bounds of this
+
+Rectangle
+
+.
+
+If this
+
+Rectangle
+
+has any dimension less than zero,
+the rules for
+
+non-existent
+
+rectangles apply.
+In that case, the new bounds of this
+
+Rectangle
+
+will
+have a location equal to the coordinates of the specified
+
+Point
+
+and width and height equal to zero.
+
+After adding a
+
+Point
+
+, a call to
+
+contains
+
+with the added
+
+Point
+
+as an argument does not
+necessarily return
+
+true
+
+. The
+
+contains
+
+method does not return
+
+true
+
+for points on the right
+or bottom edges of a
+
+Rectangle
+
+. Therefore if the added
+
+Point
+
+falls on the right or bottom edge of the
+enlarged
+
+Rectangle
+
+,
+
+contains
+
+returns
+
+false
+
+for that
+
+Point
+
+.
+If the specified point must be contained within the new
+
+Rectangle
+
+, a 1x1 rectangle should be added instead:
+
+```java
+r.add(pt.x, pt.y, 1, 1);
+```
+
+**Parameters:**
+- pt
+
+- the new
+
+Point
+
+to add to this
+
+Rectangle
+
+---
+
+#### public void add​(
+Rectangle
+r)
+
+Adds a
+
+Rectangle
+
+to this
+
+Rectangle
+
+.
+The resulting
+
+Rectangle
+
+is the union of the two
+rectangles.
+
+If either
+
+Rectangle
+
+has any dimension less than 0, the
+result will have the dimensions of the other
+
+Rectangle
+
+.
+If both
+
+Rectangle
+
+s have at least one dimension less
+than 0, the result will have at least one dimension less than 0.
+
+If either
+
+Rectangle
+
+has one or both dimensions equal
+to 0, the result along those axes with 0 dimensions will be
+equivalent to the results obtained by adding the corresponding
+origin coordinate to the result rectangle along that axis,
+similar to the operation of the
+
+add(Point)
+
+method,
+but contribute no further dimension beyond that.
+
+If the resulting
+
+Rectangle
+
+would have a dimension
+too large to be expressed as an
+
+int
+
+, the result
+will have a dimension of
+
+Integer.MAX_VALUE
+
+along
+that dimension.
+
+**Parameters:**
+- r
+
+- the specified
+
+Rectangle
+
+---
+
+#### public void grow​(int h,
+int v)
+
+Resizes the
+
+Rectangle
+
+both horizontally and vertically.
+
+This method modifies the
+
+Rectangle
+
+so that it is
+
+h
+
+units larger on both the left and right side,
+and
+
+v
+
+units larger at both the top and bottom.
+
+The new
+
+Rectangle
+
+has
+
+(x - h, y - v)
+
+as its upper-left corner,
+width of
+
+(width + 2h)
+
+,
+and a height of
+
+(height + 2v)
+
+.
+
+If negative values are supplied for
+
+h
+
+and
+
+v
+
+, the size of the
+
+Rectangle
+
+decreases accordingly.
+The
+
+grow
+
+method will check for integer overflow
+and underflow, but does not check whether the resulting
+values of
+
+width
+
+and
+
+height
+
+grow
+from negative to non-negative or shrink from non-negative
+to negative.
+
+**Parameters:**
+- h
+
+- the horizontal expansion
+- v
+
+- the vertical expansion
+
+---
+
+#### public boolean isEmpty()
+
+Determines whether the
+
+RectangularShape
+
+is empty.
+When the
+
+RectangularShape
+
+is empty, it encloses no
+area.
+
+**Specified by:**
+- isEmpty
+
+in class
+
+RectangularShape
+
+**Returns:**
+- true
+
+if the
+
+RectangularShape
+
+is empty;
+
+false
+
+otherwise.
+
+**Since:**
+- 1.2
+
+---
+
+#### public int outcode​(double x,
+double y)
+
+Determines where the specified coordinates lie with respect
+to this
+
+Rectangle2D
+
+.
+This method computes a binary OR of the appropriate mask values
+indicating, for each side of this
+
+Rectangle2D
+
+,
+whether or not the specified coordinates are on the same side
+of the edge as the rest of this
+
+Rectangle2D
+
+.
+
+**Specified by:**
+- outcode
+
+in class
+
+Rectangle2D
+
+**Parameters:**
+- x
+
+- the specified X coordinate
+- y
+
+- the specified Y coordinate
+
+**Returns:**
+- the logical OR of all appropriate out codes.
+
+**See Also:**
+- Rectangle2D.OUT_LEFT
+
+,
+
+Rectangle2D.OUT_TOP
+
+,
+
+Rectangle2D.OUT_RIGHT
+
+,
+
+Rectangle2D.OUT_BOTTOM
+
+**Since:**
+- 1.2
+
+---
+
+#### public
+Rectangle2D
+createIntersection​(
+Rectangle2D
+r)
+
+Returns a new
+
+Rectangle2D
+
+object representing the
+intersection of this
+
+Rectangle2D
+
+with the specified
+
+Rectangle2D
+
+.
+
+**Specified by:**
+- createIntersection
+
+in class
+
+Rectangle2D
+
+**Parameters:**
+- r
+
+- the
+
+Rectangle2D
+
+to be intersected with
+this
+
+Rectangle2D
+
+**Returns:**
+- the largest
+
+Rectangle2D
+
+contained in both
+the specified
+
+Rectangle2D
+
+and in this
+
+Rectangle2D
+
+.
+
+**Since:**
+- 1.2
+
+---
+
+#### public
+Rectangle2D
+createUnion​(
+Rectangle2D
+r)
+
+Returns a new
+
+Rectangle2D
+
+object representing the
+union of this
+
+Rectangle2D
+
+with the specified
+
+Rectangle2D
+
+.
+
+**Specified by:**
+- createUnion
+
+in class
+
+Rectangle2D
+
+**Parameters:**
+- r
+
+- the
+
+Rectangle2D
+
+to be combined with
+this
+
+Rectangle2D
+
+**Returns:**
+- the smallest
+
+Rectangle2D
+
+containing both
+the specified
+
+Rectangle2D
+
+and this
+
+Rectangle2D
+
+.
+
+**Since:**
+- 1.2
+
+---
+
+#### public boolean equals​(
+Object
+obj)
+
+Checks whether two rectangles are equal.
+
+The result is
+
+true
+
+if and only if the argument is not
+
+null
+
+and is a
+
+Rectangle
+
+object that has the
+same upper-left corner, width, and height as
+this
+
+Rectangle
+
+.
+
+**Overrides:**
+- equals
+
+in class
+
+Rectangle2D
+
+**Parameters:**
+- obj
+
+- the
+
+Object
+
+to compare with
+this
+
+Rectangle
+
+**Returns:**
+- true
+
+if the objects are equal;
+
+false
+
+otherwise.
+
+**See Also:**
+- Object.hashCode()
+
+,
+
+HashMap
+
+---
+
+#### public
+String
+toString()
+
+Returns a
+
+String
+
+representing this
+
+Rectangle
+
+and its values.
+
+**Overrides:**
+- toString
+
+in class
+
+Object
+
+**Returns:**
+- a
+
+String
+
+representing this
+
+Rectangle
+
+object's coordinate and size values.
+
+---
+
+### Additional Sections
+
+#### Class Rectangle
+
+java.lang.Object
+
+- java.awt.geom.RectangularShape
+- - java.awt.geom.Rectangle2D
+- - java.awt.Rectangle
+
+java.awt.geom.RectangularShape
+
+- java.awt.geom.Rectangle2D
+- - java.awt.Rectangle
+
+java.awt.geom.Rectangle2D
+
+- java.awt.Rectangle
+
+java.awt.Rectangle
+
+**All Implemented Interfaces:** Shape
+
+,
+
+Serializable
+
+,
+
+Cloneable
+
+**Direct Known Subclasses:** DefaultCaret
+
+```java
+public class
+Rectangle
+
+extends
+Rectangle2D
+
+implements
+Shape
+,
+Serializable
+```
+
+A
+
+Rectangle
+
+specifies an area in a coordinate space that is
+enclosed by the
+
+Rectangle
+
+object's upper-left point
+
+(x,y)
+
+in the coordinate space, its width, and its height.
+
+A
+
+Rectangle
+
+object's
+
+width
+
+and
+
+height
+
+are
+
+public
+
+fields. The constructors
+that create a
+
+Rectangle
+
+, and the methods that can modify
+one, do not prevent setting a negative value for width or height.
+
+A
+
+Rectangle
+
+whose width or height is exactly zero has location
+along those axes with zero dimension, but is otherwise considered empty.
+
+The
+
+isEmpty()
+
+method will return true for such a
+
+Rectangle
+
+.
+Methods which test if an empty
+
+Rectangle
+
+contains or intersects
+a point or rectangle will always return false if either dimension is zero.
+Methods which combine such a
+
+Rectangle
+
+with a point or rectangle
+will include the location of the
+
+Rectangle
+
+on that axis in the
+result as if the
+
+add(Point)
+
+method were being called.
+
+A
+
+Rectangle
+
+whose width or height is negative has neither
+location nor dimension along those axes with negative dimensions.
+Such a
+
+Rectangle
+
+is treated as non-existent along those axes.
+Such a
+
+Rectangle
+
+is also empty with respect to containment
+calculations and methods which test if it contains or intersects a
+point or rectangle will always return false.
+Methods which combine such a
+
+Rectangle
+
+with a point or rectangle
+will ignore the
+
+Rectangle
+
+entirely in generating the result.
+If two
+
+Rectangle
+
+objects are combined and each has a negative
+dimension, the result will have at least one negative dimension.
+
+Methods which affect only the location of a
+
+Rectangle
+
+will
+operate on its location regardless of whether or not it has a negative
+or zero dimension along either axis.
+
+Note that a
+
+Rectangle
+
+constructed with the default no-argument
+constructor will have dimensions of
+
+0x0
+
+and therefore be empty.
+That
+
+Rectangle
+
+will still have a location of
+
+(0,0)
+
+and
+will contribute that location to the union and add operations.
+Code attempting to accumulate the bounds of a set of points should
+therefore initially construct the
+
+Rectangle
+
+with a specifically
+negative width and height or it should use the first point in the set
+to construct the
+
+Rectangle
+
+.
+For example:
+
+```java
+Rectangle bounds = new Rectangle(0, 0, -1, -1);
+for (int i = 0; i < points.length; i++) {
+bounds.add(points[i]);
+}
+```
+
+or if we know that the points array contains at least one point:
+
+```java
+Rectangle bounds = new Rectangle(points[0]);
+for (int i = 1; i < points.length; i++) {
+bounds.add(points[i]);
+}
+```
+
+This class uses 32-bit integers to store its location and dimensions.
+Frequently operations may produce a result that exceeds the range of
+a 32-bit integer.
+The methods will calculate their results in a way that avoids any
+32-bit overflow for intermediate results and then choose the best
+representation to store the final results back into the 32-bit fields
+which hold the location and dimensions.
+The location of the result will be stored into the
+
+x
+
+and
+
+y
+
+fields by clipping the true result to the nearest 32-bit value.
+The values stored into the
+
+width
+
+and
+
+height
+
+dimension
+fields will be chosen as the 32-bit values that encompass the largest
+part of the true result as possible.
+Generally this means that the dimension will be clipped independently
+to the range of 32-bit integers except that if the location had to be
+moved to store it into its pair of 32-bit fields then the dimensions
+will be adjusted relative to the "best representation" of the location.
+If the true result had a negative dimension and was therefore
+non-existent along one or both axes, the stored dimensions will be
+negative numbers in those axes.
+If the true result had a location that could be represented within
+the range of 32-bit integers, but zero dimension along one or both
+axes, then the stored dimensions will be zero in those axes.
+
+**Since:** 1.0
+**See Also:** Serialized Form
+
+public class
+
+Rectangle
+
+extends
+
+Rectangle2D
+
+implements
+
+Shape
+
+,
+
+Serializable
+
+A
+
+Rectangle
+
+specifies an area in a coordinate space that is
+enclosed by the
+
+Rectangle
+
+object's upper-left point
+
+(x,y)
+
+in the coordinate space, its width, and its height.
+
+A
+
+Rectangle
+
+object's
+
+width
+
+and
+
+height
+
+are
+
+public
+
+fields. The constructors
+that create a
+
+Rectangle
+
+, and the methods that can modify
+one, do not prevent setting a negative value for width or height.
+
+A
+
+Rectangle
+
+whose width or height is exactly zero has location
+along those axes with zero dimension, but is otherwise considered empty.
+
+The
+
+isEmpty()
+
+method will return true for such a
+
+Rectangle
+
+.
+Methods which test if an empty
+
+Rectangle
+
+contains or intersects
+a point or rectangle will always return false if either dimension is zero.
+Methods which combine such a
+
+Rectangle
+
+with a point or rectangle
+will include the location of the
+
+Rectangle
+
+on that axis in the
+result as if the
+
+add(Point)
+
+method were being called.
+
+A
+
+Rectangle
+
+whose width or height is negative has neither
+location nor dimension along those axes with negative dimensions.
+Such a
+
+Rectangle
+
+is treated as non-existent along those axes.
+Such a
+
+Rectangle
+
+is also empty with respect to containment
+calculations and methods which test if it contains or intersects a
+point or rectangle will always return false.
+Methods which combine such a
+
+Rectangle
+
+with a point or rectangle
+will ignore the
+
+Rectangle
+
+entirely in generating the result.
+If two
+
+Rectangle
+
+objects are combined and each has a negative
+dimension, the result will have at least one negative dimension.
+
+Methods which affect only the location of a
+
+Rectangle
+
+will
+operate on its location regardless of whether or not it has a negative
+or zero dimension along either axis.
+
+Note that a
+
+Rectangle
+
+constructed with the default no-argument
+constructor will have dimensions of
+
+0x0
+
+and therefore be empty.
+That
+
+Rectangle
+
+will still have a location of
+
+(0,0)
+
+and
+will contribute that location to the union and add operations.
+Code attempting to accumulate the bounds of a set of points should
+therefore initially construct the
+
+Rectangle
+
+with a specifically
+negative width and height or it should use the first point in the set
+to construct the
+
+Rectangle
+
+.
+For example:
+
+```java
+Rectangle bounds = new Rectangle(0, 0, -1, -1);
+for (int i = 0; i < points.length; i++) {
+bounds.add(points[i]);
+}
+```
+
+or if we know that the points array contains at least one point:
+
+```java
+Rectangle bounds = new Rectangle(points[0]);
+for (int i = 1; i < points.length; i++) {
+bounds.add(points[i]);
+}
+```
+
+This class uses 32-bit integers to store its location and dimensions.
+Frequently operations may produce a result that exceeds the range of
+a 32-bit integer.
+The methods will calculate their results in a way that avoids any
+32-bit overflow for intermediate results and then choose the best
+representation to store the final results back into the 32-bit fields
+which hold the location and dimensions.
+The location of the result will be stored into the
+
+x
+
+and
+
+y
+
+fields by clipping the true result to the nearest 32-bit value.
+The values stored into the
+
+width
+
+and
+
+height
+
+dimension
+fields will be chosen as the 32-bit values that encompass the largest
+part of the true result as possible.
+Generally this means that the dimension will be clipped independently
+to the range of 32-bit integers except that if the location had to be
+moved to store it into its pair of 32-bit fields then the dimensions
+will be adjusted relative to the "best representation" of the location.
+If the true result had a negative dimension and was therefore
+non-existent along one or both axes, the stored dimensions will be
+negative numbers in those axes.
+If the true result had a location that could be represented within
+the range of 32-bit integers, but zero dimension along one or both
+axes, then the stored dimensions will be zero in those axes.
+
+A
+
+Rectangle
+
+object's
+
+width
+
+and
+
+height
+
+are
+
+public
+
+fields. The constructors
+that create a
+
+Rectangle
+
+, and the methods that can modify
+one, do not prevent setting a negative value for width or height.
+
+A
+
+Rectangle
+
+whose width or height is exactly zero has location
+along those axes with zero dimension, but is otherwise considered empty.
+
+The
+
+isEmpty()
+
+method will return true for such a
+
+Rectangle
+
+.
+Methods which test if an empty
+
+Rectangle
+
+contains or intersects
+a point or rectangle will always return false if either dimension is zero.
+Methods which combine such a
+
+Rectangle
+
+with a point or rectangle
+will include the location of the
+
+Rectangle
+
+on that axis in the
+result as if the
+
+add(Point)
+
+method were being called.
+
+A
+
+Rectangle
+
+whose width or height is negative has neither
+location nor dimension along those axes with negative dimensions.
+Such a
+
+Rectangle
+
+is treated as non-existent along those axes.
+Such a
+
+Rectangle
+
+is also empty with respect to containment
+calculations and methods which test if it contains or intersects a
+point or rectangle will always return false.
+Methods which combine such a
+
+Rectangle
+
+with a point or rectangle
+will ignore the
+
+Rectangle
+
+entirely in generating the result.
+If two
+
+Rectangle
+
+objects are combined and each has a negative
+dimension, the result will have at least one negative dimension.
+
+Methods which affect only the location of a
+
+Rectangle
+
+will
+operate on its location regardless of whether or not it has a negative
+or zero dimension along either axis.
+
+Note that a
+
+Rectangle
+
+constructed with the default no-argument
+constructor will have dimensions of
+
+0x0
+
+and therefore be empty.
+That
+
+Rectangle
+
+will still have a location of
+
+(0,0)
+
+and
+will contribute that location to the union and add operations.
+Code attempting to accumulate the bounds of a set of points should
+therefore initially construct the
+
+Rectangle
+
+with a specifically
+negative width and height or it should use the first point in the set
+to construct the
+
+Rectangle
+
+.
+For example:
+
+```java
+Rectangle bounds = new Rectangle(0, 0, -1, -1);
+for (int i = 0; i < points.length; i++) {
+bounds.add(points[i]);
+}
+```
+
+or if we know that the points array contains at least one point:
+
+```java
+Rectangle bounds = new Rectangle(points[0]);
+for (int i = 1; i < points.length; i++) {
+bounds.add(points[i]);
+}
+```
+
+This class uses 32-bit integers to store its location and dimensions.
+Frequently operations may produce a result that exceeds the range of
+a 32-bit integer.
+The methods will calculate their results in a way that avoids any
+32-bit overflow for intermediate results and then choose the best
+representation to store the final results back into the 32-bit fields
+which hold the location and dimensions.
+The location of the result will be stored into the
+
+x
+
+and
+
+y
+
+fields by clipping the true result to the nearest 32-bit value.
+The values stored into the
+
+width
+
+and
+
+height
+
+dimension
+fields will be chosen as the 32-bit values that encompass the largest
+part of the true result as possible.
+Generally this means that the dimension will be clipped independently
+to the range of 32-bit integers except that if the location had to be
+moved to store it into its pair of 32-bit fields then the dimensions
+will be adjusted relative to the "best representation" of the location.
+If the true result had a negative dimension and was therefore
+non-existent along one or both axes, the stored dimensions will be
+negative numbers in those axes.
+If the true result had a location that could be represented within
+the range of 32-bit integers, but zero dimension along one or both
+axes, then the stored dimensions will be zero in those axes.
+
+A
+
+Rectangle
+
+whose width or height is exactly zero has location
+along those axes with zero dimension, but is otherwise considered empty.
+
+The
+
+isEmpty()
+
+method will return true for such a
+
+Rectangle
+
+.
+Methods which test if an empty
+
+Rectangle
+
+contains or intersects
+a point or rectangle will always return false if either dimension is zero.
+Methods which combine such a
+
+Rectangle
+
+with a point or rectangle
+will include the location of the
+
+Rectangle
+
+on that axis in the
+result as if the
+
+add(Point)
+
+method were being called.
+
+A
+
+Rectangle
+
+whose width or height is negative has neither
+location nor dimension along those axes with negative dimensions.
+Such a
+
+Rectangle
+
+is treated as non-existent along those axes.
+Such a
+
+Rectangle
+
+is also empty with respect to containment
+calculations and methods which test if it contains or intersects a
+point or rectangle will always return false.
+Methods which combine such a
+
+Rectangle
+
+with a point or rectangle
+will ignore the
+
+Rectangle
+
+entirely in generating the result.
+If two
+
+Rectangle
+
+objects are combined and each has a negative
+dimension, the result will have at least one negative dimension.
+
+Methods which affect only the location of a
+
+Rectangle
+
+will
+operate on its location regardless of whether or not it has a negative
+or zero dimension along either axis.
+
+Note that a
+
+Rectangle
+
+constructed with the default no-argument
+constructor will have dimensions of
+
+0x0
+
+and therefore be empty.
+That
+
+Rectangle
+
+will still have a location of
+
+(0,0)
+
+and
+will contribute that location to the union and add operations.
+Code attempting to accumulate the bounds of a set of points should
+therefore initially construct the
+
+Rectangle
+
+with a specifically
+negative width and height or it should use the first point in the set
+to construct the
+
+Rectangle
+
+.
+For example:
+
+```java
+Rectangle bounds = new Rectangle(0, 0, -1, -1);
+for (int i = 0; i < points.length; i++) {
+bounds.add(points[i]);
+}
+```
+
+or if we know that the points array contains at least one point:
+
+```java
+Rectangle bounds = new Rectangle(points[0]);
+for (int i = 1; i < points.length; i++) {
+bounds.add(points[i]);
+}
+```
+
+This class uses 32-bit integers to store its location and dimensions.
+Frequently operations may produce a result that exceeds the range of
+a 32-bit integer.
+The methods will calculate their results in a way that avoids any
+32-bit overflow for intermediate results and then choose the best
+representation to store the final results back into the 32-bit fields
+which hold the location and dimensions.
+The location of the result will be stored into the
+
+x
+
+and
+
+y
+
+fields by clipping the true result to the nearest 32-bit value.
+The values stored into the
+
+width
+
+and
+
+height
+
+dimension
+fields will be chosen as the 32-bit values that encompass the largest
+part of the true result as possible.
+Generally this means that the dimension will be clipped independently
+to the range of 32-bit integers except that if the location had to be
+moved to store it into its pair of 32-bit fields then the dimensions
+will be adjusted relative to the "best representation" of the location.
+If the true result had a negative dimension and was therefore
+non-existent along one or both axes, the stored dimensions will be
+negative numbers in those axes.
+If the true result had a location that could be represented within
+the range of 32-bit integers, but zero dimension along one or both
+axes, then the stored dimensions will be zero in those axes.
+
+A
+
+Rectangle
+
+whose width or height is negative has neither
+location nor dimension along those axes with negative dimensions.
+Such a
+
+Rectangle
+
+is treated as non-existent along those axes.
+Such a
+
+Rectangle
+
+is also empty with respect to containment
+calculations and methods which test if it contains or intersects a
+point or rectangle will always return false.
+Methods which combine such a
+
+Rectangle
+
+with a point or rectangle
+will ignore the
+
+Rectangle
+
+entirely in generating the result.
+If two
+
+Rectangle
+
+objects are combined and each has a negative
+dimension, the result will have at least one negative dimension.
+
+Methods which affect only the location of a
+
+Rectangle
+
+will
+operate on its location regardless of whether or not it has a negative
+or zero dimension along either axis.
+
+Note that a
+
+Rectangle
+
+constructed with the default no-argument
+constructor will have dimensions of
+
+0x0
+
+and therefore be empty.
+That
+
+Rectangle
+
+will still have a location of
+
+(0,0)
+
+and
+will contribute that location to the union and add operations.
+Code attempting to accumulate the bounds of a set of points should
+therefore initially construct the
+
+Rectangle
+
+with a specifically
+negative width and height or it should use the first point in the set
+to construct the
+
+Rectangle
+
+.
+For example:
+
+```java
+Rectangle bounds = new Rectangle(0, 0, -1, -1);
+for (int i = 0; i < points.length; i++) {
+bounds.add(points[i]);
+}
+```
+
+or if we know that the points array contains at least one point:
+
+```java
+Rectangle bounds = new Rectangle(points[0]);
+for (int i = 1; i < points.length; i++) {
+bounds.add(points[i]);
+}
+```
+
+This class uses 32-bit integers to store its location and dimensions.
+Frequently operations may produce a result that exceeds the range of
+a 32-bit integer.
+The methods will calculate their results in a way that avoids any
+32-bit overflow for intermediate results and then choose the best
+representation to store the final results back into the 32-bit fields
+which hold the location and dimensions.
+The location of the result will be stored into the
+
+x
+
+and
+
+y
+
+fields by clipping the true result to the nearest 32-bit value.
+The values stored into the
+
+width
+
+and
+
+height
+
+dimension
+fields will be chosen as the 32-bit values that encompass the largest
+part of the true result as possible.
+Generally this means that the dimension will be clipped independently
+to the range of 32-bit integers except that if the location had to be
+moved to store it into its pair of 32-bit fields then the dimensions
+will be adjusted relative to the "best representation" of the location.
+If the true result had a negative dimension and was therefore
+non-existent along one or both axes, the stored dimensions will be
+negative numbers in those axes.
+If the true result had a location that could be represented within
+the range of 32-bit integers, but zero dimension along one or both
+axes, then the stored dimensions will be zero in those axes.
+
+Methods which affect only the location of a
+
+Rectangle
+
+will
+operate on its location regardless of whether or not it has a negative
+or zero dimension along either axis.
+
+Note that a
+
+Rectangle
+
+constructed with the default no-argument
+constructor will have dimensions of
+
+0x0
+
+and therefore be empty.
+That
+
+Rectangle
+
+will still have a location of
+
+(0,0)
+
+and
+will contribute that location to the union and add operations.
+Code attempting to accumulate the bounds of a set of points should
+therefore initially construct the
+
+Rectangle
+
+with a specifically
+negative width and height or it should use the first point in the set
+to construct the
+
+Rectangle
+
+.
+For example:
+
+```java
+Rectangle bounds = new Rectangle(0, 0, -1, -1);
+for (int i = 0; i < points.length; i++) {
+bounds.add(points[i]);
+}
+```
+
+or if we know that the points array contains at least one point:
+
+```java
+Rectangle bounds = new Rectangle(points[0]);
+for (int i = 1; i < points.length; i++) {
+bounds.add(points[i]);
+}
+```
+
+This class uses 32-bit integers to store its location and dimensions.
+Frequently operations may produce a result that exceeds the range of
+a 32-bit integer.
+The methods will calculate their results in a way that avoids any
+32-bit overflow for intermediate results and then choose the best
+representation to store the final results back into the 32-bit fields
+which hold the location and dimensions.
+The location of the result will be stored into the
+
+x
+
+and
+
+y
+
+fields by clipping the true result to the nearest 32-bit value.
+The values stored into the
+
+width
+
+and
+
+height
+
+dimension
+fields will be chosen as the 32-bit values that encompass the largest
+part of the true result as possible.
+Generally this means that the dimension will be clipped independently
+to the range of 32-bit integers except that if the location had to be
+moved to store it into its pair of 32-bit fields then the dimensions
+will be adjusted relative to the "best representation" of the location.
+If the true result had a negative dimension and was therefore
+non-existent along one or both axes, the stored dimensions will be
+negative numbers in those axes.
+If the true result had a location that could be represented within
+the range of 32-bit integers, but zero dimension along one or both
+axes, then the stored dimensions will be zero in those axes.
+
+Note that a
+
+Rectangle
+
+constructed with the default no-argument
+constructor will have dimensions of
+
+0x0
+
+and therefore be empty.
+That
+
+Rectangle
+
+will still have a location of
+
+(0,0)
+
+and
+will contribute that location to the union and add operations.
+Code attempting to accumulate the bounds of a set of points should
+therefore initially construct the
+
+Rectangle
+
+with a specifically
+negative width and height or it should use the first point in the set
+to construct the
+
+Rectangle
+
+.
+For example:
+
+```java
+Rectangle bounds = new Rectangle(0, 0, -1, -1);
+for (int i = 0; i < points.length; i++) {
+bounds.add(points[i]);
+}
+```
+
+or if we know that the points array contains at least one point:
+
+```java
+Rectangle bounds = new Rectangle(points[0]);
+for (int i = 1; i < points.length; i++) {
+bounds.add(points[i]);
+}
+```
+
+This class uses 32-bit integers to store its location and dimensions.
+Frequently operations may produce a result that exceeds the range of
+a 32-bit integer.
+The methods will calculate their results in a way that avoids any
+32-bit overflow for intermediate results and then choose the best
+representation to store the final results back into the 32-bit fields
+which hold the location and dimensions.
+The location of the result will be stored into the
+
+x
+
+and
+
+y
+
+fields by clipping the true result to the nearest 32-bit value.
+The values stored into the
+
+width
+
+and
+
+height
+
+dimension
+fields will be chosen as the 32-bit values that encompass the largest
+part of the true result as possible.
+Generally this means that the dimension will be clipped independently
+to the range of 32-bit integers except that if the location had to be
+moved to store it into its pair of 32-bit fields then the dimensions
+will be adjusted relative to the "best representation" of the location.
+If the true result had a negative dimension and was therefore
+non-existent along one or both axes, the stored dimensions will be
+negative numbers in those axes.
+If the true result had a location that could be represented within
+the range of 32-bit integers, but zero dimension along one or both
+axes, then the stored dimensions will be zero in those axes.
+
+Rectangle bounds = new Rectangle(0, 0, -1, -1);
+for (int i = 0; i < points.length; i++) {
+bounds.add(points[i]);
+}
+
+Rectangle bounds = new Rectangle(points[0]);
+for (int i = 1; i < points.length; i++) {
+bounds.add(points[i]);
+}
+
+This class uses 32-bit integers to store its location and dimensions.
+Frequently operations may produce a result that exceeds the range of
+a 32-bit integer.
+The methods will calculate their results in a way that avoids any
+32-bit overflow for intermediate results and then choose the best
+representation to store the final results back into the 32-bit fields
+which hold the location and dimensions.
+The location of the result will be stored into the
+
+x
+
+and
+
+y
+
+fields by clipping the true result to the nearest 32-bit value.
+The values stored into the
+
+width
+
+and
+
+height
+
+dimension
+fields will be chosen as the 32-bit values that encompass the largest
+part of the true result as possible.
+Generally this means that the dimension will be clipped independently
+to the range of 32-bit integers except that if the location had to be
+moved to store it into its pair of 32-bit fields then the dimensions
+will be adjusted relative to the "best representation" of the location.
+If the true result had a negative dimension and was therefore
+non-existent along one or both axes, the stored dimensions will be
+negative numbers in those axes.
+If the true result had a location that could be represented within
+the range of 32-bit integers, but zero dimension along one or both
+axes, then the stored dimensions will be zero in those axes.
+
+======== NESTED CLASS SUMMARY ========
+
+- Nested Class Summary
+
+- Nested classes/interfaces declared in class java.awt.geom.
+
+Rectangle2D
+
+Rectangle2D.Double
+
+,
+
+Rectangle2D.Float
+
+=========== FIELD SUMMARY ===========
+
+- Field Summary
+
+Fields
+
+Modifier and Type
+
+Field
+
+Description
+
+int
+
+height
+
+The height of the
+
+Rectangle
+
+.
+
+int
+
+width
+
+The width of the
+
+Rectangle
+
+.
+
+int
+
+x
+
+The X coordinate of the upper-left corner of the
+
+Rectangle
+
+.
+
+int
+
+y
+
+The Y coordinate of the upper-left corner of the
+
+Rectangle
+
+.
+
+- Fields declared in class java.awt.geom.
+
+Rectangle2D
+
+OUT_BOTTOM
+
+,
+
+OUT_LEFT
+
+,
+
+OUT_RIGHT
+
+,
+
+OUT_TOP
+
+======== CONSTRUCTOR SUMMARY ========
+
+- Constructor Summary
+
+Constructors
+
+Constructor
+
+Description
+
+Rectangle
+
+()
+
+Constructs a new
+
+Rectangle
+
+whose upper-left corner
+is at (0, 0) in the coordinate space, and whose width and
+height are both zero.
+
+Rectangle
+
+​(int width,
+int height)
+
+Constructs a new
+
+Rectangle
+
+whose upper-left corner
+is at (0, 0) in the coordinate space, and whose width and
+height are specified by the arguments of the same name.
+
+Rectangle
+
+​(int x,
+int y,
+int width,
+int height)
+
+Constructs a new
+
+Rectangle
+
+whose upper-left corner is
+specified as
+
+(x,y)
+
+and whose width and height
+are specified by the arguments of the same name.
+
+Rectangle
+
+​(
+
+Dimension
+
+d)
+
+Constructs a new
+
+Rectangle
+
+whose top left corner is
+(0, 0) and whose width and height are specified
+by the
+
+Dimension
+
+argument.
+
+Rectangle
+
+​(
+
+Point
+
+p)
+
+Constructs a new
+
+Rectangle
+
+whose upper-left corner is the
+specified
+
+Point
+
+, and whose width and height are both zero.
+
+Rectangle
+
+​(
+
+Point
+
+p,
+
+Dimension
+
+d)
+
+Constructs a new
+
+Rectangle
+
+whose upper-left corner is
+specified by the
+
+Point
+
+argument, and
+whose width and height are specified by the
+
+Dimension
+
+argument.
+
+Rectangle
+
+​(
+
+Rectangle
+
+r)
+
+Constructs a new
+
+Rectangle
+
+, initialized to match
+the values of the specified
+
+Rectangle
+
+.
+
+========== METHOD SUMMARY ===========
+
+- Method Summary
+
+All Methods
+
+Instance Methods
+
+Concrete Methods
+
+Deprecated Methods
+
+Modifier and Type
+
+Method
+
+Description
+
+void
+
+add
+
+​(int newx,
+int newy)
+
+Adds a point, specified by the integer arguments
+
+newx,newy
+
+to the bounds of this
+
+Rectangle
+
+.
+
+void
+
+add
+
+​(
+
+Point
+
+pt)
+
+Adds the specified
+
+Point
+
+to the bounds of this
+
+Rectangle
+
+.
+
+void
+
+add
+
+​(
+
+Rectangle
+
+r)
+
+Adds a
+
+Rectangle
+
+to this
+
+Rectangle
+
+.
+
+boolean
+
+contains
+
+​(int x,
+int y)
+
+Checks whether or not this
+
+Rectangle
+
+contains the
+point at the specified location
+
+(x,y)
+
+.
+
+boolean
+
+contains
+
+​(int X,
+int Y,
+int W,
+int H)
+
+Checks whether this
+
+Rectangle
+
+entirely contains
+the
+
+Rectangle
+
+at the specified location
+
+(X,Y)
+
+with the
+specified dimensions
+
+(W,H)
+
+.
+
+boolean
+
+contains
+
+​(
+
+Point
+
+p)
+
+Checks whether or not this
+
+Rectangle
+
+contains the
+specified
+
+Point
+
+.
+
+boolean
+
+contains
+
+​(
+
+Rectangle
+
+r)
+
+Checks whether or not this
+
+Rectangle
+
+entirely contains
+the specified
+
+Rectangle
+
+.
+
+Rectangle2D
+
+createIntersection
+
+​(
+
+Rectangle2D
+
+r)
+
+Returns a new
+
+Rectangle2D
+
+object representing the
+intersection of this
+
+Rectangle2D
+
+with the specified
+
+Rectangle2D
+
+.
+
+Rectangle2D
+
+createUnion
+
+​(
+
+Rectangle2D
+
+r)
+
+Returns a new
+
+Rectangle2D
+
+object representing the
+union of this
+
+Rectangle2D
+
+with the specified
+
+Rectangle2D
+
+.
+
+boolean
+
+equals
+
+​(
+
+Object
+
+obj)
+
+Checks whether two rectangles are equal.
+
+Rectangle
+
+getBounds
+
+()
+
+Gets the bounding
+
+Rectangle
+
+of this
+
+Rectangle
+
+.
+
+Rectangle2D
+
+getBounds2D
+
+()
+
+Returns a high precision and more accurate bounding box of
+the
+
+Shape
+
+than the
+
+getBounds
+
+method.
+
+double
+
+getHeight
+
+()
+
+Returns the height of the bounding
+
+Rectangle
+
+in
+
+double
+
+precision.
+
+Point
+
+getLocation
+
+()
+
+Returns the location of this
+
+Rectangle
+
+.
+
+Dimension
+
+getSize
+
+()
+
+Gets the size of this
+
+Rectangle
+
+, represented by
+the returned
+
+Dimension
+
+.
+
+double
+
+getWidth
+
+()
+
+Returns the width of the bounding
+
+Rectangle
+
+in
+
+double
+
+precision.
+
+double
+
+getX
+
+()
+
+Returns the X coordinate of the bounding
+
+Rectangle
+
+in
+
+double
+
+precision.
+
+double
+
+getY
+
+()
+
+Returns the Y coordinate of the bounding
+
+Rectangle
+
+in
+
+double
+
+precision.
+
+void
+
+grow
+
+​(int h,
+int v)
+
+Resizes the
+
+Rectangle
+
+both horizontally and vertically.
+
+boolean
+
+inside
+
+​(int X,
+int Y)
+
+Deprecated.
+
+As of JDK version 1.1,
+replaced by
+
+contains(int, int)
+
+.
+
+Rectangle
+
+intersection
+
+​(
+
+Rectangle
+
+r)
+
+Computes the intersection of this
+
+Rectangle
+
+with the
+specified
+
+Rectangle
+
+.
+
+boolean
+
+intersects
+
+​(
+
+Rectangle
+
+r)
+
+Determines whether or not this
+
+Rectangle
+
+and the specified
+
+Rectangle
+
+intersect.
+
+boolean
+
+isEmpty
+
+()
+
+Determines whether the
+
+RectangularShape
+
+is empty.
+
+void
+
+move
+
+​(int x,
+int y)
+
+Deprecated.
+
+As of JDK version 1.1,
+replaced by
+
+setLocation(int, int)
+
+.
+
+int
+
+outcode
+
+​(double x,
+double y)
+
+Determines where the specified coordinates lie with respect
+to this
+
+Rectangle2D
+
+.
+
+void
+
+reshape
+
+​(int x,
+int y,
+int width,
+int height)
+
+Deprecated.
+
+As of JDK version 1.1,
+replaced by
+
+setBounds(int, int, int, int)
+
+.
+
+void
+
+resize
+
+​(int width,
+int height)
+
+Deprecated.
+
+As of JDK version 1.1,
+replaced by
+
+setSize(int, int)
+
+.
+
+void
+
+setBounds
+
+​(int x,
+int y,
+int width,
+int height)
+
+Sets the bounding
+
+Rectangle
+
+of this
+
+Rectangle
+
+to the specified
+
+x
+
+,
+
+y
+
+,
+
+width
+
+,
+and
+
+height
+
+.
+
+void
+
+setBounds
+
+​(
+
+Rectangle
+
+r)
+
+Sets the bounding
+
+Rectangle
+
+of this
+
+Rectangle
+
+to match the specified
+
+Rectangle
+
+.
+
+void
+
+setLocation
+
+​(int x,
+int y)
+
+Moves this
+
+Rectangle
+
+to the specified location.
+
+void
+
+setLocation
+
+​(
+
+Point
+
+p)
+
+Moves this
+
+Rectangle
+
+to the specified location.
+
+void
+
+setRect
+
+​(double x,
+double y,
+double width,
+double height)
+
+Sets the bounds of this
+
+Rectangle
+
+to the integer bounds
+which encompass the specified
+
+x
+
+,
+
+y
+
+,
+
+width
+
+,
+and
+
+height
+
+.
+
+void
+
+setSize
+
+​(int width,
+int height)
+
+Sets the size of this
+
+Rectangle
+
+to the specified
+width and height.
+
+void
+
+setSize
+
+​(
+
+Dimension
+
+d)
+
+Sets the size of this
+
+Rectangle
+
+to match the
+specified
+
+Dimension
+
+.
+
+String
+
+toString
+
+()
+
+Returns a
+
+String
+
+representing this
+
+Rectangle
+
+and its values.
+
+void
+
+translate
+
+​(int dx,
+int dy)
+
+Translates this
+
+Rectangle
+
+the indicated distance,
+to the right along the X coordinate axis, and
+downward along the Y coordinate axis.
+
+Rectangle
+
+union
+
+​(
+
+Rectangle
+
+r)
+
+Computes the union of this
+
+Rectangle
+
+with the
+specified
+
+Rectangle
+
+.
+
+- Methods declared in class java.awt.geom.
+
+Rectangle2D
+
+add
+
+,
+
+add
+
+,
+
+add
+
+,
+
+contains
+
+,
+
+contains
+
+,
+
+getPathIterator
+
+,
+
+getPathIterator
+
+,
+
+hashCode
+
+,
+
+intersect
+
+,
+
+intersects
+
+,
+
+intersectsLine
+
+,
+
+intersectsLine
+
+,
+
+outcode
+
+,
+
+setFrame
+
+,
+
+setRect
+
+,
+
+union
+
+- Methods declared in class java.awt.geom.
+
+RectangularShape
+
+clone
+
+,
+
+contains
+
+,
+
+contains
+
+,
+
+getCenterX
+
+,
+
+getCenterY
+
+,
+
+getFrame
+
+,
+
+getMaxX
+
+,
+
+getMaxY
+
+,
+
+getMinX
+
+,
+
+getMinY
+
+,
+
+intersects
+
+,
+
+setFrame
+
+,
+
+setFrame
+
+,
+
+setFrameFromCenter
+
+,
+
+setFrameFromCenter
+
+,
+
+setFrameFromDiagonal
+
+,
+
+setFrameFromDiagonal
+
+- Methods declared in class java.lang.
+
+Object
+
+finalize
+
+,
+
+getClass
+
+,
+
+notify
+
+,
+
+notifyAll
+
+,
+
+wait
+
+,
+
+wait
+
+,
+
+wait
+
+- Methods declared in interface java.awt.
+
+Shape
+
+contains
+
+,
+
+contains
+
+,
+
+contains
+
+,
+
+contains
+
+,
+
+getPathIterator
+
+,
+
+getPathIterator
+
+,
+
+intersects
+
+,
+
+intersects
+
+Nested Class Summary
+
+- Nested classes/interfaces declared in class java.awt.geom.
+
+Rectangle2D
+
+Rectangle2D.Double
+
+,
+
+Rectangle2D.Float
+
+---
+
+#### Nested Class Summary
+
+Nested classes/interfaces declared in class java.awt.geom.
+
+Rectangle2D
+
+Rectangle2D.Double
+
+,
+
+Rectangle2D.Float
+
+---
+
+#### Nested classes/interfaces declared in class java.awt.geom. Rectangle2D
+
+Field Summary
+
+Fields
+
+Modifier and Type
+
+Field
+
+Description
+
+int
+
+height
+
+The height of the
+
+Rectangle
+
+.
+
+int
+
+width
+
+The width of the
+
+Rectangle
+
+.
+
+int
+
+x
+
+The X coordinate of the upper-left corner of the
+
+Rectangle
+
+.
+
+int
+
+y
+
+The Y coordinate of the upper-left corner of the
+
+Rectangle
+
+.
+
+- Fields declared in class java.awt.geom.
+
+Rectangle2D
+
+OUT_BOTTOM
+
+,
+
+OUT_LEFT
+
+,
+
+OUT_RIGHT
+
+,
+
+OUT_TOP
+
+---
+
+#### Field Summary
+
+The height of the
+
+Rectangle
+
+.
+
+The width of the
+
+Rectangle
+
+.
+
+The X coordinate of the upper-left corner of the
+
+Rectangle
+
+.
+
+The Y coordinate of the upper-left corner of the
+
+Rectangle
+
+.
+
+Fields declared in class java.awt.geom.
+
+Rectangle2D
+
+OUT_BOTTOM
+
+,
+
+OUT_LEFT
+
+,
+
+OUT_RIGHT
+
+,
+
+OUT_TOP
+
+---
+
+#### Fields declared in class java.awt.geom. Rectangle2D
+
+Constructor Summary
+
+Constructors
+
+Constructor
+
+Description
+
+Rectangle
+
+()
+
+Constructs a new
+
+Rectangle
+
+whose upper-left corner
+is at (0, 0) in the coordinate space, and whose width and
+height are both zero.
+
+Rectangle
+
+​(int width,
+int height)
+
+Constructs a new
+
+Rectangle
+
+whose upper-left corner
+is at (0, 0) in the coordinate space, and whose width and
+height are specified by the arguments of the same name.
+
+Rectangle
+
+​(int x,
+int y,
+int width,
+int height)
+
+Constructs a new
+
+Rectangle
+
+whose upper-left corner is
+specified as
+
+(x,y)
+
+and whose width and height
+are specified by the arguments of the same name.
+
+Rectangle
+
+​(
+
+Dimension
+
+d)
+
+Constructs a new
+
+Rectangle
+
+whose top left corner is
+(0, 0) and whose width and height are specified
+by the
+
+Dimension
+
+argument.
+
+Rectangle
+
+​(
+
+Point
+
+p)
+
+Constructs a new
+
+Rectangle
+
+whose upper-left corner is the
+specified
+
+Point
+
+, and whose width and height are both zero.
+
+Rectangle
+
+​(
+
+Point
+
+p,
+
+Dimension
+
+d)
+
+Constructs a new
+
+Rectangle
+
+whose upper-left corner is
+specified by the
+
+Point
+
+argument, and
+whose width and height are specified by the
+
+Dimension
+
+argument.
+
+Rectangle
+
+​(
+
+Rectangle
+
+r)
+
+Constructs a new
+
+Rectangle
+
+, initialized to match
+the values of the specified
+
+Rectangle
+
+.
+
+---
+
+#### Constructor Summary
+
+Constructs a new
+
+Rectangle
+
+whose upper-left corner
+is at (0, 0) in the coordinate space, and whose width and
+height are both zero.
+
+Constructs a new
+
+Rectangle
+
+whose upper-left corner
+is at (0, 0) in the coordinate space, and whose width and
+height are specified by the arguments of the same name.
+
+Constructs a new
+
+Rectangle
+
+whose upper-left corner is
+specified as
+
+(x,y)
+
+and whose width and height
+are specified by the arguments of the same name.
+
+Constructs a new
+
+Rectangle
+
+whose top left corner is
+(0, 0) and whose width and height are specified
+by the
+
+Dimension
+
+argument.
+
+Constructs a new
+
+Rectangle
+
+whose upper-left corner is the
+specified
+
+Point
+
+, and whose width and height are both zero.
+
+Constructs a new
+
+Rectangle
+
+whose upper-left corner is
+specified by the
+
+Point
+
+argument, and
+whose width and height are specified by the
+
+Dimension
+
+argument.
+
+Constructs a new
+
+Rectangle
+
+, initialized to match
+the values of the specified
+
+Rectangle
+
+.
+
+Method Summary
+
+All Methods
+
+Instance Methods
+
+Concrete Methods
+
+Deprecated Methods
+
+Modifier and Type
+
+Method
+
+Description
+
+void
+
+add
+
+​(int newx,
+int newy)
+
+Adds a point, specified by the integer arguments
+
+newx,newy
+
+to the bounds of this
+
+Rectangle
+
+.
+
+void
+
+add
+
+​(
+
+Point
+
+pt)
+
+Adds the specified
+
+Point
+
+to the bounds of this
+
+Rectangle
+
+.
+
+void
+
+add
+
+​(
+
+Rectangle
+
+r)
+
+Adds a
+
+Rectangle
+
+to this
+
+Rectangle
+
+.
+
+boolean
+
+contains
+
+​(int x,
+int y)
+
+Checks whether or not this
+
+Rectangle
+
+contains the
+point at the specified location
+
+(x,y)
+
+.
+
+boolean
+
+contains
+
+​(int X,
+int Y,
+int W,
+int H)
+
+Checks whether this
+
+Rectangle
+
+entirely contains
+the
+
+Rectangle
+
+at the specified location
+
+(X,Y)
+
+with the
+specified dimensions
+
+(W,H)
+
+.
+
+boolean
+
+contains
+
+​(
+
+Point
+
+p)
+
+Checks whether or not this
+
+Rectangle
+
+contains the
+specified
+
+Point
+
+.
+
+boolean
+
+contains
+
+​(
+
+Rectangle
+
+r)
+
+Checks whether or not this
+
+Rectangle
+
+entirely contains
+the specified
+
+Rectangle
+
+.
+
+Rectangle2D
+
+createIntersection
+
+​(
+
+Rectangle2D
+
+r)
+
+Returns a new
+
+Rectangle2D
+
+object representing the
+intersection of this
+
+Rectangle2D
+
+with the specified
+
+Rectangle2D
+
+.
+
+Rectangle2D
+
+createUnion
+
+​(
+
+Rectangle2D
+
+r)
+
+Returns a new
+
+Rectangle2D
+
+object representing the
+union of this
+
+Rectangle2D
+
+with the specified
+
+Rectangle2D
+
+.
+
+boolean
+
+equals
+
+​(
+
+Object
+
+obj)
+
+Checks whether two rectangles are equal.
+
+Rectangle
+
+getBounds
+
+()
+
+Gets the bounding
+
+Rectangle
+
+of this
+
+Rectangle
+
+.
+
+Rectangle2D
+
+getBounds2D
+
+()
+
+Returns a high precision and more accurate bounding box of
+the
+
+Shape
+
+than the
+
+getBounds
+
+method.
+
+double
+
+getHeight
+
+()
+
+Returns the height of the bounding
+
+Rectangle
+
+in
+
+double
+
+precision.
+
+Point
+
+getLocation
+
+()
+
+Returns the location of this
+
+Rectangle
+
+.
+
+Dimension
+
+getSize
+
+()
+
+Gets the size of this
+
+Rectangle
+
+, represented by
+the returned
+
+Dimension
+
+.
+
+double
+
+getWidth
+
+()
+
+Returns the width of the bounding
+
+Rectangle
+
+in
+
+double
+
+precision.
+
+double
+
+getX
+
+()
+
+Returns the X coordinate of the bounding
+
+Rectangle
+
+in
+
+double
+
+precision.
+
+double
+
+getY
+
+()
+
+Returns the Y coordinate of the bounding
+
+Rectangle
+
+in
+
+double
+
+precision.
+
+void
+
+grow
+
+​(int h,
+int v)
+
+Resizes the
+
+Rectangle
+
+both horizontally and vertically.
+
+boolean
+
+inside
+
+​(int X,
+int Y)
+
+Deprecated.
+
+As of JDK version 1.1,
+replaced by
+
+contains(int, int)
+
+.
+
+Rectangle
+
+intersection
+
+​(
+
+Rectangle
+
+r)
+
+Computes the intersection of this
+
+Rectangle
+
+with the
+specified
+
+Rectangle
+
+.
+
+boolean
+
+intersects
+
+​(
+
+Rectangle
+
+r)
+
+Determines whether or not this
+
+Rectangle
+
+and the specified
+
+Rectangle
+
+intersect.
+
+boolean
+
+isEmpty
+
+()
+
+Determines whether the
+
+RectangularShape
+
+is empty.
+
+void
+
+move
+
+​(int x,
+int y)
+
+Deprecated.
+
+As of JDK version 1.1,
+replaced by
+
+setLocation(int, int)
+
+.
+
+int
+
+outcode
+
+​(double x,
+double y)
+
+Determines where the specified coordinates lie with respect
+to this
+
+Rectangle2D
+
+.
+
+void
+
+reshape
+
+​(int x,
+int y,
+int width,
+int height)
+
+Deprecated.
+
+As of JDK version 1.1,
+replaced by
+
+setBounds(int, int, int, int)
+
+.
+
+void
+
+resize
+
+​(int width,
+int height)
+
+Deprecated.
+
+As of JDK version 1.1,
+replaced by
+
+setSize(int, int)
+
+.
+
+void
+
+setBounds
+
+​(int x,
+int y,
+int width,
+int height)
+
+Sets the bounding
+
+Rectangle
+
+of this
+
+Rectangle
+
+to the specified
+
+x
+
+,
+
+y
+
+,
+
+width
+
+,
+and
+
+height
+
+.
+
+void
+
+setBounds
+
+​(
+
+Rectangle
+
+r)
+
+Sets the bounding
+
+Rectangle
+
+of this
+
+Rectangle
+
+to match the specified
+
+Rectangle
+
+.
+
+void
+
+setLocation
+
+​(int x,
+int y)
+
+Moves this
+
+Rectangle
+
+to the specified location.
+
+void
+
+setLocation
+
+​(
+
+Point
+
+p)
+
+Moves this
+
+Rectangle
+
+to the specified location.
+
+void
+
+setRect
+
+​(double x,
+double y,
+double width,
+double height)
+
+Sets the bounds of this
+
+Rectangle
+
+to the integer bounds
+which encompass the specified
+
+x
+
+,
+
+y
+
+,
+
+width
+
+,
+and
+
+height
+
+.
+
+void
+
+setSize
+
+​(int width,
+int height)
+
+Sets the size of this
+
+Rectangle
+
+to the specified
+width and height.
+
+void
+
+setSize
+
+​(
+
+Dimension
+
+d)
+
+Sets the size of this
+
+Rectangle
+
+to match the
+specified
+
+Dimension
+
+.
+
+String
+
+toString
+
+()
+
+Returns a
+
+String
+
+representing this
+
+Rectangle
+
+and its values.
+
+void
+
+translate
+
+​(int dx,
+int dy)
+
+Translates this
+
+Rectangle
+
+the indicated distance,
+to the right along the X coordinate axis, and
+downward along the Y coordinate axis.
+
+Rectangle
+
+union
+
+​(
+
+Rectangle
+
+r)
+
+Computes the union of this
+
+Rectangle
+
+with the
+specified
+
+Rectangle
+
+.
+
+- Methods declared in class java.awt.geom.
+
+Rectangle2D
+
+add
+
+,
+
+add
+
+,
+
+add
+
+,
+
+contains
+
+,
+
+contains
+
+,
+
+getPathIterator
+
+,
+
+getPathIterator
+
+,
+
+hashCode
+
+,
+
+intersect
+
+,
+
+intersects
+
+,
+
+intersectsLine
+
+,
+
+intersectsLine
+
+,
+
+outcode
+
+,
+
+setFrame
+
+,
+
+setRect
+
+,
+
+union
+
+- Methods declared in class java.awt.geom.
+
+RectangularShape
+
+clone
+
+,
+
+contains
+
+,
+
+contains
+
+,
+
+getCenterX
+
+,
+
+getCenterY
+
+,
+
+getFrame
+
+,
+
+getMaxX
+
+,
+
+getMaxY
+
+,
+
+getMinX
+
+,
+
+getMinY
+
+,
+
+intersects
+
+,
+
+setFrame
+
+,
+
+setFrame
+
+,
+
+setFrameFromCenter
+
+,
+
+setFrameFromCenter
+
+,
+
+setFrameFromDiagonal
+
+,
+
+setFrameFromDiagonal
+
+- Methods declared in class java.lang.
+
+Object
+
+finalize
+
+,
+
+getClass
+
+,
+
+notify
+
+,
+
+notifyAll
+
+,
+
+wait
+
+,
+
+wait
+
+,
+
+wait
+
+- Methods declared in interface java.awt.
+
+Shape
+
+contains
+
+,
+
+contains
+
+,
+
+contains
+
+,
+
+contains
+
+,
+
+getPathIterator
+
+,
+
+getPathIterator
+
+,
+
+intersects
+
+,
+
+intersects
+
+---
+
+#### Method Summary
+
+Adds a point, specified by the integer arguments
+
+newx,newy
+
+to the bounds of this
+
+Rectangle
+
+.
+
+Adds the specified
+
+Point
+
+to the bounds of this
+
+Rectangle
+
+.
+
+Adds a
+
+Rectangle
+
+to this
+
+Rectangle
+
+.
+
+Checks whether or not this
+
+Rectangle
+
+contains the
+point at the specified location
+
+(x,y)
+
+.
+
+Checks whether this
+
+Rectangle
+
+entirely contains
+the
+
+Rectangle
+
+at the specified location
+
+(X,Y)
+
+with the
+specified dimensions
+
+(W,H)
+
+.
+
+Checks whether or not this
+
+Rectangle
+
+contains the
+specified
+
+Point
+
+.
+
+Checks whether or not this
+
+Rectangle
+
+entirely contains
+the specified
+
+Rectangle
+
+.
+
+Returns a new
+
+Rectangle2D
+
+object representing the
+intersection of this
+
+Rectangle2D
+
+with the specified
+
+Rectangle2D
+
+.
+
+Returns a new
+
+Rectangle2D
+
+object representing the
+union of this
+
+Rectangle2D
+
+with the specified
+
+Rectangle2D
+
+.
+
+Checks whether two rectangles are equal.
+
+Gets the bounding
+
+Rectangle
+
+of this
+
+Rectangle
+
+.
+
+Returns a high precision and more accurate bounding box of
+the
+
+Shape
+
+than the
+
+getBounds
+
+method.
+
+Returns the height of the bounding
+
+Rectangle
+
+in
+
+double
+
+precision.
+
+Returns the location of this
+
+Rectangle
+
+.
+
+Gets the size of this
+
+Rectangle
+
+, represented by
+the returned
+
+Dimension
+
+.
+
+Returns the width of the bounding
+
+Rectangle
+
+in
+
+double
+
+precision.
+
+Returns the X coordinate of the bounding
+
+Rectangle
+
+in
+
+double
+
+precision.
+
+Returns the Y coordinate of the bounding
+
+Rectangle
+
+in
+
+double
+
+precision.
+
+Resizes the
+
+Rectangle
+
+both horizontally and vertically.
+
+Deprecated.
+
+As of JDK version 1.1,
+replaced by
+
+contains(int, int)
+
+.
+
+Computes the intersection of this
+
+Rectangle
+
+with the
+specified
+
+Rectangle
+
+.
+
+Determines whether or not this
+
+Rectangle
+
+and the specified
+
+Rectangle
+
+intersect.
+
+Determines whether the
+
+RectangularShape
+
+is empty.
+
+Deprecated.
+
+As of JDK version 1.1,
+replaced by
+
+setLocation(int, int)
+
+.
+
+Determines where the specified coordinates lie with respect
+to this
+
+Rectangle2D
+
+.
+
+Deprecated.
+
+As of JDK version 1.1,
+replaced by
+
+setBounds(int, int, int, int)
+
+.
+
+Deprecated.
+
+As of JDK version 1.1,
+replaced by
+
+setSize(int, int)
+
+.
+
+Sets the bounding
+
+Rectangle
+
+of this
+
+Rectangle
+
+to the specified
+
+x
+
+,
+
+y
+
+,
+
+width
+
+,
+and
+
+height
+
+.
+
+Sets the bounding
+
+Rectangle
+
+of this
+
+Rectangle
+
+to match the specified
+
+Rectangle
+
+.
+
+Moves this
+
+Rectangle
+
+to the specified location.
+
+Sets the bounds of this
+
+Rectangle
+
+to the integer bounds
+which encompass the specified
+
+x
+
+,
+
+y
+
+,
+
+width
+
+,
+and
+
+height
+
+.
+
+Sets the size of this
+
+Rectangle
+
+to the specified
+width and height.
+
+Sets the size of this
+
+Rectangle
+
+to match the
+specified
+
+Dimension
+
+.
+
+Returns a
+
+String
+
+representing this
+
+Rectangle
+
+and its values.
+
+Translates this
+
+Rectangle
+
+the indicated distance,
+to the right along the X coordinate axis, and
+downward along the Y coordinate axis.
+
+Computes the union of this
+
+Rectangle
+
+with the
+specified
+
+Rectangle
+
+.
+
+Methods declared in class java.awt.geom.
+
+Rectangle2D
+
+add
+
+,
+
+add
+
+,
+
+add
+
+,
+
+contains
+
+,
+
+contains
+
+,
+
+getPathIterator
+
+,
+
+getPathIterator
+
+,
+
+hashCode
+
+,
+
+intersect
+
+,
+
+intersects
+
+,
+
+intersectsLine
+
+,
+
+intersectsLine
+
+,
+
+outcode
+
+,
+
+setFrame
+
+,
+
+setRect
+
+,
+
+union
+
+---
+
+#### Methods declared in class java.awt.geom. Rectangle2D
+
+Methods declared in class java.awt.geom.
+
+RectangularShape
+
+clone
+
+,
+
+contains
+
+,
+
+contains
+
+,
+
+getCenterX
+
+,
+
+getCenterY
+
+,
+
+getFrame
+
+,
+
+getMaxX
+
+,
+
+getMaxY
+
+,
+
+getMinX
+
+,
+
+getMinY
+
+,
+
+intersects
+
+,
+
+setFrame
+
+,
+
+setFrame
+
+,
+
+setFrameFromCenter
+
+,
+
+setFrameFromCenter
+
+,
+
+setFrameFromDiagonal
+
+,
+
+setFrameFromDiagonal
+
+---
+
+#### Methods declared in class java.awt.geom. RectangularShape
+
+Methods declared in class java.lang.
+
+Object
+
+finalize
+
+,
+
+getClass
+
+,
+
+notify
+
+,
+
+notifyAll
+
+,
+
+wait
+
+,
+
+wait
+
+,
+
+wait
+
+---
+
+#### Methods declared in class java.lang. Object
+
+Methods declared in interface java.awt.
+
+Shape
+
+contains
+
+,
+
+contains
+
+,
+
+contains
+
+,
+
+contains
+
+,
+
+getPathIterator
+
+,
+
+getPathIterator
+
+,
+
+intersects
+
+,
+
+intersects
+
+---
+
+#### Methods declared in interface java.awt. Shape
+
+============ FIELD DETAIL ===========
+
+- Field Detail
+
+- x
+
+```java
+public int x
+```
+
+The X coordinate of the upper-left corner of the
+
+Rectangle
+
+.
+
+**Since:** 1.0
+**See Also:** setLocation(int, int)
+
+,
+
+getLocation()
+
+- y
+
+```java
+public int y
+```
+
+The Y coordinate of the upper-left corner of the
+
+Rectangle
+
+.
+
+**Since:** 1.0
+**See Also:** setLocation(int, int)
+
+,
+
+getLocation()
+
+- width
+
+```java
+public int width
+```
+
+The width of the
+
+Rectangle
+
+.
+
+**Since:** 1.0
+**See Also:** setSize(int, int)
+
+,
+
+getSize()
+
+- height
+
+```java
+public int height
+```
+
+The height of the
+
+Rectangle
+
+.
+
+**Since:** 1.0
+**See Also:** setSize(int, int)
+
+,
+
+getSize()
+
+========= CONSTRUCTOR DETAIL ========
+
+- Constructor Detail
+
+- Rectangle
+
+```java
+public Rectangle()
+```
+
+Constructs a new
+
+Rectangle
+
+whose upper-left corner
+is at (0, 0) in the coordinate space, and whose width and
+height are both zero.
+
+- Rectangle
+
+```java
+public Rectangle​(
+Rectangle
+r)
+```
+
+Constructs a new
+
+Rectangle
+
+, initialized to match
+the values of the specified
+
+Rectangle
+
+.
+
+**Parameters:** r
+
+- the
+
+Rectangle
+
+from which to copy initial values
+to a newly constructed
+
+Rectangle
+**Since:** 1.1
+
+- Rectangle
+
+```java
+public Rectangle​(int x,
+int y,
+int width,
+int height)
+```
+
+Constructs a new
+
+Rectangle
+
+whose upper-left corner is
+specified as
+
+(x,y)
+
+and whose width and height
+are specified by the arguments of the same name.
+
+**Parameters:** x
+
+- the specified X coordinate
+**Parameters:** y
+
+- the specified Y coordinate
+**Parameters:** width
+
+- the width of the
+
+Rectangle
+**Parameters:** height
+
+- the height of the
+
+Rectangle
+**Since:** 1.0
+
+- Rectangle
+
+```java
+public Rectangle​(int width,
+int height)
+```
+
+Constructs a new
+
+Rectangle
+
+whose upper-left corner
+is at (0, 0) in the coordinate space, and whose width and
+height are specified by the arguments of the same name.
+
+**Parameters:** width
+
+- the width of the
+
+Rectangle
+**Parameters:** height
+
+- the height of the
+
+Rectangle
+
+- Rectangle
+
+```java
+public Rectangle​(
+Point
+p,
+
+Dimension
+d)
+```
+
+Constructs a new
+
+Rectangle
+
+whose upper-left corner is
+specified by the
+
+Point
+
+argument, and
+whose width and height are specified by the
+
+Dimension
+
+argument.
+
+**Parameters:** p
+
+- a
+
+Point
+
+that is the upper-left corner of
+the
+
+Rectangle
+**Parameters:** d
+
+- a
+
+Dimension
+
+, representing the
+width and height of the
+
+Rectangle
+
+- Rectangle
+
+```java
+public Rectangle​(
+Point
+p)
+```
+
+Constructs a new
+
+Rectangle
+
+whose upper-left corner is the
+specified
+
+Point
+
+, and whose width and height are both zero.
+
+**Parameters:** p
+
+- a
+
+Point
+
+that is the top left corner
+of the
+
+Rectangle
+
+- Rectangle
+
+```java
+public Rectangle​(
+Dimension
+d)
+```
+
+Constructs a new
+
+Rectangle
+
+whose top left corner is
+(0, 0) and whose width and height are specified
+by the
+
+Dimension
+
+argument.
+
+**Parameters:** d
+
+- a
+
+Dimension
+
+, specifying width and height
+
+============ METHOD DETAIL ==========
+
+- Method Detail
+
+- getX
+
+```java
+public double getX()
+```
+
+Returns the X coordinate of the bounding
+
+Rectangle
+
+in
+
+double
+
+precision.
+
+**Specified by:** getX
+
+in class
+
+RectangularShape
+**Returns:** the X coordinate of the bounding
+
+Rectangle
+
+.
+
+- getY
+
+```java
+public double getY()
+```
+
+Returns the Y coordinate of the bounding
+
+Rectangle
+
+in
+
+double
+
+precision.
+
+**Specified by:** getY
+
+in class
+
+RectangularShape
+**Returns:** the Y coordinate of the bounding
+
+Rectangle
+
+.
+
+- getWidth
+
+```java
+public double getWidth()
+```
+
+Returns the width of the bounding
+
+Rectangle
+
+in
+
+double
+
+precision.
+
+**Specified by:** getWidth
+
+in class
+
+RectangularShape
+**Returns:** the width of the bounding
+
+Rectangle
+
+.
+
+- getHeight
+
+```java
+public double getHeight()
+```
+
+Returns the height of the bounding
+
+Rectangle
+
+in
+
+double
+
+precision.
+
+**Specified by:** getHeight
+
+in class
+
+RectangularShape
+**Returns:** the height of the bounding
+
+Rectangle
+
+.
+
+- getBounds
+
+```java
+public
+Rectangle
+getBounds()
+```
+
+Gets the bounding
+
+Rectangle
+
+of this
+
+Rectangle
+
+.
+
+This method is included for completeness, to parallel the
+
+getBounds
+
+method of
+
+Component
+
+.
+
+**Specified by:** getBounds
+
+in interface
+
+Shape
+**Overrides:** getBounds
+
+in class
+
+RectangularShape
+**Returns:** a new
+
+Rectangle
+
+, equal to the
+bounding
+
+Rectangle
+
+for this
+
+Rectangle
+
+.
+**Since:** 1.1
+**See Also:** Component.getBounds()
+
+,
+
+setBounds(Rectangle)
+
+,
+
+setBounds(int, int, int, int)
+
+- getBounds2D
+
+```java
+public
+Rectangle2D
+getBounds2D()
+```
+
+Returns a high precision and more accurate bounding box of
+the
+
+Shape
+
+than the
+
+getBounds
+
+method.
+Note that there is no guarantee that the returned
+
+Rectangle2D
+
+is the smallest bounding box that encloses
+the
+
+Shape
+
+, only that the
+
+Shape
+
+lies
+entirely within the indicated
+
+Rectangle2D
+
+. The
+bounding box returned by this method is usually tighter than that
+returned by the
+
+getBounds
+
+method and never fails due
+to overflow problems since the return value can be an instance of
+the
+
+Rectangle2D
+
+that uses double precision values to
+store the dimensions.
+
+Note that the
+
+definition of insideness
+
+can lead to situations where points
+on the defining outline of the
+
+shape
+
+may not be considered
+contained in the returned
+
+bounds
+
+object, but only in cases
+where those points are also not considered contained in the original
+
+shape
+
+.
+
+If a
+
+point
+
+is inside the
+
+shape
+
+according to the
+
+contains(point)
+
+method, then it must
+be inside the returned
+
+Rectangle2D
+
+bounds object according
+to the
+
+contains(point)
+
+method of the
+
+bounds
+
+. Specifically:
+
+shape.contains(p)
+
+requires
+
+bounds.contains(p)
+
+If a
+
+point
+
+is not inside the
+
+shape
+
+, then it might
+still be contained in the
+
+bounds
+
+object:
+
+bounds.contains(p)
+
+does not imply
+
+shape.contains(p)
+
+**Specified by:** getBounds2D
+
+in interface
+
+Shape
+**Overrides:** getBounds2D
+
+in class
+
+Rectangle2D
+**Returns:** an instance of
+
+Rectangle2D
+
+that is a
+high-precision bounding box of the
+
+Shape
+
+.
+**Since:** 1.2
+**See Also:** Shape.getBounds()
+
+- setBounds
+
+```java
+public void setBounds​(
+Rectangle
+r)
+```
+
+Sets the bounding
+
+Rectangle
+
+of this
+
+Rectangle
+
+to match the specified
+
+Rectangle
+
+.
+
+This method is included for completeness, to parallel the
+
+setBounds
+
+method of
+
+Component
+
+.
+
+**Parameters:** r
+
+- the specified
+
+Rectangle
+**Since:** 1.1
+**See Also:** getBounds()
+
+,
+
+Component.setBounds(java.awt.Rectangle)
+
+- setBounds
+
+```java
+public void setBounds​(int x,
+int y,
+int width,
+int height)
+```
+
+Sets the bounding
+
+Rectangle
+
+of this
+
+Rectangle
+
+to the specified
+
+x
+
+,
+
+y
+
+,
+
+width
+
+,
+and
+
+height
+
+.
+
+This method is included for completeness, to parallel the
+
+setBounds
+
+method of
+
+Component
+
+.
+
+**Parameters:** x
+
+- the new X coordinate for the upper-left
+corner of this
+
+Rectangle
+**Parameters:** y
+
+- the new Y coordinate for the upper-left
+corner of this
+
+Rectangle
+**Parameters:** width
+
+- the new width for this
+
+Rectangle
+**Parameters:** height
+
+- the new height for this
+
+Rectangle
+**Since:** 1.1
+**See Also:** getBounds()
+
+,
+
+Component.setBounds(int, int, int, int)
+
+- setRect
+
+```java
+public void setRect​(double x,
+double y,
+double width,
+double height)
+```
+
+Sets the bounds of this
+
+Rectangle
+
+to the integer bounds
+which encompass the specified
+
+x
+
+,
+
+y
+
+,
+
+width
+
+,
+and
+
+height
+
+.
+If the parameters specify a
+
+Rectangle
+
+that exceeds the
+maximum range of integers, the result will be the best
+representation of the specified
+
+Rectangle
+
+intersected
+with the maximum integer bounds.
+
+**Specified by:** setRect
+
+in class
+
+Rectangle2D
+**Parameters:** x
+
+- the X coordinate of the upper-left corner of
+the specified rectangle
+**Parameters:** y
+
+- the Y coordinate of the upper-left corner of
+the specified rectangle
+**Parameters:** width
+
+- the width of the specified rectangle
+**Parameters:** height
+
+- the new height of the specified rectangle
+
+- reshape
+
+```java
+@Deprecated
+
+public void reshape​(int x,
+int y,
+int width,
+int height)
+```
+
+Deprecated.
+
+As of JDK version 1.1,
+replaced by
+
+setBounds(int, int, int, int)
+
+.
+
+Sets the bounding
+
+Rectangle
+
+of this
+
+Rectangle
+
+to the specified
+
+x
+
+,
+
+y
+
+,
+
+width
+
+,
+and
+
+height
+
+.
+
+**Parameters:** x
+
+- the new X coordinate for the upper-left
+corner of this
+
+Rectangle
+**Parameters:** y
+
+- the new Y coordinate for the upper-left
+corner of this
+
+Rectangle
+**Parameters:** width
+
+- the new width for this
+
+Rectangle
+**Parameters:** height
+
+- the new height for this
+
+Rectangle
+
+- getLocation
+
+```java
+public
+Point
+getLocation()
+```
+
+Returns the location of this
+
+Rectangle
+
+.
+
+This method is included for completeness, to parallel the
+
+getLocation
+
+method of
+
+Component
+
+.
+
+**Returns:** the
+
+Point
+
+that is the upper-left corner of
+this
+
+Rectangle
+
+.
+**Since:** 1.1
+**See Also:** Component.getLocation()
+
+,
+
+setLocation(Point)
+
+,
+
+setLocation(int, int)
+
+- setLocation
+
+```java
+public void setLocation​(
+Point
+p)
+```
+
+Moves this
+
+Rectangle
+
+to the specified location.
+
+This method is included for completeness, to parallel the
+
+setLocation
+
+method of
+
+Component
+
+.
+
+**Parameters:** p
+
+- the
+
+Point
+
+specifying the new location
+for this
+
+Rectangle
+**Since:** 1.1
+**See Also:** Component.setLocation(java.awt.Point)
+
+,
+
+getLocation()
+
+- setLocation
+
+```java
+public void setLocation​(int x,
+int y)
+```
+
+Moves this
+
+Rectangle
+
+to the specified location.
+
+This method is included for completeness, to parallel the
+
+setLocation
+
+method of
+
+Component
+
+.
+
+**Parameters:** x
+
+- the X coordinate of the new location
+**Parameters:** y
+
+- the Y coordinate of the new location
+**Since:** 1.1
+**See Also:** getLocation()
+
+,
+
+Component.setLocation(int, int)
+
+- move
+
+```java
+@Deprecated
+
+public void move​(int x,
+int y)
+```
+
+Deprecated.
+
+As of JDK version 1.1,
+replaced by
+
+setLocation(int, int)
+
+.
+
+Moves this
+
+Rectangle
+
+to the specified location.
+
+**Parameters:** x
+
+- the X coordinate of the new location
+**Parameters:** y
+
+- the Y coordinate of the new location
+
+- translate
+
+```java
+public void translate​(int dx,
+int dy)
+```
+
+Translates this
+
+Rectangle
+
+the indicated distance,
+to the right along the X coordinate axis, and
+downward along the Y coordinate axis.
+
+**Parameters:** dx
+
+- the distance to move this
+
+Rectangle
+
+along the X axis
+**Parameters:** dy
+
+- the distance to move this
+
+Rectangle
+
+along the Y axis
+**See Also:** setLocation(int, int)
+
+,
+
+setLocation(java.awt.Point)
+
+- getSize
+
+```java
+public
+Dimension
+getSize()
+```
+
+Gets the size of this
+
+Rectangle
+
+, represented by
+the returned
+
+Dimension
+
+.
+
+This method is included for completeness, to parallel the
+
+getSize
+
+method of
+
+Component
+
+.
+
+**Returns:** a
+
+Dimension
+
+, representing the size of
+this
+
+Rectangle
+
+.
+**Since:** 1.1
+**See Also:** Component.getSize()
+
+,
+
+setSize(Dimension)
+
+,
+
+setSize(int, int)
+
+- setSize
+
+```java
+public void setSize​(
+Dimension
+d)
+```
+
+Sets the size of this
+
+Rectangle
+
+to match the
+specified
+
+Dimension
+
+.
+
+This method is included for completeness, to parallel the
+
+setSize
+
+method of
+
+Component
+
+.
+
+**Parameters:** d
+
+- the new size for the
+
+Dimension
+
+object
+**Since:** 1.1
+**See Also:** Component.setSize(java.awt.Dimension)
+
+,
+
+getSize()
+
+- setSize
+
+```java
+public void setSize​(int width,
+int height)
+```
+
+Sets the size of this
+
+Rectangle
+
+to the specified
+width and height.
+
+This method is included for completeness, to parallel the
+
+setSize
+
+method of
+
+Component
+
+.
+
+**Parameters:** width
+
+- the new width for this
+
+Rectangle
+**Parameters:** height
+
+- the new height for this
+
+Rectangle
+**Since:** 1.1
+**See Also:** Component.setSize(int, int)
+
+,
+
+getSize()
+
+- resize
+
+```java
+@Deprecated
+
+public void resize​(int width,
+int height)
+```
+
+Deprecated.
+
+As of JDK version 1.1,
+replaced by
+
+setSize(int, int)
+
+.
+
+Sets the size of this
+
+Rectangle
+
+to the specified
+width and height.
+
+**Parameters:** width
+
+- the new width for this
+
+Rectangle
+**Parameters:** height
+
+- the new height for this
+
+Rectangle
+
+- contains
+
+```java
+public boolean contains​(
+Point
+p)
+```
+
+Checks whether or not this
+
+Rectangle
+
+contains the
+specified
+
+Point
+
+.
+
+**Parameters:** p
+
+- the
+
+Point
+
+to test
+**Returns:** true
+
+if the specified
+
+Point
+
+is inside this
+
+Rectangle
+
+;
+
+false
+
+otherwise.
+**Since:** 1.1
+
+- contains
+
+```java
+public boolean contains​(int x,
+int y)
+```
+
+Checks whether or not this
+
+Rectangle
+
+contains the
+point at the specified location
+
+(x,y)
+
+.
+
+**Parameters:** x
+
+- the specified X coordinate
+**Parameters:** y
+
+- the specified Y coordinate
+**Returns:** true
+
+if the point
+
+(x,y)
+
+is inside this
+
+Rectangle
+
+;
+
+false
+
+otherwise.
+**Since:** 1.1
+
+- contains
+
+```java
+public boolean contains​(
+Rectangle
+r)
+```
+
+Checks whether or not this
+
+Rectangle
+
+entirely contains
+the specified
+
+Rectangle
+
+.
+
+**Parameters:** r
+
+- the specified
+
+Rectangle
+**Returns:** true
+
+if the
+
+Rectangle
+
+is contained entirely inside this
+
+Rectangle
+
+;
+
+false
+
+otherwise
+**Since:** 1.2
+
+- contains
+
+```java
+public boolean contains​(int X,
+int Y,
+int W,
+int H)
+```
+
+Checks whether this
+
+Rectangle
+
+entirely contains
+the
+
+Rectangle
+
+at the specified location
+
+(X,Y)
+
+with the
+specified dimensions
+
+(W,H)
+
+.
+
+**Parameters:** X
+
+- the specified X coordinate
+**Parameters:** Y
+
+- the specified Y coordinate
+**Parameters:** W
+
+- the width of the
+
+Rectangle
+**Parameters:** H
+
+- the height of the
+
+Rectangle
+**Returns:** true
+
+if the
+
+Rectangle
+
+specified by
+
+(X, Y, W, H)
+
+is entirely enclosed inside this
+
+Rectangle
+
+;
+
+false
+
+otherwise.
+**Since:** 1.1
+
+- inside
+
+```java
+@Deprecated
+
+public boolean inside​(int X,
+int Y)
+```
+
+Deprecated.
+
+As of JDK version 1.1,
+replaced by
+
+contains(int, int)
+
+.
+
+Checks whether or not this
+
+Rectangle
+
+contains the
+point at the specified location
+
+(X,Y)
+
+.
+
+**Parameters:** X
+
+- the specified X coordinate
+**Parameters:** Y
+
+- the specified Y coordinate
+**Returns:** true
+
+if the point
+
+(X,Y)
+
+is inside this
+
+Rectangle
+
+;
+
+false
+
+otherwise.
+
+- intersects
+
+```java
+public boolean intersects​(
+Rectangle
+r)
+```
+
+Determines whether or not this
+
+Rectangle
+
+and the specified
+
+Rectangle
+
+intersect. Two rectangles intersect if
+their intersection is nonempty.
+
+**Parameters:** r
+
+- the specified
+
+Rectangle
+**Returns:** true
+
+if the specified
+
+Rectangle
+
+and this
+
+Rectangle
+
+intersect;
+
+false
+
+otherwise.
+
+- intersection
+
+```java
+public
+Rectangle
+intersection​(
+Rectangle
+r)
+```
+
+Computes the intersection of this
+
+Rectangle
+
+with the
+specified
+
+Rectangle
+
+. Returns a new
+
+Rectangle
+
+that represents the intersection of the two rectangles.
+If the two rectangles do not intersect, the result will be
+an empty rectangle.
+
+**Parameters:** r
+
+- the specified
+
+Rectangle
+**Returns:** the largest
+
+Rectangle
+
+contained in both the
+specified
+
+Rectangle
+
+and in
+this
+
+Rectangle
+
+; or if the rectangles
+do not intersect, an empty rectangle.
+
+- union
+
+```java
+public
+Rectangle
+union​(
+Rectangle
+r)
+```
+
+Computes the union of this
+
+Rectangle
+
+with the
+specified
+
+Rectangle
+
+. Returns a new
+
+Rectangle
+
+that
+represents the union of the two rectangles.
+
+If either
+
+Rectangle
+
+has any dimension less than zero
+the rules for
+
+non-existent
+
+rectangles
+apply.
+If only one has a dimension less than zero, then the result
+will be a copy of the other
+
+Rectangle
+
+.
+If both have dimension less than zero, then the result will
+have at least one dimension less than zero.
+
+If the resulting
+
+Rectangle
+
+would have a dimension
+too large to be expressed as an
+
+int
+
+, the result
+will have a dimension of
+
+Integer.MAX_VALUE
+
+along
+that dimension.
+
+**Parameters:** r
+
+- the specified
+
+Rectangle
+**Returns:** the smallest
+
+Rectangle
+
+containing both
+the specified
+
+Rectangle
+
+and this
+
+Rectangle
+
+.
+
+- add
+
+```java
+public void add​(int newx,
+int newy)
+```
+
+Adds a point, specified by the integer arguments
+
+newx,newy
+
+to the bounds of this
+
+Rectangle
+
+.
+
+If this
+
+Rectangle
+
+has any dimension less than zero,
+the rules for
+
+non-existent
+
+rectangles apply.
+In that case, the new bounds of this
+
+Rectangle
+
+will
+have a location equal to the specified coordinates and
+width and height equal to zero.
+
+After adding a point, a call to
+
+contains
+
+with the
+added point as an argument does not necessarily return
+
+true
+
+. The
+
+contains
+
+method does not
+return
+
+true
+
+for points on the right or bottom
+edges of a
+
+Rectangle
+
+. Therefore, if the added point
+falls on the right or bottom edge of the enlarged
+
+Rectangle
+
+,
+
+contains
+
+returns
+
+false
+
+for that point.
+If the specified point must be contained within the new
+
+Rectangle
+
+, a 1x1 rectangle should be added instead:
+
+```java
+r.add(newx, newy, 1, 1);
+```
+
+**Parameters:** newx
+
+- the X coordinate of the new point
+**Parameters:** newy
+
+- the Y coordinate of the new point
+
+- add
+
+```java
+public void add​(
+Point
+pt)
+```
+
+Adds the specified
+
+Point
+
+to the bounds of this
+
+Rectangle
+
+.
+
+If this
+
+Rectangle
+
+has any dimension less than zero,
+the rules for
+
+non-existent
+
+rectangles apply.
+In that case, the new bounds of this
+
+Rectangle
+
+will
+have a location equal to the coordinates of the specified
+
+Point
+
+and width and height equal to zero.
+
+After adding a
+
+Point
+
+, a call to
+
+contains
+
+with the added
+
+Point
+
+as an argument does not
+necessarily return
+
+true
+
+. The
+
+contains
+
+method does not return
+
+true
+
+for points on the right
+or bottom edges of a
+
+Rectangle
+
+. Therefore if the added
+
+Point
+
+falls on the right or bottom edge of the
+enlarged
+
+Rectangle
+
+,
+
+contains
+
+returns
+
+false
+
+for that
+
+Point
+
+.
+If the specified point must be contained within the new
+
+Rectangle
+
+, a 1x1 rectangle should be added instead:
+
+```java
+r.add(pt.x, pt.y, 1, 1);
+```
+
+**Parameters:** pt
+
+- the new
+
+Point
+
+to add to this
+
+Rectangle
+
+- add
+
+```java
+public void add​(
+Rectangle
+r)
+```
+
+Adds a
+
+Rectangle
+
+to this
+
+Rectangle
+
+.
+The resulting
+
+Rectangle
+
+is the union of the two
+rectangles.
+
+If either
+
+Rectangle
+
+has any dimension less than 0, the
+result will have the dimensions of the other
+
+Rectangle
+
+.
+If both
+
+Rectangle
+
+s have at least one dimension less
+than 0, the result will have at least one dimension less than 0.
+
+If either
+
+Rectangle
+
+has one or both dimensions equal
+to 0, the result along those axes with 0 dimensions will be
+equivalent to the results obtained by adding the corresponding
+origin coordinate to the result rectangle along that axis,
+similar to the operation of the
+
+add(Point)
+
+method,
+but contribute no further dimension beyond that.
+
+If the resulting
+
+Rectangle
+
+would have a dimension
+too large to be expressed as an
+
+int
+
+, the result
+will have a dimension of
+
+Integer.MAX_VALUE
+
+along
+that dimension.
+
+**Parameters:** r
+
+- the specified
+
+Rectangle
+
+- grow
+
+```java
+public void grow​(int h,
+int v)
+```
+
+Resizes the
+
+Rectangle
+
+both horizontally and vertically.
+
+This method modifies the
+
+Rectangle
+
+so that it is
+
+h
+
+units larger on both the left and right side,
+and
+
+v
+
+units larger at both the top and bottom.
+
+The new
+
+Rectangle
+
+has
+
+(x - h, y - v)
+
+as its upper-left corner,
+width of
+
+(width + 2h)
+
+,
+and a height of
+
+(height + 2v)
+
+.
+
+If negative values are supplied for
+
+h
+
+and
+
+v
+
+, the size of the
+
+Rectangle
+
+decreases accordingly.
+The
+
+grow
+
+method will check for integer overflow
+and underflow, but does not check whether the resulting
+values of
+
+width
+
+and
+
+height
+
+grow
+from negative to non-negative or shrink from non-negative
+to negative.
+
+**Parameters:** h
+
+- the horizontal expansion
+**Parameters:** v
+
+- the vertical expansion
+
+- isEmpty
+
+```java
+public boolean isEmpty()
+```
+
+Determines whether the
+
+RectangularShape
+
+is empty.
+When the
+
+RectangularShape
+
+is empty, it encloses no
+area.
+
+**Specified by:** isEmpty
+
+in class
+
+RectangularShape
+**Returns:** true
+
+if the
+
+RectangularShape
+
+is empty;
+
+false
+
+otherwise.
+**Since:** 1.2
+
+- outcode
+
+```java
+public int outcode​(double x,
+double y)
+```
+
+Determines where the specified coordinates lie with respect
+to this
+
+Rectangle2D
+
+.
+This method computes a binary OR of the appropriate mask values
+indicating, for each side of this
+
+Rectangle2D
+
+,
+whether or not the specified coordinates are on the same side
+of the edge as the rest of this
+
+Rectangle2D
+
+.
+
+**Specified by:** outcode
+
+in class
+
+Rectangle2D
+**Parameters:** x
+
+- the specified X coordinate
+**Parameters:** y
+
+- the specified Y coordinate
+**Returns:** the logical OR of all appropriate out codes.
+**Since:** 1.2
+**See Also:** Rectangle2D.OUT_LEFT
+
+,
+
+Rectangle2D.OUT_TOP
+
+,
+
+Rectangle2D.OUT_RIGHT
+
+,
+
+Rectangle2D.OUT_BOTTOM
+
+- createIntersection
+
+```java
+public
+Rectangle2D
+createIntersection​(
+Rectangle2D
+r)
+```
+
+Returns a new
+
+Rectangle2D
+
+object representing the
+intersection of this
+
+Rectangle2D
+
+with the specified
+
+Rectangle2D
+
+.
+
+**Specified by:** createIntersection
+
+in class
+
+Rectangle2D
+**Parameters:** r
+
+- the
+
+Rectangle2D
+
+to be intersected with
+this
+
+Rectangle2D
+**Returns:** the largest
+
+Rectangle2D
+
+contained in both
+the specified
+
+Rectangle2D
+
+and in this
+
+Rectangle2D
+
+.
+**Since:** 1.2
+
+- createUnion
+
+```java
+public
+Rectangle2D
+createUnion​(
+Rectangle2D
+r)
+```
+
+Returns a new
+
+Rectangle2D
+
+object representing the
+union of this
+
+Rectangle2D
+
+with the specified
+
+Rectangle2D
+
+.
+
+**Specified by:** createUnion
+
+in class
+
+Rectangle2D
+**Parameters:** r
+
+- the
+
+Rectangle2D
+
+to be combined with
+this
+
+Rectangle2D
+**Returns:** the smallest
+
+Rectangle2D
+
+containing both
+the specified
+
+Rectangle2D
+
+and this
+
+Rectangle2D
+
+.
+**Since:** 1.2
+
+- equals
+
+```java
+public boolean equals​(
+Object
+obj)
+```
+
+Checks whether two rectangles are equal.
+
+The result is
+
+true
+
+if and only if the argument is not
+
+null
+
+and is a
+
+Rectangle
+
+object that has the
+same upper-left corner, width, and height as
+this
+
+Rectangle
+
+.
+
+**Overrides:** equals
+
+in class
+
+Rectangle2D
+**Parameters:** obj
+
+- the
+
+Object
+
+to compare with
+this
+
+Rectangle
+**Returns:** true
+
+if the objects are equal;
+
+false
+
+otherwise.
+**See Also:** Object.hashCode()
+
+,
+
+HashMap
+
+- toString
+
+```java
+public
+String
+toString()
+```
+
+Returns a
+
+String
+
+representing this
+
+Rectangle
+
+and its values.
+
+**Overrides:** toString
+
+in class
+
+Object
+**Returns:** a
+
+String
+
+representing this
+
+Rectangle
+
+object's coordinate and size values.
+
+Field Detail
+
+- x
+
+```java
+public int x
+```
+
+The X coordinate of the upper-left corner of the
+
+Rectangle
+
+.
+
+**Since:** 1.0
+**See Also:** setLocation(int, int)
+
+,
+
+getLocation()
+
+- y
+
+```java
+public int y
+```
+
+The Y coordinate of the upper-left corner of the
+
+Rectangle
+
+.
+
+**Since:** 1.0
+**See Also:** setLocation(int, int)
+
+,
+
+getLocation()
+
+- width
+
+```java
+public int width
+```
+
+The width of the
+
+Rectangle
+
+.
+
+**Since:** 1.0
+**See Also:** setSize(int, int)
+
+,
+
+getSize()
+
+- height
+
+```java
+public int height
+```
+
+The height of the
+
+Rectangle
+
+.
+
+**Since:** 1.0
+**See Also:** setSize(int, int)
+
+,
+
+getSize()
+
+---
+
+#### Field Detail
+
+x
+
+```java
+public int x
+```
+
+The X coordinate of the upper-left corner of the
+
+Rectangle
+
+.
+
+**Since:** 1.0
+**See Also:** setLocation(int, int)
+
+,
+
+getLocation()
+
+---
+
+#### x
+
+public int x
+
+The X coordinate of the upper-left corner of the
+
+Rectangle
+
+.
+
+y
+
+```java
+public int y
+```
+
+The Y coordinate of the upper-left corner of the
+
+Rectangle
+
+.
+
+**Since:** 1.0
+**See Also:** setLocation(int, int)
+
+,
+
+getLocation()
+
+---
+
+#### y
+
+public int y
+
+The Y coordinate of the upper-left corner of the
+
+Rectangle
+
+.
+
+width
+
+```java
+public int width
+```
+
+The width of the
+
+Rectangle
+
+.
+
+**Since:** 1.0
+**See Also:** setSize(int, int)
+
+,
+
+getSize()
+
+---
+
+#### width
+
+public int width
+
+The width of the
+
+Rectangle
+
+.
+
+height
+
+```java
+public int height
+```
+
+The height of the
+
+Rectangle
+
+.
+
+**Since:** 1.0
+**See Also:** setSize(int, int)
+
+,
+
+getSize()
+
+---
+
+#### height
+
+public int height
+
+The height of the
+
+Rectangle
+
+.
+
+Constructor Detail
+
+- Rectangle
+
+```java
+public Rectangle()
+```
+
+Constructs a new
+
+Rectangle
+
+whose upper-left corner
+is at (0, 0) in the coordinate space, and whose width and
+height are both zero.
+
+- Rectangle
+
+```java
+public Rectangle​(
+Rectangle
+r)
+```
+
+Constructs a new
+
+Rectangle
+
+, initialized to match
+the values of the specified
+
+Rectangle
+
+.
+
+**Parameters:** r
+
+- the
+
+Rectangle
+
+from which to copy initial values
+to a newly constructed
+
+Rectangle
+**Since:** 1.1
+
+- Rectangle
+
+```java
+public Rectangle​(int x,
+int y,
+int width,
+int height)
+```
+
+Constructs a new
+
+Rectangle
+
+whose upper-left corner is
+specified as
+
+(x,y)
+
+and whose width and height
+are specified by the arguments of the same name.
+
+**Parameters:** x
+
+- the specified X coordinate
+**Parameters:** y
+
+- the specified Y coordinate
+**Parameters:** width
+
+- the width of the
+
+Rectangle
+**Parameters:** height
+
+- the height of the
+
+Rectangle
+**Since:** 1.0
+
+- Rectangle
+
+```java
+public Rectangle​(int width,
+int height)
+```
+
+Constructs a new
+
+Rectangle
+
+whose upper-left corner
+is at (0, 0) in the coordinate space, and whose width and
+height are specified by the arguments of the same name.
+
+**Parameters:** width
+
+- the width of the
+
+Rectangle
+**Parameters:** height
+
+- the height of the
+
+Rectangle
+
+- Rectangle
+
+```java
+public Rectangle​(
+Point
+p,
+
+Dimension
+d)
+```
+
+Constructs a new
+
+Rectangle
+
+whose upper-left corner is
+specified by the
+
+Point
+
+argument, and
+whose width and height are specified by the
+
+Dimension
+
+argument.
+
+**Parameters:** p
+
+- a
+
+Point
+
+that is the upper-left corner of
+the
+
+Rectangle
+**Parameters:** d
+
+- a
+
+Dimension
+
+, representing the
+width and height of the
+
+Rectangle
+
+- Rectangle
+
+```java
+public Rectangle​(
+Point
+p)
+```
+
+Constructs a new
+
+Rectangle
+
+whose upper-left corner is the
+specified
+
+Point
+
+, and whose width and height are both zero.
+
+**Parameters:** p
+
+- a
+
+Point
+
+that is the top left corner
+of the
+
+Rectangle
+
+- Rectangle
+
+```java
+public Rectangle​(
+Dimension
+d)
+```
+
+Constructs a new
+
+Rectangle
+
+whose top left corner is
+(0, 0) and whose width and height are specified
+by the
+
+Dimension
+
+argument.
+
+**Parameters:** d
+
+- a
+
+Dimension
+
+, specifying width and height
+
+---
+
+#### Constructor Detail
+
+Rectangle
+
+```java
+public Rectangle()
+```
+
+Constructs a new
+
+Rectangle
+
+whose upper-left corner
+is at (0, 0) in the coordinate space, and whose width and
+height are both zero.
+
+---
+
+#### Rectangle
+
+public Rectangle()
+
+Constructs a new
+
+Rectangle
+
+whose upper-left corner
+is at (0, 0) in the coordinate space, and whose width and
+height are both zero.
+
+Rectangle
+
+```java
+public Rectangle​(
+Rectangle
+r)
+```
+
+Constructs a new
+
+Rectangle
+
+, initialized to match
+the values of the specified
+
+Rectangle
+
+.
+
+**Parameters:** r
+
+- the
+
+Rectangle
+
+from which to copy initial values
+to a newly constructed
+
+Rectangle
+**Since:** 1.1
+
+---
+
+#### Rectangle
+
+public Rectangle​(
+
+Rectangle
+
+r)
+
+Constructs a new
+
+Rectangle
+
+, initialized to match
+the values of the specified
+
+Rectangle
+
+.
+
+Rectangle
+
+```java
+public Rectangle​(int x,
+int y,
+int width,
+int height)
+```
+
+Constructs a new
+
+Rectangle
+
+whose upper-left corner is
+specified as
+
+(x,y)
+
+and whose width and height
+are specified by the arguments of the same name.
+
+**Parameters:** x
+
+- the specified X coordinate
+**Parameters:** y
+
+- the specified Y coordinate
+**Parameters:** width
+
+- the width of the
+
+Rectangle
+**Parameters:** height
+
+- the height of the
+
+Rectangle
+**Since:** 1.0
+
+---
+
+#### Rectangle
+
+public Rectangle​(int x,
+int y,
+int width,
+int height)
+
+Constructs a new
+
+Rectangle
+
+whose upper-left corner is
+specified as
+
+(x,y)
+
+and whose width and height
+are specified by the arguments of the same name.
+
+Rectangle
+
+```java
+public Rectangle​(int width,
+int height)
+```
+
+Constructs a new
+
+Rectangle
+
+whose upper-left corner
+is at (0, 0) in the coordinate space, and whose width and
+height are specified by the arguments of the same name.
+
+**Parameters:** width
+
+- the width of the
+
+Rectangle
+**Parameters:** height
+
+- the height of the
+
+Rectangle
+
+---
+
+#### Rectangle
+
+public Rectangle​(int width,
+int height)
+
+Constructs a new
+
+Rectangle
+
+whose upper-left corner
+is at (0, 0) in the coordinate space, and whose width and
+height are specified by the arguments of the same name.
+
+Rectangle
+
+```java
+public Rectangle​(
+Point
+p,
+
+Dimension
+d)
+```
+
+Constructs a new
+
+Rectangle
+
+whose upper-left corner is
+specified by the
+
+Point
+
+argument, and
+whose width and height are specified by the
+
+Dimension
+
+argument.
+
+**Parameters:** p
+
+- a
+
+Point
+
+that is the upper-left corner of
+the
+
+Rectangle
+**Parameters:** d
+
+- a
+
+Dimension
+
+, representing the
+width and height of the
+
+Rectangle
+
+---
+
+#### Rectangle
+
+public Rectangle​(
+
+Point
+
+p,
+
+Dimension
+
+d)
+
+Constructs a new
+
+Rectangle
+
+whose upper-left corner is
+specified by the
+
+Point
+
+argument, and
+whose width and height are specified by the
+
+Dimension
+
+argument.
+
+Rectangle
+
+```java
+public Rectangle​(
+Point
+p)
+```
+
+Constructs a new
+
+Rectangle
+
+whose upper-left corner is the
+specified
+
+Point
+
+, and whose width and height are both zero.
+
+**Parameters:** p
+
+- a
+
+Point
+
+that is the top left corner
+of the
+
+Rectangle
+
+---
+
+#### Rectangle
+
+public Rectangle​(
+
+Point
+
+p)
+
+Constructs a new
+
+Rectangle
+
+whose upper-left corner is the
+specified
+
+Point
+
+, and whose width and height are both zero.
+
+Rectangle
+
+```java
+public Rectangle​(
+Dimension
+d)
+```
+
+Constructs a new
+
+Rectangle
+
+whose top left corner is
+(0, 0) and whose width and height are specified
+by the
+
+Dimension
+
+argument.
+
+**Parameters:** d
+
+- a
+
+Dimension
+
+, specifying width and height
+
+---
+
+#### Rectangle
+
+public Rectangle​(
+
+Dimension
+
+d)
+
+Constructs a new
+
+Rectangle
+
+whose top left corner is
+(0, 0) and whose width and height are specified
+by the
+
+Dimension
+
+argument.
+
+Method Detail
+
+- getX
+
+```java
+public double getX()
+```
+
+Returns the X coordinate of the bounding
+
+Rectangle
+
+in
+
+double
+
+precision.
+
+**Specified by:** getX
+
+in class
+
+RectangularShape
+**Returns:** the X coordinate of the bounding
+
+Rectangle
+
+.
+
+- getY
+
+```java
+public double getY()
+```
+
+Returns the Y coordinate of the bounding
+
+Rectangle
+
+in
+
+double
+
+precision.
+
+**Specified by:** getY
+
+in class
+
+RectangularShape
+**Returns:** the Y coordinate of the bounding
+
+Rectangle
+
+.
+
+- getWidth
+
+```java
+public double getWidth()
+```
+
+Returns the width of the bounding
+
+Rectangle
+
+in
+
+double
+
+precision.
+
+**Specified by:** getWidth
+
+in class
+
+RectangularShape
+**Returns:** the width of the bounding
+
+Rectangle
+
+.
+
+- getHeight
+
+```java
+public double getHeight()
+```
+
+Returns the height of the bounding
+
+Rectangle
+
+in
+
+double
+
+precision.
+
+**Specified by:** getHeight
+
+in class
+
+RectangularShape
+**Returns:** the height of the bounding
+
+Rectangle
+
+.
+
+- getBounds
+
+```java
+public
+Rectangle
+getBounds()
+```
+
+Gets the bounding
+
+Rectangle
+
+of this
+
+Rectangle
+
+.
+
+This method is included for completeness, to parallel the
+
+getBounds
+
+method of
+
+Component
+
+.
+
+**Specified by:** getBounds
+
+in interface
+
+Shape
+**Overrides:** getBounds
+
+in class
+
+RectangularShape
+**Returns:** a new
+
+Rectangle
+
+, equal to the
+bounding
+
+Rectangle
+
+for this
+
+Rectangle
+
+.
+**Since:** 1.1
+**See Also:** Component.getBounds()
+
+,
+
+setBounds(Rectangle)
+
+,
+
+setBounds(int, int, int, int)
+
+- getBounds2D
+
+```java
+public
+Rectangle2D
+getBounds2D()
+```
+
+Returns a high precision and more accurate bounding box of
+the
+
+Shape
+
+than the
+
+getBounds
+
+method.
+Note that there is no guarantee that the returned
+
+Rectangle2D
+
+is the smallest bounding box that encloses
+the
+
+Shape
+
+, only that the
+
+Shape
+
+lies
+entirely within the indicated
+
+Rectangle2D
+
+. The
+bounding box returned by this method is usually tighter than that
+returned by the
+
+getBounds
+
+method and never fails due
+to overflow problems since the return value can be an instance of
+the
+
+Rectangle2D
+
+that uses double precision values to
+store the dimensions.
+
+Note that the
+
+definition of insideness
+
+can lead to situations where points
+on the defining outline of the
+
+shape
+
+may not be considered
+contained in the returned
+
+bounds
+
+object, but only in cases
+where those points are also not considered contained in the original
+
+shape
+
+.
+
+If a
+
+point
+
+is inside the
+
+shape
+
+according to the
+
+contains(point)
+
+method, then it must
+be inside the returned
+
+Rectangle2D
+
+bounds object according
+to the
+
+contains(point)
+
+method of the
+
+bounds
+
+. Specifically:
+
+shape.contains(p)
+
+requires
+
+bounds.contains(p)
+
+If a
+
+point
+
+is not inside the
+
+shape
+
+, then it might
+still be contained in the
+
+bounds
+
+object:
+
+bounds.contains(p)
+
+does not imply
+
+shape.contains(p)
+
+**Specified by:** getBounds2D
+
+in interface
+
+Shape
+**Overrides:** getBounds2D
+
+in class
+
+Rectangle2D
+**Returns:** an instance of
+
+Rectangle2D
+
+that is a
+high-precision bounding box of the
+
+Shape
+
+.
+**Since:** 1.2
+**See Also:** Shape.getBounds()
+
+- setBounds
+
+```java
+public void setBounds​(
+Rectangle
+r)
+```
+
+Sets the bounding
+
+Rectangle
+
+of this
+
+Rectangle
+
+to match the specified
+
+Rectangle
+
+.
+
+This method is included for completeness, to parallel the
+
+setBounds
+
+method of
+
+Component
+
+.
+
+**Parameters:** r
+
+- the specified
+
+Rectangle
+**Since:** 1.1
+**See Also:** getBounds()
+
+,
+
+Component.setBounds(java.awt.Rectangle)
+
+- setBounds
+
+```java
+public void setBounds​(int x,
+int y,
+int width,
+int height)
+```
+
+Sets the bounding
+
+Rectangle
+
+of this
+
+Rectangle
+
+to the specified
+
+x
+
+,
+
+y
+
+,
+
+width
+
+,
+and
+
+height
+
+.
+
+This method is included for completeness, to parallel the
+
+setBounds
+
+method of
+
+Component
+
+.
+
+**Parameters:** x
+
+- the new X coordinate for the upper-left
+corner of this
+
+Rectangle
+**Parameters:** y
+
+- the new Y coordinate for the upper-left
+corner of this
+
+Rectangle
+**Parameters:** width
+
+- the new width for this
+
+Rectangle
+**Parameters:** height
+
+- the new height for this
+
+Rectangle
+**Since:** 1.1
+**See Also:** getBounds()
+
+,
+
+Component.setBounds(int, int, int, int)
+
+- setRect
+
+```java
+public void setRect​(double x,
+double y,
+double width,
+double height)
+```
+
+Sets the bounds of this
+
+Rectangle
+
+to the integer bounds
+which encompass the specified
+
+x
+
+,
+
+y
+
+,
+
+width
+
+,
+and
+
+height
+
+.
+If the parameters specify a
+
+Rectangle
+
+that exceeds the
+maximum range of integers, the result will be the best
+representation of the specified
+
+Rectangle
+
+intersected
+with the maximum integer bounds.
+
+**Specified by:** setRect
+
+in class
+
+Rectangle2D
+**Parameters:** x
+
+- the X coordinate of the upper-left corner of
+the specified rectangle
+**Parameters:** y
+
+- the Y coordinate of the upper-left corner of
+the specified rectangle
+**Parameters:** width
+
+- the width of the specified rectangle
+**Parameters:** height
+
+- the new height of the specified rectangle
+
+- reshape
+
+```java
+@Deprecated
+
+public void reshape​(int x,
+int y,
+int width,
+int height)
+```
+
+Deprecated.
+
+As of JDK version 1.1,
+replaced by
+
+setBounds(int, int, int, int)
+
+.
+
+Sets the bounding
+
+Rectangle
+
+of this
+
+Rectangle
+
+to the specified
+
+x
+
+,
+
+y
+
+,
+
+width
+
+,
+and
+
+height
+
+.
+
+**Parameters:** x
+
+- the new X coordinate for the upper-left
+corner of this
+
+Rectangle
+**Parameters:** y
+
+- the new Y coordinate for the upper-left
+corner of this
+
+Rectangle
+**Parameters:** width
+
+- the new width for this
+
+Rectangle
+**Parameters:** height
+
+- the new height for this
+
+Rectangle
+
+- getLocation
+
+```java
+public
+Point
+getLocation()
+```
+
+Returns the location of this
+
+Rectangle
+
+.
+
+This method is included for completeness, to parallel the
+
+getLocation
+
+method of
+
+Component
+
+.
+
+**Returns:** the
+
+Point
+
+that is the upper-left corner of
+this
+
+Rectangle
+
+.
+**Since:** 1.1
+**See Also:** Component.getLocation()
+
+,
+
+setLocation(Point)
+
+,
+
+setLocation(int, int)
+
+- setLocation
+
+```java
+public void setLocation​(
+Point
+p)
+```
+
+Moves this
+
+Rectangle
+
+to the specified location.
+
+This method is included for completeness, to parallel the
+
+setLocation
+
+method of
+
+Component
+
+.
+
+**Parameters:** p
+
+- the
+
+Point
+
+specifying the new location
+for this
+
+Rectangle
+**Since:** 1.1
+**See Also:** Component.setLocation(java.awt.Point)
+
+,
+
+getLocation()
+
+- setLocation
+
+```java
+public void setLocation​(int x,
+int y)
+```
+
+Moves this
+
+Rectangle
+
+to the specified location.
+
+This method is included for completeness, to parallel the
+
+setLocation
+
+method of
+
+Component
+
+.
+
+**Parameters:** x
+
+- the X coordinate of the new location
+**Parameters:** y
+
+- the Y coordinate of the new location
+**Since:** 1.1
+**See Also:** getLocation()
+
+,
+
+Component.setLocation(int, int)
+
+- move
+
+```java
+@Deprecated
+
+public void move​(int x,
+int y)
+```
+
+Deprecated.
+
+As of JDK version 1.1,
+replaced by
+
+setLocation(int, int)
+
+.
+
+Moves this
+
+Rectangle
+
+to the specified location.
+
+**Parameters:** x
+
+- the X coordinate of the new location
+**Parameters:** y
+
+- the Y coordinate of the new location
+
+- translate
+
+```java
+public void translate​(int dx,
+int dy)
+```
+
+Translates this
+
+Rectangle
+
+the indicated distance,
+to the right along the X coordinate axis, and
+downward along the Y coordinate axis.
+
+**Parameters:** dx
+
+- the distance to move this
+
+Rectangle
+
+along the X axis
+**Parameters:** dy
+
+- the distance to move this
+
+Rectangle
+
+along the Y axis
+**See Also:** setLocation(int, int)
+
+,
+
+setLocation(java.awt.Point)
+
+- getSize
+
+```java
+public
+Dimension
+getSize()
+```
+
+Gets the size of this
+
+Rectangle
+
+, represented by
+the returned
+
+Dimension
+
+.
+
+This method is included for completeness, to parallel the
+
+getSize
+
+method of
+
+Component
+
+.
+
+**Returns:** a
+
+Dimension
+
+, representing the size of
+this
+
+Rectangle
+
+.
+**Since:** 1.1
+**See Also:** Component.getSize()
+
+,
+
+setSize(Dimension)
+
+,
+
+setSize(int, int)
+
+- setSize
+
+```java
+public void setSize​(
+Dimension
+d)
+```
+
+Sets the size of this
+
+Rectangle
+
+to match the
+specified
+
+Dimension
+
+.
+
+This method is included for completeness, to parallel the
+
+setSize
+
+method of
+
+Component
+
+.
+
+**Parameters:** d
+
+- the new size for the
+
+Dimension
+
+object
+**Since:** 1.1
+**See Also:** Component.setSize(java.awt.Dimension)
+
+,
+
+getSize()
+
+- setSize
+
+```java
+public void setSize​(int width,
+int height)
+```
+
+Sets the size of this
+
+Rectangle
+
+to the specified
+width and height.
+
+This method is included for completeness, to parallel the
+
+setSize
+
+method of
+
+Component
+
+.
+
+**Parameters:** width
+
+- the new width for this
+
+Rectangle
+**Parameters:** height
+
+- the new height for this
+
+Rectangle
+**Since:** 1.1
+**See Also:** Component.setSize(int, int)
+
+,
+
+getSize()
+
+- resize
+
+```java
+@Deprecated
+
+public void resize​(int width,
+int height)
+```
+
+Deprecated.
+
+As of JDK version 1.1,
+replaced by
+
+setSize(int, int)
+
+.
+
+Sets the size of this
+
+Rectangle
+
+to the specified
+width and height.
+
+**Parameters:** width
+
+- the new width for this
+
+Rectangle
+**Parameters:** height
+
+- the new height for this
+
+Rectangle
+
+- contains
+
+```java
+public boolean contains​(
+Point
+p)
+```
+
+Checks whether or not this
+
+Rectangle
+
+contains the
+specified
+
+Point
+
+.
+
+**Parameters:** p
+
+- the
+
+Point
+
+to test
+**Returns:** true
+
+if the specified
+
+Point
+
+is inside this
+
+Rectangle
+
+;
+
+false
+
+otherwise.
+**Since:** 1.1
+
+- contains
+
+```java
+public boolean contains​(int x,
+int y)
+```
+
+Checks whether or not this
+
+Rectangle
+
+contains the
+point at the specified location
+
+(x,y)
+
+.
+
+**Parameters:** x
+
+- the specified X coordinate
+**Parameters:** y
+
+- the specified Y coordinate
+**Returns:** true
+
+if the point
+
+(x,y)
+
+is inside this
+
+Rectangle
+
+;
+
+false
+
+otherwise.
+**Since:** 1.1
+
+- contains
+
+```java
+public boolean contains​(
+Rectangle
+r)
+```
+
+Checks whether or not this
+
+Rectangle
+
+entirely contains
+the specified
+
+Rectangle
+
+.
+
+**Parameters:** r
+
+- the specified
+
+Rectangle
+**Returns:** true
+
+if the
+
+Rectangle
+
+is contained entirely inside this
+
+Rectangle
+
+;
+
+false
+
+otherwise
+**Since:** 1.2
+
+- contains
+
+```java
+public boolean contains​(int X,
+int Y,
+int W,
+int H)
+```
+
+Checks whether this
+
+Rectangle
+
+entirely contains
+the
+
+Rectangle
+
+at the specified location
+
+(X,Y)
+
+with the
+specified dimensions
+
+(W,H)
+
+.
+
+**Parameters:** X
+
+- the specified X coordinate
+**Parameters:** Y
+
+- the specified Y coordinate
+**Parameters:** W
+
+- the width of the
+
+Rectangle
+**Parameters:** H
+
+- the height of the
+
+Rectangle
+**Returns:** true
+
+if the
+
+Rectangle
+
+specified by
+
+(X, Y, W, H)
+
+is entirely enclosed inside this
+
+Rectangle
+
+;
+
+false
+
+otherwise.
+**Since:** 1.1
+
+- inside
+
+```java
+@Deprecated
+
+public boolean inside​(int X,
+int Y)
+```
+
+Deprecated.
+
+As of JDK version 1.1,
+replaced by
+
+contains(int, int)
+
+.
+
+Checks whether or not this
+
+Rectangle
+
+contains the
+point at the specified location
+
+(X,Y)
+
+.
+
+**Parameters:** X
+
+- the specified X coordinate
+**Parameters:** Y
+
+- the specified Y coordinate
+**Returns:** true
+
+if the point
+
+(X,Y)
+
+is inside this
+
+Rectangle
+
+;
+
+false
+
+otherwise.
+
+- intersects
+
+```java
+public boolean intersects​(
+Rectangle
+r)
+```
+
+Determines whether or not this
+
+Rectangle
+
+and the specified
+
+Rectangle
+
+intersect. Two rectangles intersect if
+their intersection is nonempty.
+
+**Parameters:** r
+
+- the specified
+
+Rectangle
+**Returns:** true
+
+if the specified
+
+Rectangle
+
+and this
+
+Rectangle
+
+intersect;
+
+false
+
+otherwise.
+
+- intersection
+
+```java
+public
+Rectangle
+intersection​(
+Rectangle
+r)
+```
+
+Computes the intersection of this
+
+Rectangle
+
+with the
+specified
+
+Rectangle
+
+. Returns a new
+
+Rectangle
+
+that represents the intersection of the two rectangles.
+If the two rectangles do not intersect, the result will be
+an empty rectangle.
+
+**Parameters:** r
+
+- the specified
+
+Rectangle
+**Returns:** the largest
+
+Rectangle
+
+contained in both the
+specified
+
+Rectangle
+
+and in
+this
+
+Rectangle
+
+; or if the rectangles
+do not intersect, an empty rectangle.
+
+- union
+
+```java
+public
+Rectangle
+union​(
+Rectangle
+r)
+```
+
+Computes the union of this
+
+Rectangle
+
+with the
+specified
+
+Rectangle
+
+. Returns a new
+
+Rectangle
+
+that
+represents the union of the two rectangles.
+
+If either
+
+Rectangle
+
+has any dimension less than zero
+the rules for
+
+non-existent
+
+rectangles
+apply.
+If only one has a dimension less than zero, then the result
+will be a copy of the other
+
+Rectangle
+
+.
+If both have dimension less than zero, then the result will
+have at least one dimension less than zero.
+
+If the resulting
+
+Rectangle
+
+would have a dimension
+too large to be expressed as an
+
+int
+
+, the result
+will have a dimension of
+
+Integer.MAX_VALUE
+
+along
+that dimension.
+
+**Parameters:** r
+
+- the specified
+
+Rectangle
+**Returns:** the smallest
+
+Rectangle
+
+containing both
+the specified
+
+Rectangle
+
+and this
+
+Rectangle
+
+.
+
+- add
+
+```java
+public void add​(int newx,
+int newy)
+```
+
+Adds a point, specified by the integer arguments
+
+newx,newy
+
+to the bounds of this
+
+Rectangle
+
+.
+
+If this
+
+Rectangle
+
+has any dimension less than zero,
+the rules for
+
+non-existent
+
+rectangles apply.
+In that case, the new bounds of this
+
+Rectangle
+
+will
+have a location equal to the specified coordinates and
+width and height equal to zero.
+
+After adding a point, a call to
+
+contains
+
+with the
+added point as an argument does not necessarily return
+
+true
+
+. The
+
+contains
+
+method does not
+return
+
+true
+
+for points on the right or bottom
+edges of a
+
+Rectangle
+
+. Therefore, if the added point
+falls on the right or bottom edge of the enlarged
+
+Rectangle
+
+,
+
+contains
+
+returns
+
+false
+
+for that point.
+If the specified point must be contained within the new
+
+Rectangle
+
+, a 1x1 rectangle should be added instead:
+
+```java
+r.add(newx, newy, 1, 1);
+```
+
+**Parameters:** newx
+
+- the X coordinate of the new point
+**Parameters:** newy
+
+- the Y coordinate of the new point
+
+- add
+
+```java
+public void add​(
+Point
+pt)
+```
+
+Adds the specified
+
+Point
+
+to the bounds of this
+
+Rectangle
+
+.
+
+If this
+
+Rectangle
+
+has any dimension less than zero,
+the rules for
+
+non-existent
+
+rectangles apply.
+In that case, the new bounds of this
+
+Rectangle
+
+will
+have a location equal to the coordinates of the specified
+
+Point
+
+and width and height equal to zero.
+
+After adding a
+
+Point
+
+, a call to
+
+contains
+
+with the added
+
+Point
+
+as an argument does not
+necessarily return
+
+true
+
+. The
+
+contains
+
+method does not return
+
+true
+
+for points on the right
+or bottom edges of a
+
+Rectangle
+
+. Therefore if the added
+
+Point
+
+falls on the right or bottom edge of the
+enlarged
+
+Rectangle
+
+,
+
+contains
+
+returns
+
+false
+
+for that
+
+Point
+
+.
+If the specified point must be contained within the new
+
+Rectangle
+
+, a 1x1 rectangle should be added instead:
+
+```java
+r.add(pt.x, pt.y, 1, 1);
+```
+
+**Parameters:** pt
+
+- the new
+
+Point
+
+to add to this
+
+Rectangle
+
+- add
+
+```java
+public void add​(
+Rectangle
+r)
+```
+
+Adds a
+
+Rectangle
+
+to this
+
+Rectangle
+
+.
+The resulting
+
+Rectangle
+
+is the union of the two
+rectangles.
+
+If either
+
+Rectangle
+
+has any dimension less than 0, the
+result will have the dimensions of the other
+
+Rectangle
+
+.
+If both
+
+Rectangle
+
+s have at least one dimension less
+than 0, the result will have at least one dimension less than 0.
+
+If either
+
+Rectangle
+
+has one or both dimensions equal
+to 0, the result along those axes with 0 dimensions will be
+equivalent to the results obtained by adding the corresponding
+origin coordinate to the result rectangle along that axis,
+similar to the operation of the
+
+add(Point)
+
+method,
+but contribute no further dimension beyond that.
+
+If the resulting
+
+Rectangle
+
+would have a dimension
+too large to be expressed as an
+
+int
+
+, the result
+will have a dimension of
+
+Integer.MAX_VALUE
+
+along
+that dimension.
+
+**Parameters:** r
+
+- the specified
+
+Rectangle
+
+- grow
+
+```java
+public void grow​(int h,
+int v)
+```
+
+Resizes the
+
+Rectangle
+
+both horizontally and vertically.
+
+This method modifies the
+
+Rectangle
+
+so that it is
+
+h
+
+units larger on both the left and right side,
+and
+
+v
+
+units larger at both the top and bottom.
+
+The new
+
+Rectangle
+
+has
+
+(x - h, y - v)
+
+as its upper-left corner,
+width of
+
+(width + 2h)
+
+,
+and a height of
+
+(height + 2v)
+
+.
+
+If negative values are supplied for
+
+h
+
+and
+
+v
+
+, the size of the
+
+Rectangle
+
+decreases accordingly.
+The
+
+grow
+
+method will check for integer overflow
+and underflow, but does not check whether the resulting
+values of
+
+width
+
+and
+
+height
+
+grow
+from negative to non-negative or shrink from non-negative
+to negative.
+
+**Parameters:** h
+
+- the horizontal expansion
+**Parameters:** v
+
+- the vertical expansion
+
+- isEmpty
+
+```java
+public boolean isEmpty()
+```
+
+Determines whether the
+
+RectangularShape
+
+is empty.
+When the
+
+RectangularShape
+
+is empty, it encloses no
+area.
+
+**Specified by:** isEmpty
+
+in class
+
+RectangularShape
+**Returns:** true
+
+if the
+
+RectangularShape
+
+is empty;
+
+false
+
+otherwise.
+**Since:** 1.2
+
+- outcode
+
+```java
+public int outcode​(double x,
+double y)
+```
+
+Determines where the specified coordinates lie with respect
+to this
+
+Rectangle2D
+
+.
+This method computes a binary OR of the appropriate mask values
+indicating, for each side of this
+
+Rectangle2D
+
+,
+whether or not the specified coordinates are on the same side
+of the edge as the rest of this
+
+Rectangle2D
+
+.
+
+**Specified by:** outcode
+
+in class
+
+Rectangle2D
+**Parameters:** x
+
+- the specified X coordinate
+**Parameters:** y
+
+- the specified Y coordinate
+**Returns:** the logical OR of all appropriate out codes.
+**Since:** 1.2
+**See Also:** Rectangle2D.OUT_LEFT
+
+,
+
+Rectangle2D.OUT_TOP
+
+,
+
+Rectangle2D.OUT_RIGHT
+
+,
+
+Rectangle2D.OUT_BOTTOM
+
+- createIntersection
+
+```java
+public
+Rectangle2D
+createIntersection​(
+Rectangle2D
+r)
+```
+
+Returns a new
+
+Rectangle2D
+
+object representing the
+intersection of this
+
+Rectangle2D
+
+with the specified
+
+Rectangle2D
+
+.
+
+**Specified by:** createIntersection
+
+in class
+
+Rectangle2D
+**Parameters:** r
+
+- the
+
+Rectangle2D
+
+to be intersected with
+this
+
+Rectangle2D
+**Returns:** the largest
+
+Rectangle2D
+
+contained in both
+the specified
+
+Rectangle2D
+
+and in this
+
+Rectangle2D
+
+.
+**Since:** 1.2
+
+- createUnion
+
+```java
+public
+Rectangle2D
+createUnion​(
+Rectangle2D
+r)
+```
+
+Returns a new
+
+Rectangle2D
+
+object representing the
+union of this
+
+Rectangle2D
+
+with the specified
+
+Rectangle2D
+
+.
+
+**Specified by:** createUnion
+
+in class
+
+Rectangle2D
+**Parameters:** r
+
+- the
+
+Rectangle2D
+
+to be combined with
+this
+
+Rectangle2D
+**Returns:** the smallest
+
+Rectangle2D
+
+containing both
+the specified
+
+Rectangle2D
+
+and this
+
+Rectangle2D
+
+.
+**Since:** 1.2
+
+- equals
+
+```java
+public boolean equals​(
+Object
+obj)
+```
+
+Checks whether two rectangles are equal.
+
+The result is
+
+true
+
+if and only if the argument is not
+
+null
+
+and is a
+
+Rectangle
+
+object that has the
+same upper-left corner, width, and height as
+this
+
+Rectangle
+
+.
+
+**Overrides:** equals
+
+in class
+
+Rectangle2D
+**Parameters:** obj
+
+- the
+
+Object
+
+to compare with
+this
+
+Rectangle
+**Returns:** true
+
+if the objects are equal;
+
+false
+
+otherwise.
+**See Also:** Object.hashCode()
+
+,
+
+HashMap
+
+- toString
+
+```java
+public
+String
+toString()
+```
+
+Returns a
+
+String
+
+representing this
+
+Rectangle
+
+and its values.
+
+**Overrides:** toString
+
+in class
+
+Object
+**Returns:** a
+
+String
+
+representing this
+
+Rectangle
+
+object's coordinate and size values.
+
+---
+
+#### Method Detail
+
+getX
+
+```java
+public double getX()
+```
+
+Returns the X coordinate of the bounding
+
+Rectangle
+
+in
+
+double
+
+precision.
+
+**Specified by:** getX
+
+in class
+
+RectangularShape
+**Returns:** the X coordinate of the bounding
+
+Rectangle
+
+.
+
+---
+
+#### getX
+
+public double getX()
+
+Returns the X coordinate of the bounding
+
+Rectangle
+
+in
+
+double
+
+precision.
+
+getY
+
+```java
+public double getY()
+```
+
+Returns the Y coordinate of the bounding
+
+Rectangle
+
+in
+
+double
+
+precision.
+
+**Specified by:** getY
+
+in class
+
+RectangularShape
+**Returns:** the Y coordinate of the bounding
+
+Rectangle
+
+.
+
+---
+
+#### getY
+
+public double getY()
+
+Returns the Y coordinate of the bounding
+
+Rectangle
+
+in
+
+double
+
+precision.
+
+getWidth
+
+```java
+public double getWidth()
+```
+
+Returns the width of the bounding
+
+Rectangle
+
+in
+
+double
+
+precision.
+
+**Specified by:** getWidth
+
+in class
+
+RectangularShape
+**Returns:** the width of the bounding
+
+Rectangle
+
+.
+
+---
+
+#### getWidth
+
+public double getWidth()
+
+Returns the width of the bounding
+
+Rectangle
+
+in
+
+double
+
+precision.
+
+getHeight
+
+```java
+public double getHeight()
+```
+
+Returns the height of the bounding
+
+Rectangle
+
+in
+
+double
+
+precision.
+
+**Specified by:** getHeight
+
+in class
+
+RectangularShape
+**Returns:** the height of the bounding
+
+Rectangle
+
+.
+
+---
+
+#### getHeight
+
+public double getHeight()
+
+Returns the height of the bounding
+
+Rectangle
+
+in
+
+double
+
+precision.
+
+getBounds
+
+```java
+public
+Rectangle
+getBounds()
+```
+
+Gets the bounding
+
+Rectangle
+
+of this
+
+Rectangle
+
+.
+
+This method is included for completeness, to parallel the
+
+getBounds
+
+method of
+
+Component
+
+.
+
+**Specified by:** getBounds
+
+in interface
+
+Shape
+**Overrides:** getBounds
+
+in class
+
+RectangularShape
+**Returns:** a new
+
+Rectangle
+
+, equal to the
+bounding
+
+Rectangle
+
+for this
+
+Rectangle
+
+.
+**Since:** 1.1
+**See Also:** Component.getBounds()
+
+,
+
+setBounds(Rectangle)
+
+,
+
+setBounds(int, int, int, int)
+
+---
+
+#### getBounds
+
+public
+
+Rectangle
+
+getBounds()
+
+Gets the bounding
+
+Rectangle
+
+of this
+
+Rectangle
+
+.
+
+This method is included for completeness, to parallel the
+
+getBounds
+
+method of
+
+Component
+
+.
+
+This method is included for completeness, to parallel the
+
+getBounds
+
+method of
+
+Component
+
+.
+
+getBounds2D
+
+```java
+public
+Rectangle2D
+getBounds2D()
+```
+
+Returns a high precision and more accurate bounding box of
+the
+
+Shape
+
+than the
+
+getBounds
+
+method.
+Note that there is no guarantee that the returned
+
+Rectangle2D
+
+is the smallest bounding box that encloses
+the
+
+Shape
+
+, only that the
+
+Shape
+
+lies
+entirely within the indicated
+
+Rectangle2D
+
+. The
+bounding box returned by this method is usually tighter than that
+returned by the
+
+getBounds
+
+method and never fails due
+to overflow problems since the return value can be an instance of
+the
+
+Rectangle2D
+
+that uses double precision values to
+store the dimensions.
+
+Note that the
+
+definition of insideness
+
+can lead to situations where points
+on the defining outline of the
+
+shape
+
+may not be considered
+contained in the returned
+
+bounds
+
+object, but only in cases
+where those points are also not considered contained in the original
+
+shape
+
+.
+
+If a
+
+point
+
+is inside the
+
+shape
+
+according to the
+
+contains(point)
+
+method, then it must
+be inside the returned
+
+Rectangle2D
+
+bounds object according
+to the
+
+contains(point)
+
+method of the
+
+bounds
+
+. Specifically:
+
+shape.contains(p)
+
+requires
+
+bounds.contains(p)
+
+If a
+
+point
+
+is not inside the
+
+shape
+
+, then it might
+still be contained in the
+
+bounds
+
+object:
+
+bounds.contains(p)
+
+does not imply
+
+shape.contains(p)
+
+**Specified by:** getBounds2D
+
+in interface
+
+Shape
+**Overrides:** getBounds2D
+
+in class
+
+Rectangle2D
+**Returns:** an instance of
+
+Rectangle2D
+
+that is a
+high-precision bounding box of the
+
+Shape
+
+.
+**Since:** 1.2
+**See Also:** Shape.getBounds()
+
+---
+
+#### getBounds2D
+
+public
+
+Rectangle2D
+
+getBounds2D()
+
+Returns a high precision and more accurate bounding box of
+the
+
+Shape
+
+than the
+
+getBounds
+
+method.
+Note that there is no guarantee that the returned
+
+Rectangle2D
+
+is the smallest bounding box that encloses
+the
+
+Shape
+
+, only that the
+
+Shape
+
+lies
+entirely within the indicated
+
+Rectangle2D
+
+. The
+bounding box returned by this method is usually tighter than that
+returned by the
+
+getBounds
+
+method and never fails due
+to overflow problems since the return value can be an instance of
+the
+
+Rectangle2D
+
+that uses double precision values to
+store the dimensions.
+
+Note that the
+
+definition of insideness
+
+can lead to situations where points
+on the defining outline of the
+
+shape
+
+may not be considered
+contained in the returned
+
+bounds
+
+object, but only in cases
+where those points are also not considered contained in the original
+
+shape
+
+.
+
+If a
+
+point
+
+is inside the
+
+shape
+
+according to the
+
+contains(point)
+
+method, then it must
+be inside the returned
+
+Rectangle2D
+
+bounds object according
+to the
+
+contains(point)
+
+method of the
+
+bounds
+
+. Specifically:
+
+shape.contains(p)
+
+requires
+
+bounds.contains(p)
+
+If a
+
+point
+
+is not inside the
+
+shape
+
+, then it might
+still be contained in the
+
+bounds
+
+object:
+
+bounds.contains(p)
+
+does not imply
+
+shape.contains(p)
+
+Note that the
+
+definition of insideness
+
+can lead to situations where points
+on the defining outline of the
+
+shape
+
+may not be considered
+contained in the returned
+
+bounds
+
+object, but only in cases
+where those points are also not considered contained in the original
+
+shape
+
+.
+
+If a
+
+point
+
+is inside the
+
+shape
+
+according to the
+
+contains(point)
+
+method, then it must
+be inside the returned
+
+Rectangle2D
+
+bounds object according
+to the
+
+contains(point)
+
+method of the
+
+bounds
+
+. Specifically:
+
+shape.contains(p)
+
+requires
+
+bounds.contains(p)
+
+If a
+
+point
+
+is not inside the
+
+shape
+
+, then it might
+still be contained in the
+
+bounds
+
+object:
+
+bounds.contains(p)
+
+does not imply
+
+shape.contains(p)
+
+setBounds
+
+```java
+public void setBounds​(
+Rectangle
+r)
+```
+
+Sets the bounding
+
+Rectangle
+
+of this
+
+Rectangle
+
+to match the specified
+
+Rectangle
+
+.
+
+This method is included for completeness, to parallel the
+
+setBounds
+
+method of
+
+Component
+
+.
+
+**Parameters:** r
+
+- the specified
+
+Rectangle
+**Since:** 1.1
+**See Also:** getBounds()
+
+,
+
+Component.setBounds(java.awt.Rectangle)
+
+---
+
+#### setBounds
+
+public void setBounds​(
+
+Rectangle
+
+r)
+
+Sets the bounding
+
+Rectangle
+
+of this
+
+Rectangle
+
+to match the specified
+
+Rectangle
+
+.
+
+This method is included for completeness, to parallel the
+
+setBounds
+
+method of
+
+Component
+
+.
+
+This method is included for completeness, to parallel the
+
+setBounds
+
+method of
+
+Component
+
+.
+
+setBounds
+
+```java
+public void setBounds​(int x,
+int y,
+int width,
+int height)
+```
+
+Sets the bounding
+
+Rectangle
+
+of this
+
+Rectangle
+
+to the specified
+
+x
+
+,
+
+y
+
+,
+
+width
+
+,
+and
+
+height
+
+.
+
+This method is included for completeness, to parallel the
+
+setBounds
+
+method of
+
+Component
+
+.
+
+**Parameters:** x
+
+- the new X coordinate for the upper-left
+corner of this
+
+Rectangle
+**Parameters:** y
+
+- the new Y coordinate for the upper-left
+corner of this
+
+Rectangle
+**Parameters:** width
+
+- the new width for this
+
+Rectangle
+**Parameters:** height
+
+- the new height for this
+
+Rectangle
+**Since:** 1.1
+**See Also:** getBounds()
+
+,
+
+Component.setBounds(int, int, int, int)
+
+---
+
+#### setBounds
+
+public void setBounds​(int x,
+int y,
+int width,
+int height)
+
+Sets the bounding
+
+Rectangle
+
+of this
+
+Rectangle
+
+to the specified
+
+x
+
+,
+
+y
+
+,
+
+width
+
+,
+and
+
+height
+
+.
+
+This method is included for completeness, to parallel the
+
+setBounds
+
+method of
+
+Component
+
+.
+
+This method is included for completeness, to parallel the
+
+setBounds
+
+method of
+
+Component
+
+.
+
+setRect
+
+```java
+public void setRect​(double x,
+double y,
+double width,
+double height)
+```
+
+Sets the bounds of this
+
+Rectangle
+
+to the integer bounds
+which encompass the specified
+
+x
+
+,
+
+y
+
+,
+
+width
+
+,
+and
+
+height
+
+.
+If the parameters specify a
+
+Rectangle
+
+that exceeds the
+maximum range of integers, the result will be the best
+representation of the specified
+
+Rectangle
+
+intersected
+with the maximum integer bounds.
+
+**Specified by:** setRect
+
+in class
+
+Rectangle2D
+**Parameters:** x
+
+- the X coordinate of the upper-left corner of
+the specified rectangle
+**Parameters:** y
+
+- the Y coordinate of the upper-left corner of
+the specified rectangle
+**Parameters:** width
+
+- the width of the specified rectangle
+**Parameters:** height
+
+- the new height of the specified rectangle
+
+---
+
+#### setRect
+
+public void setRect​(double x,
+double y,
+double width,
+double height)
+
+Sets the bounds of this
+
+Rectangle
+
+to the integer bounds
+which encompass the specified
+
+x
+
+,
+
+y
+
+,
+
+width
+
+,
+and
+
+height
+
+.
+If the parameters specify a
+
+Rectangle
+
+that exceeds the
+maximum range of integers, the result will be the best
+representation of the specified
+
+Rectangle
+
+intersected
+with the maximum integer bounds.
+
+reshape
+
+```java
+@Deprecated
+
+public void reshape​(int x,
+int y,
+int width,
+int height)
+```
+
+Deprecated.
+
+As of JDK version 1.1,
+replaced by
+
+setBounds(int, int, int, int)
+
+.
+
+Sets the bounding
+
+Rectangle
+
+of this
+
+Rectangle
+
+to the specified
+
+x
+
+,
+
+y
+
+,
+
+width
+
+,
+and
+
+height
+
+.
+
+**Parameters:** x
+
+- the new X coordinate for the upper-left
+corner of this
+
+Rectangle
+**Parameters:** y
+
+- the new Y coordinate for the upper-left
+corner of this
+
+Rectangle
+**Parameters:** width
+
+- the new width for this
+
+Rectangle
+**Parameters:** height
+
+- the new height for this
+
+Rectangle
+
+---
+
+#### reshape
+
+@Deprecated
+
+public void reshape​(int x,
+int y,
+int width,
+int height)
+
+Sets the bounding
+
+Rectangle
+
+of this
+
+Rectangle
+
+to the specified
+
+x
+
+,
+
+y
+
+,
+
+width
+
+,
+and
+
+height
+
+.
+
+getLocation
+
+```java
+public
+Point
+getLocation()
+```
+
+Returns the location of this
+
+Rectangle
+
+.
+
+This method is included for completeness, to parallel the
+
+getLocation
+
+method of
+
+Component
+
+.
+
+**Returns:** the
+
+Point
+
+that is the upper-left corner of
+this
+
+Rectangle
+
+.
+**Since:** 1.1
+**See Also:** Component.getLocation()
+
+,
+
+setLocation(Point)
+
+,
+
+setLocation(int, int)
+
+---
+
+#### getLocation
+
+public
+
+Point
+
+getLocation()
+
+Returns the location of this
+
+Rectangle
+
+.
+
+This method is included for completeness, to parallel the
+
+getLocation
+
+method of
+
+Component
+
+.
+
+This method is included for completeness, to parallel the
+
+getLocation
+
+method of
+
+Component
+
+.
+
+setLocation
+
+```java
+public void setLocation​(
+Point
+p)
+```
+
+Moves this
+
+Rectangle
+
+to the specified location.
+
+This method is included for completeness, to parallel the
+
+setLocation
+
+method of
+
+Component
+
+.
+
+**Parameters:** p
+
+- the
+
+Point
+
+specifying the new location
+for this
+
+Rectangle
+**Since:** 1.1
+**See Also:** Component.setLocation(java.awt.Point)
+
+,
+
+getLocation()
+
+---
+
+#### setLocation
+
+public void setLocation​(
+
+Point
+
+p)
+
+Moves this
+
+Rectangle
+
+to the specified location.
+
+This method is included for completeness, to parallel the
+
+setLocation
+
+method of
+
+Component
+
+.
+
+This method is included for completeness, to parallel the
+
+setLocation
+
+method of
+
+Component
+
+.
+
+setLocation
+
+```java
+public void setLocation​(int x,
+int y)
+```
+
+Moves this
+
+Rectangle
+
+to the specified location.
+
+This method is included for completeness, to parallel the
+
+setLocation
+
+method of
+
+Component
+
+.
+
+**Parameters:** x
+
+- the X coordinate of the new location
+**Parameters:** y
+
+- the Y coordinate of the new location
+**Since:** 1.1
+**See Also:** getLocation()
+
+,
+
+Component.setLocation(int, int)
+
+---
+
+#### setLocation
+
+public void setLocation​(int x,
+int y)
+
+Moves this
+
+Rectangle
+
+to the specified location.
+
+This method is included for completeness, to parallel the
+
+setLocation
+
+method of
+
+Component
+
+.
+
+This method is included for completeness, to parallel the
+
+setLocation
+
+method of
+
+Component
+
+.
+
+move
+
+```java
+@Deprecated
+
+public void move​(int x,
+int y)
+```
+
+Deprecated.
+
+As of JDK version 1.1,
+replaced by
+
+setLocation(int, int)
+
+.
+
+Moves this
+
+Rectangle
+
+to the specified location.
+
+**Parameters:** x
+
+- the X coordinate of the new location
+**Parameters:** y
+
+- the Y coordinate of the new location
+
+---
+
+#### move
+
+@Deprecated
+
+public void move​(int x,
+int y)
+
+Moves this
+
+Rectangle
+
+to the specified location.
+
+translate
+
+```java
+public void translate​(int dx,
+int dy)
+```
+
+Translates this
+
+Rectangle
+
+the indicated distance,
+to the right along the X coordinate axis, and
+downward along the Y coordinate axis.
+
+**Parameters:** dx
+
+- the distance to move this
+
+Rectangle
+
+along the X axis
+**Parameters:** dy
+
+- the distance to move this
+
+Rectangle
+
+along the Y axis
+**See Also:** setLocation(int, int)
+
+,
+
+setLocation(java.awt.Point)
+
+---
+
+#### translate
+
+public void translate​(int dx,
+int dy)
+
+Translates this
+
+Rectangle
+
+the indicated distance,
+to the right along the X coordinate axis, and
+downward along the Y coordinate axis.
+
+getSize
+
+```java
+public
+Dimension
+getSize()
+```
+
+Gets the size of this
+
+Rectangle
+
+, represented by
+the returned
+
+Dimension
+
+.
+
+This method is included for completeness, to parallel the
+
+getSize
+
+method of
+
+Component
+
+.
+
+**Returns:** a
+
+Dimension
+
+, representing the size of
+this
+
+Rectangle
+
+.
+**Since:** 1.1
+**See Also:** Component.getSize()
+
+,
+
+setSize(Dimension)
+
+,
+
+setSize(int, int)
+
+---
+
+#### getSize
+
+public
+
+Dimension
+
+getSize()
+
+Gets the size of this
+
+Rectangle
+
+, represented by
+the returned
+
+Dimension
+
+.
+
+This method is included for completeness, to parallel the
+
+getSize
+
+method of
+
+Component
+
+.
+
+This method is included for completeness, to parallel the
+
+getSize
+
+method of
+
+Component
+
+.
+
+setSize
+
+```java
+public void setSize​(
+Dimension
+d)
+```
+
+Sets the size of this
+
+Rectangle
+
+to match the
+specified
+
+Dimension
+
+.
+
+This method is included for completeness, to parallel the
+
+setSize
+
+method of
+
+Component
+
+.
+
+**Parameters:** d
+
+- the new size for the
+
+Dimension
+
+object
+**Since:** 1.1
+**See Also:** Component.setSize(java.awt.Dimension)
+
+,
+
+getSize()
+
+---
+
+#### setSize
+
+public void setSize​(
+
+Dimension
+
+d)
+
+Sets the size of this
+
+Rectangle
+
+to match the
+specified
+
+Dimension
+
+.
+
+This method is included for completeness, to parallel the
+
+setSize
+
+method of
+
+Component
+
+.
+
+This method is included for completeness, to parallel the
+
+setSize
+
+method of
+
+Component
+
+.
+
+setSize
+
+```java
+public void setSize​(int width,
+int height)
+```
+
+Sets the size of this
+
+Rectangle
+
+to the specified
+width and height.
+
+This method is included for completeness, to parallel the
+
+setSize
+
+method of
+
+Component
+
+.
+
+**Parameters:** width
+
+- the new width for this
+
+Rectangle
+**Parameters:** height
+
+- the new height for this
+
+Rectangle
+**Since:** 1.1
+**See Also:** Component.setSize(int, int)
+
+,
+
+getSize()
+
+---
+
+#### setSize
+
+public void setSize​(int width,
+int height)
+
+Sets the size of this
+
+Rectangle
+
+to the specified
+width and height.
+
+This method is included for completeness, to parallel the
+
+setSize
+
+method of
+
+Component
+
+.
+
+This method is included for completeness, to parallel the
+
+setSize
+
+method of
+
+Component
+
+.
+
+resize
+
+```java
+@Deprecated
+
+public void resize​(int width,
+int height)
+```
+
+Deprecated.
+
+As of JDK version 1.1,
+replaced by
+
+setSize(int, int)
+
+.
+
+Sets the size of this
+
+Rectangle
+
+to the specified
+width and height.
+
+**Parameters:** width
+
+- the new width for this
+
+Rectangle
+**Parameters:** height
+
+- the new height for this
+
+Rectangle
+
+---
+
+#### resize
+
+@Deprecated
+
+public void resize​(int width,
+int height)
+
+Sets the size of this
+
+Rectangle
+
+to the specified
+width and height.
+
+contains
+
+```java
+public boolean contains​(
+Point
+p)
+```
+
+Checks whether or not this
+
+Rectangle
+
+contains the
+specified
+
+Point
+
+.
+
+**Parameters:** p
+
+- the
+
+Point
+
+to test
+**Returns:** true
+
+if the specified
+
+Point
+
+is inside this
+
+Rectangle
+
+;
+
+false
+
+otherwise.
+**Since:** 1.1
+
+---
+
+#### contains
+
+public boolean contains​(
+
+Point
+
+p)
+
+Checks whether or not this
+
+Rectangle
+
+contains the
+specified
+
+Point
+
+.
+
+contains
+
+```java
+public boolean contains​(int x,
+int y)
+```
+
+Checks whether or not this
+
+Rectangle
+
+contains the
+point at the specified location
+
+(x,y)
+
+.
+
+**Parameters:** x
+
+- the specified X coordinate
+**Parameters:** y
+
+- the specified Y coordinate
+**Returns:** true
+
+if the point
+
+(x,y)
+
+is inside this
+
+Rectangle
+
+;
+
+false
+
+otherwise.
+**Since:** 1.1
+
+---
+
+#### contains
+
+public boolean contains​(int x,
+int y)
+
+Checks whether or not this
+
+Rectangle
+
+contains the
+point at the specified location
+
+(x,y)
+
+.
+
+contains
+
+```java
+public boolean contains​(
+Rectangle
+r)
+```
+
+Checks whether or not this
+
+Rectangle
+
+entirely contains
+the specified
+
+Rectangle
+
+.
+
+**Parameters:** r
+
+- the specified
+
+Rectangle
+**Returns:** true
+
+if the
+
+Rectangle
+
+is contained entirely inside this
+
+Rectangle
+
+;
+
+false
+
+otherwise
+**Since:** 1.2
+
+---
+
+#### contains
+
+public boolean contains​(
+
+Rectangle
+
+r)
+
+Checks whether or not this
+
+Rectangle
+
+entirely contains
+the specified
+
+Rectangle
+
+.
+
+contains
+
+```java
+public boolean contains​(int X,
+int Y,
+int W,
+int H)
+```
+
+Checks whether this
+
+Rectangle
+
+entirely contains
+the
+
+Rectangle
+
+at the specified location
+
+(X,Y)
+
+with the
+specified dimensions
+
+(W,H)
+
+.
+
+**Parameters:** X
+
+- the specified X coordinate
+**Parameters:** Y
+
+- the specified Y coordinate
+**Parameters:** W
+
+- the width of the
+
+Rectangle
+**Parameters:** H
+
+- the height of the
+
+Rectangle
+**Returns:** true
+
+if the
+
+Rectangle
+
+specified by
+
+(X, Y, W, H)
+
+is entirely enclosed inside this
+
+Rectangle
+
+;
+
+false
+
+otherwise.
+**Since:** 1.1
+
+---
+
+#### contains
+
+public boolean contains​(int X,
+int Y,
+int W,
+int H)
+
+Checks whether this
+
+Rectangle
+
+entirely contains
+the
+
+Rectangle
+
+at the specified location
+
+(X,Y)
+
+with the
+specified dimensions
+
+(W,H)
+
+.
+
+inside
+
+```java
+@Deprecated
+
+public boolean inside​(int X,
+int Y)
+```
+
+Deprecated.
+
+As of JDK version 1.1,
+replaced by
+
+contains(int, int)
+
+.
+
+Checks whether or not this
+
+Rectangle
+
+contains the
+point at the specified location
+
+(X,Y)
+
+.
+
+**Parameters:** X
+
+- the specified X coordinate
+**Parameters:** Y
+
+- the specified Y coordinate
+**Returns:** true
+
+if the point
+
+(X,Y)
+
+is inside this
+
+Rectangle
+
+;
+
+false
+
+otherwise.
+
+---
+
+#### inside
+
+@Deprecated
+
+public boolean inside​(int X,
+int Y)
+
+Checks whether or not this
+
+Rectangle
+
+contains the
+point at the specified location
+
+(X,Y)
+
+.
+
+intersects
+
+```java
+public boolean intersects​(
+Rectangle
+r)
+```
+
+Determines whether or not this
+
+Rectangle
+
+and the specified
+
+Rectangle
+
+intersect. Two rectangles intersect if
+their intersection is nonempty.
+
+**Parameters:** r
+
+- the specified
+
+Rectangle
+**Returns:** true
+
+if the specified
+
+Rectangle
+
+and this
+
+Rectangle
+
+intersect;
+
+false
+
+otherwise.
+
+---
+
+#### intersects
+
+public boolean intersects​(
+
+Rectangle
+
+r)
+
+Determines whether or not this
+
+Rectangle
+
+and the specified
+
+Rectangle
+
+intersect. Two rectangles intersect if
+their intersection is nonempty.
+
+intersection
+
+```java
+public
+Rectangle
+intersection​(
+Rectangle
+r)
+```
+
+Computes the intersection of this
+
+Rectangle
+
+with the
+specified
+
+Rectangle
+
+. Returns a new
+
+Rectangle
+
+that represents the intersection of the two rectangles.
+If the two rectangles do not intersect, the result will be
+an empty rectangle.
+
+**Parameters:** r
+
+- the specified
+
+Rectangle
+**Returns:** the largest
+
+Rectangle
+
+contained in both the
+specified
+
+Rectangle
+
+and in
+this
+
+Rectangle
+
+; or if the rectangles
+do not intersect, an empty rectangle.
+
+---
+
+#### intersection
+
+public
+
+Rectangle
+
+intersection​(
+
+Rectangle
+
+r)
+
+Computes the intersection of this
+
+Rectangle
+
+with the
+specified
+
+Rectangle
+
+. Returns a new
+
+Rectangle
+
+that represents the intersection of the two rectangles.
+If the two rectangles do not intersect, the result will be
+an empty rectangle.
+
+union
+
+```java
+public
+Rectangle
+union​(
+Rectangle
+r)
+```
+
+Computes the union of this
+
+Rectangle
+
+with the
+specified
+
+Rectangle
+
+. Returns a new
+
+Rectangle
+
+that
+represents the union of the two rectangles.
+
+If either
+
+Rectangle
+
+has any dimension less than zero
+the rules for
+
+non-existent
+
+rectangles
+apply.
+If only one has a dimension less than zero, then the result
+will be a copy of the other
+
+Rectangle
+
+.
+If both have dimension less than zero, then the result will
+have at least one dimension less than zero.
+
+If the resulting
+
+Rectangle
+
+would have a dimension
+too large to be expressed as an
+
+int
+
+, the result
+will have a dimension of
+
+Integer.MAX_VALUE
+
+along
+that dimension.
+
+**Parameters:** r
+
+- the specified
+
+Rectangle
+**Returns:** the smallest
+
+Rectangle
+
+containing both
+the specified
+
+Rectangle
+
+and this
+
+Rectangle
+
+.
+
+---
+
+#### union
+
+public
+
+Rectangle
+
+union​(
+
+Rectangle
+
+r)
+
+Computes the union of this
+
+Rectangle
+
+with the
+specified
+
+Rectangle
+
+. Returns a new
+
+Rectangle
+
+that
+represents the union of the two rectangles.
+
+If either
+
+Rectangle
+
+has any dimension less than zero
+the rules for
+
+non-existent
+
+rectangles
+apply.
+If only one has a dimension less than zero, then the result
+will be a copy of the other
+
+Rectangle
+
+.
+If both have dimension less than zero, then the result will
+have at least one dimension less than zero.
+
+If the resulting
+
+Rectangle
+
+would have a dimension
+too large to be expressed as an
+
+int
+
+, the result
+will have a dimension of
+
+Integer.MAX_VALUE
+
+along
+that dimension.
+
+If either
+
+Rectangle
+
+has any dimension less than zero
+the rules for
+
+non-existent
+
+rectangles
+apply.
+If only one has a dimension less than zero, then the result
+will be a copy of the other
+
+Rectangle
+
+.
+If both have dimension less than zero, then the result will
+have at least one dimension less than zero.
+
+If the resulting
+
+Rectangle
+
+would have a dimension
+too large to be expressed as an
+
+int
+
+, the result
+will have a dimension of
+
+Integer.MAX_VALUE
+
+along
+that dimension.
+
+If the resulting
+
+Rectangle
+
+would have a dimension
+too large to be expressed as an
+
+int
+
+, the result
+will have a dimension of
+
+Integer.MAX_VALUE
+
+along
+that dimension.
+
+add
+
+```java
+public void add​(int newx,
+int newy)
+```
+
+Adds a point, specified by the integer arguments
+
+newx,newy
+
+to the bounds of this
+
+Rectangle
+
+.
+
+If this
+
+Rectangle
+
+has any dimension less than zero,
+the rules for
+
+non-existent
+
+rectangles apply.
+In that case, the new bounds of this
+
+Rectangle
+
+will
+have a location equal to the specified coordinates and
+width and height equal to zero.
+
+After adding a point, a call to
+
+contains
+
+with the
+added point as an argument does not necessarily return
+
+true
+
+. The
+
+contains
+
+method does not
+return
+
+true
+
+for points on the right or bottom
+edges of a
+
+Rectangle
+
+. Therefore, if the added point
+falls on the right or bottom edge of the enlarged
+
+Rectangle
+
+,
+
+contains
+
+returns
+
+false
+
+for that point.
+If the specified point must be contained within the new
+
+Rectangle
+
+, a 1x1 rectangle should be added instead:
+
+```java
+r.add(newx, newy, 1, 1);
+```
+
+**Parameters:** newx
+
+- the X coordinate of the new point
+**Parameters:** newy
+
+- the Y coordinate of the new point
+
+---
+
+#### add
+
+public void add​(int newx,
+int newy)
+
+Adds a point, specified by the integer arguments
+
+newx,newy
+
+to the bounds of this
+
+Rectangle
+
+.
+
+If this
+
+Rectangle
+
+has any dimension less than zero,
+the rules for
+
+non-existent
+
+rectangles apply.
+In that case, the new bounds of this
+
+Rectangle
+
+will
+have a location equal to the specified coordinates and
+width and height equal to zero.
+
+After adding a point, a call to
+
+contains
+
+with the
+added point as an argument does not necessarily return
+
+true
+
+. The
+
+contains
+
+method does not
+return
+
+true
+
+for points on the right or bottom
+edges of a
+
+Rectangle
+
+. Therefore, if the added point
+falls on the right or bottom edge of the enlarged
+
+Rectangle
+
+,
+
+contains
+
+returns
+
+false
+
+for that point.
+If the specified point must be contained within the new
+
+Rectangle
+
+, a 1x1 rectangle should be added instead:
+
+```java
+r.add(newx, newy, 1, 1);
+```
+
+If this
+
+Rectangle
+
+has any dimension less than zero,
+the rules for
+
+non-existent
+
+rectangles apply.
+In that case, the new bounds of this
+
+Rectangle
+
+will
+have a location equal to the specified coordinates and
+width and height equal to zero.
+
+After adding a point, a call to
+
+contains
+
+with the
+added point as an argument does not necessarily return
+
+true
+
+. The
+
+contains
+
+method does not
+return
+
+true
+
+for points on the right or bottom
+edges of a
+
+Rectangle
+
+. Therefore, if the added point
+falls on the right or bottom edge of the enlarged
+
+Rectangle
+
+,
+
+contains
+
+returns
+
+false
+
+for that point.
+If the specified point must be contained within the new
+
+Rectangle
+
+, a 1x1 rectangle should be added instead:
+
+```java
+r.add(newx, newy, 1, 1);
+```
+
+After adding a point, a call to
+
+contains
+
+with the
+added point as an argument does not necessarily return
+
+true
+
+. The
+
+contains
+
+method does not
+return
+
+true
+
+for points on the right or bottom
+edges of a
+
+Rectangle
+
+. Therefore, if the added point
+falls on the right or bottom edge of the enlarged
+
+Rectangle
+
+,
+
+contains
+
+returns
+
+false
+
+for that point.
+If the specified point must be contained within the new
+
+Rectangle
+
+, a 1x1 rectangle should be added instead:
+
+```java
+r.add(newx, newy, 1, 1);
+```
+
+r.add(newx, newy, 1, 1);
+
+add
+
+```java
+public void add​(
+Point
+pt)
+```
+
+Adds the specified
+
+Point
+
+to the bounds of this
+
+Rectangle
+
+.
+
+If this
+
+Rectangle
+
+has any dimension less than zero,
+the rules for
+
+non-existent
+
+rectangles apply.
+In that case, the new bounds of this
+
+Rectangle
+
+will
+have a location equal to the coordinates of the specified
+
+Point
+
+and width and height equal to zero.
+
+After adding a
+
+Point
+
+, a call to
+
+contains
+
+with the added
+
+Point
+
+as an argument does not
+necessarily return
+
+true
+
+. The
+
+contains
+
+method does not return
+
+true
+
+for points on the right
+or bottom edges of a
+
+Rectangle
+
+. Therefore if the added
+
+Point
+
+falls on the right or bottom edge of the
+enlarged
+
+Rectangle
+
+,
+
+contains
+
+returns
+
+false
+
+for that
+
+Point
+
+.
+If the specified point must be contained within the new
+
+Rectangle
+
+, a 1x1 rectangle should be added instead:
+
+```java
+r.add(pt.x, pt.y, 1, 1);
+```
+
+**Parameters:** pt
+
+- the new
+
+Point
+
+to add to this
+
+Rectangle
+
+---
+
+#### add
+
+public void add​(
+
+Point
+
+pt)
+
+Adds the specified
+
+Point
+
+to the bounds of this
+
+Rectangle
+
+.
+
+If this
+
+Rectangle
+
+has any dimension less than zero,
+the rules for
+
+non-existent
+
+rectangles apply.
+In that case, the new bounds of this
+
+Rectangle
+
+will
+have a location equal to the coordinates of the specified
+
+Point
+
+and width and height equal to zero.
+
+After adding a
+
+Point
+
+, a call to
+
+contains
+
+with the added
+
+Point
+
+as an argument does not
+necessarily return
+
+true
+
+. The
+
+contains
+
+method does not return
+
+true
+
+for points on the right
+or bottom edges of a
+
+Rectangle
+
+. Therefore if the added
+
+Point
+
+falls on the right or bottom edge of the
+enlarged
+
+Rectangle
+
+,
+
+contains
+
+returns
+
+false
+
+for that
+
+Point
+
+.
+If the specified point must be contained within the new
+
+Rectangle
+
+, a 1x1 rectangle should be added instead:
+
+```java
+r.add(pt.x, pt.y, 1, 1);
+```
+
+If this
+
+Rectangle
+
+has any dimension less than zero,
+the rules for
+
+non-existent
+
+rectangles apply.
+In that case, the new bounds of this
+
+Rectangle
+
+will
+have a location equal to the coordinates of the specified
+
+Point
+
+and width and height equal to zero.
+
+After adding a
+
+Point
+
+, a call to
+
+contains
+
+with the added
+
+Point
+
+as an argument does not
+necessarily return
+
+true
+
+. The
+
+contains
+
+method does not return
+
+true
+
+for points on the right
+or bottom edges of a
+
+Rectangle
+
+. Therefore if the added
+
+Point
+
+falls on the right or bottom edge of the
+enlarged
+
+Rectangle
+
+,
+
+contains
+
+returns
+
+false
+
+for that
+
+Point
+
+.
+If the specified point must be contained within the new
+
+Rectangle
+
+, a 1x1 rectangle should be added instead:
+
+```java
+r.add(pt.x, pt.y, 1, 1);
+```
+
+After adding a
+
+Point
+
+, a call to
+
+contains
+
+with the added
+
+Point
+
+as an argument does not
+necessarily return
+
+true
+
+. The
+
+contains
+
+method does not return
+
+true
+
+for points on the right
+or bottom edges of a
+
+Rectangle
+
+. Therefore if the added
+
+Point
+
+falls on the right or bottom edge of the
+enlarged
+
+Rectangle
+
+,
+
+contains
+
+returns
+
+false
+
+for that
+
+Point
+
+.
+If the specified point must be contained within the new
+
+Rectangle
+
+, a 1x1 rectangle should be added instead:
+
+```java
+r.add(pt.x, pt.y, 1, 1);
+```
+
+r.add(pt.x, pt.y, 1, 1);
+
+add
+
+```java
+public void add​(
+Rectangle
+r)
+```
+
+Adds a
+
+Rectangle
+
+to this
+
+Rectangle
+
+.
+The resulting
+
+Rectangle
+
+is the union of the two
+rectangles.
+
+If either
+
+Rectangle
+
+has any dimension less than 0, the
+result will have the dimensions of the other
+
+Rectangle
+
+.
+If both
+
+Rectangle
+
+s have at least one dimension less
+than 0, the result will have at least one dimension less than 0.
+
+If either
+
+Rectangle
+
+has one or both dimensions equal
+to 0, the result along those axes with 0 dimensions will be
+equivalent to the results obtained by adding the corresponding
+origin coordinate to the result rectangle along that axis,
+similar to the operation of the
+
+add(Point)
+
+method,
+but contribute no further dimension beyond that.
+
+If the resulting
+
+Rectangle
+
+would have a dimension
+too large to be expressed as an
+
+int
+
+, the result
+will have a dimension of
+
+Integer.MAX_VALUE
+
+along
+that dimension.
+
+**Parameters:** r
+
+- the specified
+
+Rectangle
+
+---
+
+#### add
+
+public void add​(
+
+Rectangle
+
+r)
+
+Adds a
+
+Rectangle
+
+to this
+
+Rectangle
+
+.
+The resulting
+
+Rectangle
+
+is the union of the two
+rectangles.
+
+If either
+
+Rectangle
+
+has any dimension less than 0, the
+result will have the dimensions of the other
+
+Rectangle
+
+.
+If both
+
+Rectangle
+
+s have at least one dimension less
+than 0, the result will have at least one dimension less than 0.
+
+If either
+
+Rectangle
+
+has one or both dimensions equal
+to 0, the result along those axes with 0 dimensions will be
+equivalent to the results obtained by adding the corresponding
+origin coordinate to the result rectangle along that axis,
+similar to the operation of the
+
+add(Point)
+
+method,
+but contribute no further dimension beyond that.
+
+If the resulting
+
+Rectangle
+
+would have a dimension
+too large to be expressed as an
+
+int
+
+, the result
+will have a dimension of
+
+Integer.MAX_VALUE
+
+along
+that dimension.
+
+If either
+
+Rectangle
+
+has any dimension less than 0, the
+result will have the dimensions of the other
+
+Rectangle
+
+.
+If both
+
+Rectangle
+
+s have at least one dimension less
+than 0, the result will have at least one dimension less than 0.
+
+If either
+
+Rectangle
+
+has one or both dimensions equal
+to 0, the result along those axes with 0 dimensions will be
+equivalent to the results obtained by adding the corresponding
+origin coordinate to the result rectangle along that axis,
+similar to the operation of the
+
+add(Point)
+
+method,
+but contribute no further dimension beyond that.
+
+If the resulting
+
+Rectangle
+
+would have a dimension
+too large to be expressed as an
+
+int
+
+, the result
+will have a dimension of
+
+Integer.MAX_VALUE
+
+along
+that dimension.
+
+If either
+
+Rectangle
+
+has one or both dimensions equal
+to 0, the result along those axes with 0 dimensions will be
+equivalent to the results obtained by adding the corresponding
+origin coordinate to the result rectangle along that axis,
+similar to the operation of the
+
+add(Point)
+
+method,
+but contribute no further dimension beyond that.
+
+If the resulting
+
+Rectangle
+
+would have a dimension
+too large to be expressed as an
+
+int
+
+, the result
+will have a dimension of
+
+Integer.MAX_VALUE
+
+along
+that dimension.
+
+If the resulting
+
+Rectangle
+
+would have a dimension
+too large to be expressed as an
+
+int
+
+, the result
+will have a dimension of
+
+Integer.MAX_VALUE
+
+along
+that dimension.
+
+grow
+
+```java
+public void grow​(int h,
+int v)
+```
+
+Resizes the
+
+Rectangle
+
+both horizontally and vertically.
+
+This method modifies the
+
+Rectangle
+
+so that it is
+
+h
+
+units larger on both the left and right side,
+and
+
+v
+
+units larger at both the top and bottom.
+
+The new
+
+Rectangle
+
+has
+
+(x - h, y - v)
+
+as its upper-left corner,
+width of
+
+(width + 2h)
+
+,
+and a height of
+
+(height + 2v)
+
+.
+
+If negative values are supplied for
+
+h
+
+and
+
+v
+
+, the size of the
+
+Rectangle
+
+decreases accordingly.
+The
+
+grow
+
+method will check for integer overflow
+and underflow, but does not check whether the resulting
+values of
+
+width
+
+and
+
+height
+
+grow
+from negative to non-negative or shrink from non-negative
+to negative.
+
+**Parameters:** h
+
+- the horizontal expansion
+**Parameters:** v
+
+- the vertical expansion
+
+---
+
+#### grow
+
+public void grow​(int h,
+int v)
+
+Resizes the
+
+Rectangle
+
+both horizontally and vertically.
+
+This method modifies the
+
+Rectangle
+
+so that it is
+
+h
+
+units larger on both the left and right side,
+and
+
+v
+
+units larger at both the top and bottom.
+
+The new
+
+Rectangle
+
+has
+
+(x - h, y - v)
+
+as its upper-left corner,
+width of
+
+(width + 2h)
+
+,
+and a height of
+
+(height + 2v)
+
+.
+
+If negative values are supplied for
+
+h
+
+and
+
+v
+
+, the size of the
+
+Rectangle
+
+decreases accordingly.
+The
+
+grow
+
+method will check for integer overflow
+and underflow, but does not check whether the resulting
+values of
+
+width
+
+and
+
+height
+
+grow
+from negative to non-negative or shrink from non-negative
+to negative.
+
+This method modifies the
+
+Rectangle
+
+so that it is
+
+h
+
+units larger on both the left and right side,
+and
+
+v
+
+units larger at both the top and bottom.
+
+The new
+
+Rectangle
+
+has
+
+(x - h, y - v)
+
+as its upper-left corner,
+width of
+
+(width + 2h)
+
+,
+and a height of
+
+(height + 2v)
+
+.
+
+If negative values are supplied for
+
+h
+
+and
+
+v
+
+, the size of the
+
+Rectangle
+
+decreases accordingly.
+The
+
+grow
+
+method will check for integer overflow
+and underflow, but does not check whether the resulting
+values of
+
+width
+
+and
+
+height
+
+grow
+from negative to non-negative or shrink from non-negative
+to negative.
+
+The new
+
+Rectangle
+
+has
+
+(x - h, y - v)
+
+as its upper-left corner,
+width of
+
+(width + 2h)
+
+,
+and a height of
+
+(height + 2v)
+
+.
+
+If negative values are supplied for
+
+h
+
+and
+
+v
+
+, the size of the
+
+Rectangle
+
+decreases accordingly.
+The
+
+grow
+
+method will check for integer overflow
+and underflow, but does not check whether the resulting
+values of
+
+width
+
+and
+
+height
+
+grow
+from negative to non-negative or shrink from non-negative
+to negative.
+
+If negative values are supplied for
+
+h
+
+and
+
+v
+
+, the size of the
+
+Rectangle
+
+decreases accordingly.
+The
+
+grow
+
+method will check for integer overflow
+and underflow, but does not check whether the resulting
+values of
+
+width
+
+and
+
+height
+
+grow
+from negative to non-negative or shrink from non-negative
+to negative.
+
+isEmpty
+
+```java
+public boolean isEmpty()
+```
+
+Determines whether the
+
+RectangularShape
+
+is empty.
+When the
+
+RectangularShape
+
+is empty, it encloses no
+area.
+
+**Specified by:** isEmpty
+
+in class
+
+RectangularShape
+**Returns:** true
+
+if the
+
+RectangularShape
+
+is empty;
+
+false
+
+otherwise.
+**Since:** 1.2
+
+---
+
+#### isEmpty
+
+public boolean isEmpty()
+
+Determines whether the
+
+RectangularShape
+
+is empty.
+When the
+
+RectangularShape
+
+is empty, it encloses no
+area.
+
+outcode
+
+```java
+public int outcode​(double x,
+double y)
+```
+
+Determines where the specified coordinates lie with respect
+to this
+
+Rectangle2D
+
+.
+This method computes a binary OR of the appropriate mask values
+indicating, for each side of this
+
+Rectangle2D
+
+,
+whether or not the specified coordinates are on the same side
+of the edge as the rest of this
+
+Rectangle2D
+
+.
+
+**Specified by:** outcode
+
+in class
+
+Rectangle2D
+**Parameters:** x
+
+- the specified X coordinate
+**Parameters:** y
+
+- the specified Y coordinate
+**Returns:** the logical OR of all appropriate out codes.
+**Since:** 1.2
+**See Also:** Rectangle2D.OUT_LEFT
+
+,
+
+Rectangle2D.OUT_TOP
+
+,
+
+Rectangle2D.OUT_RIGHT
+
+,
+
+Rectangle2D.OUT_BOTTOM
+
+---
+
+#### outcode
+
+public int outcode​(double x,
+double y)
+
+Determines where the specified coordinates lie with respect
+to this
+
+Rectangle2D
+
+.
+This method computes a binary OR of the appropriate mask values
+indicating, for each side of this
+
+Rectangle2D
+
+,
+whether or not the specified coordinates are on the same side
+of the edge as the rest of this
+
+Rectangle2D
+
+.
+
+createIntersection
+
+```java
+public
+Rectangle2D
+createIntersection​(
+Rectangle2D
+r)
+```
+
+Returns a new
+
+Rectangle2D
+
+object representing the
+intersection of this
+
+Rectangle2D
+
+with the specified
+
+Rectangle2D
+
+.
+
+**Specified by:** createIntersection
+
+in class
+
+Rectangle2D
+**Parameters:** r
+
+- the
+
+Rectangle2D
+
+to be intersected with
+this
+
+Rectangle2D
+**Returns:** the largest
+
+Rectangle2D
+
+contained in both
+the specified
+
+Rectangle2D
+
+and in this
+
+Rectangle2D
+
+.
+**Since:** 1.2
+
+---
+
+#### createIntersection
+
+public
+
+Rectangle2D
+
+createIntersection​(
+
+Rectangle2D
+
+r)
+
+Returns a new
+
+Rectangle2D
+
+object representing the
+intersection of this
+
+Rectangle2D
+
+with the specified
+
+Rectangle2D
+
+.
+
+createUnion
+
+```java
+public
+Rectangle2D
+createUnion​(
+Rectangle2D
+r)
+```
+
+Returns a new
+
+Rectangle2D
+
+object representing the
+union of this
+
+Rectangle2D
+
+with the specified
+
+Rectangle2D
+
+.
+
+**Specified by:** createUnion
+
+in class
+
+Rectangle2D
+**Parameters:** r
+
+- the
+
+Rectangle2D
+
+to be combined with
+this
+
+Rectangle2D
+**Returns:** the smallest
+
+Rectangle2D
+
+containing both
+the specified
+
+Rectangle2D
+
+and this
+
+Rectangle2D
+
+.
+**Since:** 1.2
+
+---
+
+#### createUnion
+
+public
+
+Rectangle2D
+
+createUnion​(
+
+Rectangle2D
+
+r)
+
+Returns a new
+
+Rectangle2D
+
+object representing the
+union of this
+
+Rectangle2D
+
+with the specified
+
+Rectangle2D
+
+.
+
+equals
+
+```java
+public boolean equals​(
+Object
+obj)
+```
+
+Checks whether two rectangles are equal.
+
+The result is
+
+true
+
+if and only if the argument is not
+
+null
+
+and is a
+
+Rectangle
+
+object that has the
+same upper-left corner, width, and height as
+this
+
+Rectangle
+
+.
+
+**Overrides:** equals
+
+in class
+
+Rectangle2D
+**Parameters:** obj
+
+- the
+
+Object
+
+to compare with
+this
+
+Rectangle
+**Returns:** true
+
+if the objects are equal;
+
+false
+
+otherwise.
+**See Also:** Object.hashCode()
+
+,
+
+HashMap
+
+---
+
+#### equals
+
+public boolean equals​(
+
+Object
+
+obj)
+
+Checks whether two rectangles are equal.
+
+The result is
+
+true
+
+if and only if the argument is not
+
+null
+
+and is a
+
+Rectangle
+
+object that has the
+same upper-left corner, width, and height as
+this
+
+Rectangle
+
+.
+
+The result is
+
+true
+
+if and only if the argument is not
+
+null
+
+and is a
+
+Rectangle
+
+object that has the
+same upper-left corner, width, and height as
+this
+
+Rectangle
+
+.
+
+toString
+
+```java
+public
+String
+toString()
+```
+
+Returns a
+
+String
+
+representing this
+
+Rectangle
+
+and its values.
+
+**Overrides:** toString
+
+in class
+
+Object
+**Returns:** a
+
+String
+
+representing this
+
+Rectangle
+
+object's coordinate and size values.
+
+---
+
+#### toString
+
+public
+
+String
+
+toString()
+
+Returns a
+
+String
+
+representing this
+
+Rectangle
+
+and its values.
+
+---
+

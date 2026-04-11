@@ -1,0 +1,2315 @@
+# Class MatteBorder
+
+**Source:** `java.desktop\javax\swing\border\MatteBorder.html`
+
+### Class Description
+
+```java
+public class
+MatteBorder
+
+extends
+EmptyBorder
+```
+
+A class which provides a matte-like border of either a solid color
+or a tiled icon.
+
+Warning:
+
+Serialized objects of this class will not be compatible with
+future Swing releases. The current serialization support is
+appropriate for short term storage or RMI between applications running
+the same version of Swing. As of 1.4, support for long term storage
+of all JavaBeans™
+has been added to the
+
+java.beans
+
+package.
+Please see
+
+XMLEncoder
+
+.
+
+**All Implemented Interfaces:** Serializable
+
+,
+
+Border
+
+---
+
+### Field Details
+
+#### protected
+Color
+color
+
+The color rendered for the border.
+
+---
+
+#### protected
+Icon
+tileIcon
+
+The icon to be used for tiling the border.
+
+---
+
+### Constructor Details
+
+#### public MatteBorder​(int top,
+int left,
+int bottom,
+int right,
+
+Color
+matteColor)
+
+Creates a matte border with the specified insets and color.
+
+**Parameters:**
+- top
+
+- the top inset of the border
+- left
+
+- the left inset of the border
+- bottom
+
+- the bottom inset of the border
+- right
+
+- the right inset of the border
+- matteColor
+
+- the color rendered for the border
+
+---
+
+#### public MatteBorder​(
+Insets
+borderInsets,
+
+Color
+matteColor)
+
+Creates a matte border with the specified insets and color.
+
+**Parameters:**
+- borderInsets
+
+- the insets of the border
+- matteColor
+
+- the color rendered for the border
+
+**Since:**
+- 1.3
+
+---
+
+#### public MatteBorder​(int top,
+int left,
+int bottom,
+int right,
+
+Icon
+tileIcon)
+
+Creates a matte border with the specified insets and tile icon.
+
+**Parameters:**
+- top
+
+- the top inset of the border
+- left
+
+- the left inset of the border
+- bottom
+
+- the bottom inset of the border
+- right
+
+- the right inset of the border
+- tileIcon
+
+- the icon to be used for tiling the border
+
+---
+
+#### public MatteBorder​(
+Insets
+borderInsets,
+
+Icon
+tileIcon)
+
+Creates a matte border with the specified insets and tile icon.
+
+**Parameters:**
+- borderInsets
+
+- the insets of the border
+- tileIcon
+
+- the icon to be used for tiling the border
+
+**Since:**
+- 1.3
+
+---
+
+#### public MatteBorder​(
+Icon
+tileIcon)
+
+Creates a matte border with the specified tile icon. The
+insets will be calculated dynamically based on the size of
+the tile icon, where the top and bottom will be equal to the
+tile icon's height, and the left and right will be equal to
+the tile icon's width.
+
+**Parameters:**
+- tileIcon
+
+- the icon to be used for tiling the border
+
+---
+
+### Method Details
+
+#### public void paintBorder​(
+Component
+c,
+
+Graphics
+g,
+int x,
+int y,
+int width,
+int height)
+
+Paints the matte border.
+
+**Specified by:**
+- paintBorder
+
+in interface
+
+Border
+
+**Overrides:**
+- paintBorder
+
+in class
+
+EmptyBorder
+
+**Parameters:**
+- c
+
+- the component for which this border is being painted
+- g
+
+- the paint graphics
+- x
+
+- the x position of the painted border
+- y
+
+- the y position of the painted border
+- width
+
+- the width of the painted border
+- height
+
+- the height of the painted border
+
+---
+
+#### public
+Insets
+getBorderInsets​(
+Component
+c,
+
+Insets
+insets)
+
+Reinitialize the insets parameter with this Border's current Insets.
+
+**Overrides:**
+- getBorderInsets
+
+in class
+
+EmptyBorder
+
+**Parameters:**
+- c
+
+- the component for which this border insets value applies
+- insets
+
+- the object to be reinitialized
+
+**Returns:**
+- the
+
+insets
+
+object
+
+**Since:**
+- 1.3
+
+---
+
+#### public
+Insets
+getBorderInsets()
+
+Returns the insets of the border.
+
+**Overrides:**
+- getBorderInsets
+
+in class
+
+EmptyBorder
+
+**Returns:**
+- an
+
+Insets
+
+object containing the insets from top, left,
+bottom and right
+
+**Since:**
+- 1.3
+
+---
+
+#### public
+Color
+getMatteColor()
+
+Returns the color used for tiling the border or null
+if a tile icon is being used.
+
+**Returns:**
+- the
+
+Color
+
+object used to render the border or
+
+null
+
+if a tile icon is used
+
+**Since:**
+- 1.3
+
+---
+
+#### public
+Icon
+getTileIcon()
+
+Returns the icon used for tiling the border or null
+if a solid color is being used.
+
+**Returns:**
+- the
+
+Icon
+
+used to tile the border or
+
+null
+
+if a
+solid color is used to fill the border
+
+**Since:**
+- 1.3
+
+---
+
+#### public boolean isBorderOpaque()
+
+Returns whether or not the border is opaque.
+
+**Specified by:**
+- isBorderOpaque
+
+in interface
+
+Border
+
+**Overrides:**
+- isBorderOpaque
+
+in class
+
+EmptyBorder
+
+**Returns:**
+- true
+
+if the border is opaque,
+
+false
+
+otherwise
+
+---
+
+### Additional Sections
+
+#### Class MatteBorder
+
+java.lang.Object
+
+- javax.swing.border.AbstractBorder
+- - javax.swing.border.EmptyBorder
+- - javax.swing.border.MatteBorder
+
+javax.swing.border.AbstractBorder
+
+- javax.swing.border.EmptyBorder
+- - javax.swing.border.MatteBorder
+
+javax.swing.border.EmptyBorder
+
+- javax.swing.border.MatteBorder
+
+javax.swing.border.MatteBorder
+
+**All Implemented Interfaces:** Serializable
+
+,
+
+Border
+
+**Direct Known Subclasses:** BorderUIResource.MatteBorderUIResource
+
+```java
+public class
+MatteBorder
+
+extends
+EmptyBorder
+```
+
+A class which provides a matte-like border of either a solid color
+or a tiled icon.
+
+Warning:
+
+Serialized objects of this class will not be compatible with
+future Swing releases. The current serialization support is
+appropriate for short term storage or RMI between applications running
+the same version of Swing. As of 1.4, support for long term storage
+of all JavaBeans™
+has been added to the
+
+java.beans
+
+package.
+Please see
+
+XMLEncoder
+
+.
+
+**See Also:** Serialized Form
+
+public class
+
+MatteBorder
+
+extends
+
+EmptyBorder
+
+A class which provides a matte-like border of either a solid color
+or a tiled icon.
+
+Warning:
+
+Serialized objects of this class will not be compatible with
+future Swing releases. The current serialization support is
+appropriate for short term storage or RMI between applications running
+the same version of Swing. As of 1.4, support for long term storage
+of all JavaBeans™
+has been added to the
+
+java.beans
+
+package.
+Please see
+
+XMLEncoder
+
+.
+
+Warning:
+
+Serialized objects of this class will not be compatible with
+future Swing releases. The current serialization support is
+appropriate for short term storage or RMI between applications running
+the same version of Swing. As of 1.4, support for long term storage
+of all JavaBeans™
+has been added to the
+
+java.beans
+
+package.
+Please see
+
+XMLEncoder
+
+.
+
+=========== FIELD SUMMARY ===========
+
+- Field Summary
+
+Fields
+
+Modifier and Type
+
+Field
+
+Description
+
+protected
+
+Color
+
+color
+
+The color rendered for the border.
+
+protected
+
+Icon
+
+tileIcon
+
+The icon to be used for tiling the border.
+
+- Fields declared in class javax.swing.border.
+
+EmptyBorder
+
+bottom
+
+,
+
+left
+
+,
+
+right
+
+,
+
+top
+
+======== CONSTRUCTOR SUMMARY ========
+
+- Constructor Summary
+
+Constructors
+
+Constructor
+
+Description
+
+MatteBorder
+
+​(int top,
+int left,
+int bottom,
+int right,
+
+Color
+
+matteColor)
+
+Creates a matte border with the specified insets and color.
+
+MatteBorder
+
+​(int top,
+int left,
+int bottom,
+int right,
+
+Icon
+
+tileIcon)
+
+Creates a matte border with the specified insets and tile icon.
+
+MatteBorder
+
+​(
+
+Insets
+
+borderInsets,
+
+Color
+
+matteColor)
+
+Creates a matte border with the specified insets and color.
+
+MatteBorder
+
+​(
+
+Insets
+
+borderInsets,
+
+Icon
+
+tileIcon)
+
+Creates a matte border with the specified insets and tile icon.
+
+MatteBorder
+
+​(
+
+Icon
+
+tileIcon)
+
+Creates a matte border with the specified tile icon.
+
+========== METHOD SUMMARY ===========
+
+- Method Summary
+
+All Methods
+
+Instance Methods
+
+Concrete Methods
+
+Modifier and Type
+
+Method
+
+Description
+
+Insets
+
+getBorderInsets
+
+()
+
+Returns the insets of the border.
+
+Insets
+
+getBorderInsets
+
+​(
+
+Component
+
+c,
+
+Insets
+
+insets)
+
+Reinitialize the insets parameter with this Border's current Insets.
+
+Color
+
+getMatteColor
+
+()
+
+Returns the color used for tiling the border or null
+if a tile icon is being used.
+
+Icon
+
+getTileIcon
+
+()
+
+Returns the icon used for tiling the border or null
+if a solid color is being used.
+
+boolean
+
+isBorderOpaque
+
+()
+
+Returns whether or not the border is opaque.
+
+void
+
+paintBorder
+
+​(
+
+Component
+
+c,
+
+Graphics
+
+g,
+int x,
+int y,
+int width,
+int height)
+
+Paints the matte border.
+
+- Methods declared in class javax.swing.border.
+
+AbstractBorder
+
+getBaseline
+
+,
+
+getBaselineResizeBehavior
+
+,
+
+getBorderInsets
+
+,
+
+getInteriorRectangle
+
+,
+
+getInteriorRectangle
+
+- Methods declared in class java.lang.
+
+Object
+
+clone
+
+,
+
+equals
+
+,
+
+finalize
+
+,
+
+getClass
+
+,
+
+hashCode
+
+,
+
+notify
+
+,
+
+notifyAll
+
+,
+
+toString
+
+,
+
+wait
+
+,
+
+wait
+
+,
+
+wait
+
+Field Summary
+
+Fields
+
+Modifier and Type
+
+Field
+
+Description
+
+protected
+
+Color
+
+color
+
+The color rendered for the border.
+
+protected
+
+Icon
+
+tileIcon
+
+The icon to be used for tiling the border.
+
+- Fields declared in class javax.swing.border.
+
+EmptyBorder
+
+bottom
+
+,
+
+left
+
+,
+
+right
+
+,
+
+top
+
+---
+
+#### Field Summary
+
+The color rendered for the border.
+
+The icon to be used for tiling the border.
+
+Fields declared in class javax.swing.border.
+
+EmptyBorder
+
+bottom
+
+,
+
+left
+
+,
+
+right
+
+,
+
+top
+
+---
+
+#### Fields declared in class javax.swing.border. EmptyBorder
+
+Constructor Summary
+
+Constructors
+
+Constructor
+
+Description
+
+MatteBorder
+
+​(int top,
+int left,
+int bottom,
+int right,
+
+Color
+
+matteColor)
+
+Creates a matte border with the specified insets and color.
+
+MatteBorder
+
+​(int top,
+int left,
+int bottom,
+int right,
+
+Icon
+
+tileIcon)
+
+Creates a matte border with the specified insets and tile icon.
+
+MatteBorder
+
+​(
+
+Insets
+
+borderInsets,
+
+Color
+
+matteColor)
+
+Creates a matte border with the specified insets and color.
+
+MatteBorder
+
+​(
+
+Insets
+
+borderInsets,
+
+Icon
+
+tileIcon)
+
+Creates a matte border with the specified insets and tile icon.
+
+MatteBorder
+
+​(
+
+Icon
+
+tileIcon)
+
+Creates a matte border with the specified tile icon.
+
+---
+
+#### Constructor Summary
+
+Creates a matte border with the specified insets and color.
+
+Creates a matte border with the specified insets and tile icon.
+
+Creates a matte border with the specified tile icon.
+
+Method Summary
+
+All Methods
+
+Instance Methods
+
+Concrete Methods
+
+Modifier and Type
+
+Method
+
+Description
+
+Insets
+
+getBorderInsets
+
+()
+
+Returns the insets of the border.
+
+Insets
+
+getBorderInsets
+
+​(
+
+Component
+
+c,
+
+Insets
+
+insets)
+
+Reinitialize the insets parameter with this Border's current Insets.
+
+Color
+
+getMatteColor
+
+()
+
+Returns the color used for tiling the border or null
+if a tile icon is being used.
+
+Icon
+
+getTileIcon
+
+()
+
+Returns the icon used for tiling the border or null
+if a solid color is being used.
+
+boolean
+
+isBorderOpaque
+
+()
+
+Returns whether or not the border is opaque.
+
+void
+
+paintBorder
+
+​(
+
+Component
+
+c,
+
+Graphics
+
+g,
+int x,
+int y,
+int width,
+int height)
+
+Paints the matte border.
+
+- Methods declared in class javax.swing.border.
+
+AbstractBorder
+
+getBaseline
+
+,
+
+getBaselineResizeBehavior
+
+,
+
+getBorderInsets
+
+,
+
+getInteriorRectangle
+
+,
+
+getInteriorRectangle
+
+- Methods declared in class java.lang.
+
+Object
+
+clone
+
+,
+
+equals
+
+,
+
+finalize
+
+,
+
+getClass
+
+,
+
+hashCode
+
+,
+
+notify
+
+,
+
+notifyAll
+
+,
+
+toString
+
+,
+
+wait
+
+,
+
+wait
+
+,
+
+wait
+
+---
+
+#### Method Summary
+
+Returns the insets of the border.
+
+Reinitialize the insets parameter with this Border's current Insets.
+
+Returns the color used for tiling the border or null
+if a tile icon is being used.
+
+Returns the icon used for tiling the border or null
+if a solid color is being used.
+
+Returns whether or not the border is opaque.
+
+Paints the matte border.
+
+Methods declared in class javax.swing.border.
+
+AbstractBorder
+
+getBaseline
+
+,
+
+getBaselineResizeBehavior
+
+,
+
+getBorderInsets
+
+,
+
+getInteriorRectangle
+
+,
+
+getInteriorRectangle
+
+---
+
+#### Methods declared in class javax.swing.border. AbstractBorder
+
+Methods declared in class java.lang.
+
+Object
+
+clone
+
+,
+
+equals
+
+,
+
+finalize
+
+,
+
+getClass
+
+,
+
+hashCode
+
+,
+
+notify
+
+,
+
+notifyAll
+
+,
+
+toString
+
+,
+
+wait
+
+,
+
+wait
+
+,
+
+wait
+
+---
+
+#### Methods declared in class java.lang. Object
+
+============ FIELD DETAIL ===========
+
+- Field Detail
+
+- color
+
+```java
+protected
+Color
+color
+```
+
+The color rendered for the border.
+
+- tileIcon
+
+```java
+protected
+Icon
+tileIcon
+```
+
+The icon to be used for tiling the border.
+
+========= CONSTRUCTOR DETAIL ========
+
+- Constructor Detail
+
+- MatteBorder
+
+```java
+public MatteBorder​(int top,
+int left,
+int bottom,
+int right,
+
+Color
+matteColor)
+```
+
+Creates a matte border with the specified insets and color.
+
+**Parameters:** top
+
+- the top inset of the border
+**Parameters:** left
+
+- the left inset of the border
+**Parameters:** bottom
+
+- the bottom inset of the border
+**Parameters:** right
+
+- the right inset of the border
+**Parameters:** matteColor
+
+- the color rendered for the border
+
+- MatteBorder
+
+```java
+public MatteBorder​(
+Insets
+borderInsets,
+
+Color
+matteColor)
+```
+
+Creates a matte border with the specified insets and color.
+
+**Parameters:** borderInsets
+
+- the insets of the border
+**Parameters:** matteColor
+
+- the color rendered for the border
+**Since:** 1.3
+
+- MatteBorder
+
+```java
+public MatteBorder​(int top,
+int left,
+int bottom,
+int right,
+
+Icon
+tileIcon)
+```
+
+Creates a matte border with the specified insets and tile icon.
+
+**Parameters:** top
+
+- the top inset of the border
+**Parameters:** left
+
+- the left inset of the border
+**Parameters:** bottom
+
+- the bottom inset of the border
+**Parameters:** right
+
+- the right inset of the border
+**Parameters:** tileIcon
+
+- the icon to be used for tiling the border
+
+- MatteBorder
+
+```java
+public MatteBorder​(
+Insets
+borderInsets,
+
+Icon
+tileIcon)
+```
+
+Creates a matte border with the specified insets and tile icon.
+
+**Parameters:** borderInsets
+
+- the insets of the border
+**Parameters:** tileIcon
+
+- the icon to be used for tiling the border
+**Since:** 1.3
+
+- MatteBorder
+
+```java
+public MatteBorder​(
+Icon
+tileIcon)
+```
+
+Creates a matte border with the specified tile icon. The
+insets will be calculated dynamically based on the size of
+the tile icon, where the top and bottom will be equal to the
+tile icon's height, and the left and right will be equal to
+the tile icon's width.
+
+**Parameters:** tileIcon
+
+- the icon to be used for tiling the border
+
+============ METHOD DETAIL ==========
+
+- Method Detail
+
+- paintBorder
+
+```java
+public void paintBorder​(
+Component
+c,
+
+Graphics
+g,
+int x,
+int y,
+int width,
+int height)
+```
+
+Paints the matte border.
+
+**Specified by:** paintBorder
+
+in interface
+
+Border
+**Overrides:** paintBorder
+
+in class
+
+EmptyBorder
+**Parameters:** c
+
+- the component for which this border is being painted
+**Parameters:** g
+
+- the paint graphics
+**Parameters:** x
+
+- the x position of the painted border
+**Parameters:** y
+
+- the y position of the painted border
+**Parameters:** width
+
+- the width of the painted border
+**Parameters:** height
+
+- the height of the painted border
+
+- getBorderInsets
+
+```java
+public
+Insets
+getBorderInsets​(
+Component
+c,
+
+Insets
+insets)
+```
+
+Reinitialize the insets parameter with this Border's current Insets.
+
+**Overrides:** getBorderInsets
+
+in class
+
+EmptyBorder
+**Parameters:** c
+
+- the component for which this border insets value applies
+**Parameters:** insets
+
+- the object to be reinitialized
+**Returns:** the
+
+insets
+
+object
+**Since:** 1.3
+
+- getBorderInsets
+
+```java
+public
+Insets
+getBorderInsets()
+```
+
+Returns the insets of the border.
+
+**Overrides:** getBorderInsets
+
+in class
+
+EmptyBorder
+**Returns:** an
+
+Insets
+
+object containing the insets from top, left,
+bottom and right
+**Since:** 1.3
+
+- getMatteColor
+
+```java
+public
+Color
+getMatteColor()
+```
+
+Returns the color used for tiling the border or null
+if a tile icon is being used.
+
+**Returns:** the
+
+Color
+
+object used to render the border or
+
+null
+
+if a tile icon is used
+**Since:** 1.3
+
+- getTileIcon
+
+```java
+public
+Icon
+getTileIcon()
+```
+
+Returns the icon used for tiling the border or null
+if a solid color is being used.
+
+**Returns:** the
+
+Icon
+
+used to tile the border or
+
+null
+
+if a
+solid color is used to fill the border
+**Since:** 1.3
+
+- isBorderOpaque
+
+```java
+public boolean isBorderOpaque()
+```
+
+Returns whether or not the border is opaque.
+
+**Specified by:** isBorderOpaque
+
+in interface
+
+Border
+**Overrides:** isBorderOpaque
+
+in class
+
+EmptyBorder
+**Returns:** true
+
+if the border is opaque,
+
+false
+
+otherwise
+
+Field Detail
+
+- color
+
+```java
+protected
+Color
+color
+```
+
+The color rendered for the border.
+
+- tileIcon
+
+```java
+protected
+Icon
+tileIcon
+```
+
+The icon to be used for tiling the border.
+
+---
+
+#### Field Detail
+
+color
+
+```java
+protected
+Color
+color
+```
+
+The color rendered for the border.
+
+---
+
+#### color
+
+protected
+
+Color
+
+color
+
+The color rendered for the border.
+
+tileIcon
+
+```java
+protected
+Icon
+tileIcon
+```
+
+The icon to be used for tiling the border.
+
+---
+
+#### tileIcon
+
+protected
+
+Icon
+
+tileIcon
+
+The icon to be used for tiling the border.
+
+Constructor Detail
+
+- MatteBorder
+
+```java
+public MatteBorder​(int top,
+int left,
+int bottom,
+int right,
+
+Color
+matteColor)
+```
+
+Creates a matte border with the specified insets and color.
+
+**Parameters:** top
+
+- the top inset of the border
+**Parameters:** left
+
+- the left inset of the border
+**Parameters:** bottom
+
+- the bottom inset of the border
+**Parameters:** right
+
+- the right inset of the border
+**Parameters:** matteColor
+
+- the color rendered for the border
+
+- MatteBorder
+
+```java
+public MatteBorder​(
+Insets
+borderInsets,
+
+Color
+matteColor)
+```
+
+Creates a matte border with the specified insets and color.
+
+**Parameters:** borderInsets
+
+- the insets of the border
+**Parameters:** matteColor
+
+- the color rendered for the border
+**Since:** 1.3
+
+- MatteBorder
+
+```java
+public MatteBorder​(int top,
+int left,
+int bottom,
+int right,
+
+Icon
+tileIcon)
+```
+
+Creates a matte border with the specified insets and tile icon.
+
+**Parameters:** top
+
+- the top inset of the border
+**Parameters:** left
+
+- the left inset of the border
+**Parameters:** bottom
+
+- the bottom inset of the border
+**Parameters:** right
+
+- the right inset of the border
+**Parameters:** tileIcon
+
+- the icon to be used for tiling the border
+
+- MatteBorder
+
+```java
+public MatteBorder​(
+Insets
+borderInsets,
+
+Icon
+tileIcon)
+```
+
+Creates a matte border with the specified insets and tile icon.
+
+**Parameters:** borderInsets
+
+- the insets of the border
+**Parameters:** tileIcon
+
+- the icon to be used for tiling the border
+**Since:** 1.3
+
+- MatteBorder
+
+```java
+public MatteBorder​(
+Icon
+tileIcon)
+```
+
+Creates a matte border with the specified tile icon. The
+insets will be calculated dynamically based on the size of
+the tile icon, where the top and bottom will be equal to the
+tile icon's height, and the left and right will be equal to
+the tile icon's width.
+
+**Parameters:** tileIcon
+
+- the icon to be used for tiling the border
+
+---
+
+#### Constructor Detail
+
+MatteBorder
+
+```java
+public MatteBorder​(int top,
+int left,
+int bottom,
+int right,
+
+Color
+matteColor)
+```
+
+Creates a matte border with the specified insets and color.
+
+**Parameters:** top
+
+- the top inset of the border
+**Parameters:** left
+
+- the left inset of the border
+**Parameters:** bottom
+
+- the bottom inset of the border
+**Parameters:** right
+
+- the right inset of the border
+**Parameters:** matteColor
+
+- the color rendered for the border
+
+---
+
+#### MatteBorder
+
+public MatteBorder​(int top,
+int left,
+int bottom,
+int right,
+
+Color
+
+matteColor)
+
+Creates a matte border with the specified insets and color.
+
+MatteBorder
+
+```java
+public MatteBorder​(
+Insets
+borderInsets,
+
+Color
+matteColor)
+```
+
+Creates a matte border with the specified insets and color.
+
+**Parameters:** borderInsets
+
+- the insets of the border
+**Parameters:** matteColor
+
+- the color rendered for the border
+**Since:** 1.3
+
+---
+
+#### MatteBorder
+
+public MatteBorder​(
+
+Insets
+
+borderInsets,
+
+Color
+
+matteColor)
+
+Creates a matte border with the specified insets and color.
+
+MatteBorder
+
+```java
+public MatteBorder​(int top,
+int left,
+int bottom,
+int right,
+
+Icon
+tileIcon)
+```
+
+Creates a matte border with the specified insets and tile icon.
+
+**Parameters:** top
+
+- the top inset of the border
+**Parameters:** left
+
+- the left inset of the border
+**Parameters:** bottom
+
+- the bottom inset of the border
+**Parameters:** right
+
+- the right inset of the border
+**Parameters:** tileIcon
+
+- the icon to be used for tiling the border
+
+---
+
+#### MatteBorder
+
+public MatteBorder​(int top,
+int left,
+int bottom,
+int right,
+
+Icon
+
+tileIcon)
+
+Creates a matte border with the specified insets and tile icon.
+
+MatteBorder
+
+```java
+public MatteBorder​(
+Insets
+borderInsets,
+
+Icon
+tileIcon)
+```
+
+Creates a matte border with the specified insets and tile icon.
+
+**Parameters:** borderInsets
+
+- the insets of the border
+**Parameters:** tileIcon
+
+- the icon to be used for tiling the border
+**Since:** 1.3
+
+---
+
+#### MatteBorder
+
+public MatteBorder​(
+
+Insets
+
+borderInsets,
+
+Icon
+
+tileIcon)
+
+Creates a matte border with the specified insets and tile icon.
+
+MatteBorder
+
+```java
+public MatteBorder​(
+Icon
+tileIcon)
+```
+
+Creates a matte border with the specified tile icon. The
+insets will be calculated dynamically based on the size of
+the tile icon, where the top and bottom will be equal to the
+tile icon's height, and the left and right will be equal to
+the tile icon's width.
+
+**Parameters:** tileIcon
+
+- the icon to be used for tiling the border
+
+---
+
+#### MatteBorder
+
+public MatteBorder​(
+
+Icon
+
+tileIcon)
+
+Creates a matte border with the specified tile icon. The
+insets will be calculated dynamically based on the size of
+the tile icon, where the top and bottom will be equal to the
+tile icon's height, and the left and right will be equal to
+the tile icon's width.
+
+Method Detail
+
+- paintBorder
+
+```java
+public void paintBorder​(
+Component
+c,
+
+Graphics
+g,
+int x,
+int y,
+int width,
+int height)
+```
+
+Paints the matte border.
+
+**Specified by:** paintBorder
+
+in interface
+
+Border
+**Overrides:** paintBorder
+
+in class
+
+EmptyBorder
+**Parameters:** c
+
+- the component for which this border is being painted
+**Parameters:** g
+
+- the paint graphics
+**Parameters:** x
+
+- the x position of the painted border
+**Parameters:** y
+
+- the y position of the painted border
+**Parameters:** width
+
+- the width of the painted border
+**Parameters:** height
+
+- the height of the painted border
+
+- getBorderInsets
+
+```java
+public
+Insets
+getBorderInsets​(
+Component
+c,
+
+Insets
+insets)
+```
+
+Reinitialize the insets parameter with this Border's current Insets.
+
+**Overrides:** getBorderInsets
+
+in class
+
+EmptyBorder
+**Parameters:** c
+
+- the component for which this border insets value applies
+**Parameters:** insets
+
+- the object to be reinitialized
+**Returns:** the
+
+insets
+
+object
+**Since:** 1.3
+
+- getBorderInsets
+
+```java
+public
+Insets
+getBorderInsets()
+```
+
+Returns the insets of the border.
+
+**Overrides:** getBorderInsets
+
+in class
+
+EmptyBorder
+**Returns:** an
+
+Insets
+
+object containing the insets from top, left,
+bottom and right
+**Since:** 1.3
+
+- getMatteColor
+
+```java
+public
+Color
+getMatteColor()
+```
+
+Returns the color used for tiling the border or null
+if a tile icon is being used.
+
+**Returns:** the
+
+Color
+
+object used to render the border or
+
+null
+
+if a tile icon is used
+**Since:** 1.3
+
+- getTileIcon
+
+```java
+public
+Icon
+getTileIcon()
+```
+
+Returns the icon used for tiling the border or null
+if a solid color is being used.
+
+**Returns:** the
+
+Icon
+
+used to tile the border or
+
+null
+
+if a
+solid color is used to fill the border
+**Since:** 1.3
+
+- isBorderOpaque
+
+```java
+public boolean isBorderOpaque()
+```
+
+Returns whether or not the border is opaque.
+
+**Specified by:** isBorderOpaque
+
+in interface
+
+Border
+**Overrides:** isBorderOpaque
+
+in class
+
+EmptyBorder
+**Returns:** true
+
+if the border is opaque,
+
+false
+
+otherwise
+
+---
+
+#### Method Detail
+
+paintBorder
+
+```java
+public void paintBorder​(
+Component
+c,
+
+Graphics
+g,
+int x,
+int y,
+int width,
+int height)
+```
+
+Paints the matte border.
+
+**Specified by:** paintBorder
+
+in interface
+
+Border
+**Overrides:** paintBorder
+
+in class
+
+EmptyBorder
+**Parameters:** c
+
+- the component for which this border is being painted
+**Parameters:** g
+
+- the paint graphics
+**Parameters:** x
+
+- the x position of the painted border
+**Parameters:** y
+
+- the y position of the painted border
+**Parameters:** width
+
+- the width of the painted border
+**Parameters:** height
+
+- the height of the painted border
+
+---
+
+#### paintBorder
+
+public void paintBorder​(
+
+Component
+
+c,
+
+Graphics
+
+g,
+int x,
+int y,
+int width,
+int height)
+
+Paints the matte border.
+
+getBorderInsets
+
+```java
+public
+Insets
+getBorderInsets​(
+Component
+c,
+
+Insets
+insets)
+```
+
+Reinitialize the insets parameter with this Border's current Insets.
+
+**Overrides:** getBorderInsets
+
+in class
+
+EmptyBorder
+**Parameters:** c
+
+- the component for which this border insets value applies
+**Parameters:** insets
+
+- the object to be reinitialized
+**Returns:** the
+
+insets
+
+object
+**Since:** 1.3
+
+---
+
+#### getBorderInsets
+
+public
+
+Insets
+
+getBorderInsets​(
+
+Component
+
+c,
+
+Insets
+
+insets)
+
+Reinitialize the insets parameter with this Border's current Insets.
+
+getBorderInsets
+
+```java
+public
+Insets
+getBorderInsets()
+```
+
+Returns the insets of the border.
+
+**Overrides:** getBorderInsets
+
+in class
+
+EmptyBorder
+**Returns:** an
+
+Insets
+
+object containing the insets from top, left,
+bottom and right
+**Since:** 1.3
+
+---
+
+#### getBorderInsets
+
+public
+
+Insets
+
+getBorderInsets()
+
+Returns the insets of the border.
+
+getMatteColor
+
+```java
+public
+Color
+getMatteColor()
+```
+
+Returns the color used for tiling the border or null
+if a tile icon is being used.
+
+**Returns:** the
+
+Color
+
+object used to render the border or
+
+null
+
+if a tile icon is used
+**Since:** 1.3
+
+---
+
+#### getMatteColor
+
+public
+
+Color
+
+getMatteColor()
+
+Returns the color used for tiling the border or null
+if a tile icon is being used.
+
+getTileIcon
+
+```java
+public
+Icon
+getTileIcon()
+```
+
+Returns the icon used for tiling the border or null
+if a solid color is being used.
+
+**Returns:** the
+
+Icon
+
+used to tile the border or
+
+null
+
+if a
+solid color is used to fill the border
+**Since:** 1.3
+
+---
+
+#### getTileIcon
+
+public
+
+Icon
+
+getTileIcon()
+
+Returns the icon used for tiling the border or null
+if a solid color is being used.
+
+isBorderOpaque
+
+```java
+public boolean isBorderOpaque()
+```
+
+Returns whether or not the border is opaque.
+
+**Specified by:** isBorderOpaque
+
+in interface
+
+Border
+**Overrides:** isBorderOpaque
+
+in class
+
+EmptyBorder
+**Returns:** true
+
+if the border is opaque,
+
+false
+
+otherwise
+
+---
+
+#### isBorderOpaque
+
+public boolean isBorderOpaque()
+
+Returns whether or not the border is opaque.
+
+---
+

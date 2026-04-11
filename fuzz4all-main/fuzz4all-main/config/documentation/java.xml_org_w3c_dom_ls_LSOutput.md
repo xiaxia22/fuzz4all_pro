@@ -1,0 +1,1329 @@
+# Interface LSOutput
+
+**Source:** `java.xml\org\w3c\dom\ls\LSOutput.html`
+
+### Class Description
+
+```java
+public interface
+LSOutput
+```
+
+This interface represents an output destination for data.
+
+This interface allows an application to encapsulate information about
+an output destination in a single object, which may include a URI, a byte
+stream (possibly with a specified encoding), a base URI, and/or a
+character stream.
+
+The exact definitions of a byte stream and a character stream are
+binding dependent.
+
+The application is expected to provide objects that implement this
+interface whenever such objects are needed. The application can either
+provide its own objects that implement this interface, or it can use the
+generic factory method
+
+DOMImplementationLS.createLSOutput()
+
+to create objects that implement this interface.
+
+The
+
+LSSerializer
+
+will use the
+
+LSOutput
+
+object
+to determine where to serialize the output to. The
+
+LSSerializer
+
+will look at the different outputs specified in
+the
+
+LSOutput
+
+in the following order to know which one to
+output to, the first one that is not null and not an empty string will be
+used:
+
+- LSOutput.characterStream
+- LSOutput.byteStream
+- LSOutput.systemId
+
+LSOutput
+
+objects belong to the application. The DOM
+implementation will never modify them (though it may make copies and
+modify the copies, if necessary).
+
+See also the
+
+Document Object Model (DOM) Level 3 Load
+and Save Specification
+
+.
+
+**Since:** 1.5
+
+---
+
+### Field Details
+
+*No entries found.*
+
+### Constructor Details
+
+*No entries found.*
+
+### Method Details
+
+#### Writer
+getCharacterStream()
+
+An attribute of a language and binding dependent type that represents
+a writable stream to which 16-bit units can be output.
+
+---
+
+#### void setCharacterStream​(
+Writer
+characterStream)
+
+An attribute of a language and binding dependent type that represents
+a writable stream to which 16-bit units can be output.
+
+---
+
+#### OutputStream
+getByteStream()
+
+An attribute of a language and binding dependent type that represents
+a writable stream of bytes.
+
+---
+
+#### void setByteStream​(
+OutputStream
+byteStream)
+
+An attribute of a language and binding dependent type that represents
+a writable stream of bytes.
+
+---
+
+#### String
+getSystemId()
+
+The system identifier, a URI reference [
+
+IETF RFC 2396
+
+], for this
+output destination.
+
+If the system ID is a relative URI reference (see section 5 in [
+
+IETF RFC 2396
+
+]), the
+behavior is implementation dependent.
+
+---
+
+#### void setSystemId​(
+String
+systemId)
+
+The system identifier, a URI reference [
+
+IETF RFC 2396
+
+], for this
+output destination.
+
+If the system ID is a relative URI reference (see section 5 in [
+
+IETF RFC 2396
+
+]), the
+behavior is implementation dependent.
+
+---
+
+#### String
+getEncoding()
+
+The character encoding to use for the output. The encoding must be a
+string acceptable for an XML encoding declaration ([
+
+XML 1.0
+
+] section
+4.3.3 "Character Encoding in Entities"), it is recommended that
+character encodings registered (as charsets) with the Internet
+Assigned Numbers Authority [
+
+IANA-CHARSETS
+
+]
+should be referred to using their registered names.
+
+---
+
+#### void setEncoding​(
+String
+encoding)
+
+The character encoding to use for the output. The encoding must be a
+string acceptable for an XML encoding declaration ([
+
+XML 1.0
+
+] section
+4.3.3 "Character Encoding in Entities"), it is recommended that
+character encodings registered (as charsets) with the Internet
+Assigned Numbers Authority [
+
+IANA-CHARSETS
+
+]
+should be referred to using their registered names.
+
+---
+
+### Additional Sections
+
+#### Interface LSOutput
+
+```java
+public interface
+LSOutput
+```
+
+This interface represents an output destination for data.
+
+This interface allows an application to encapsulate information about
+an output destination in a single object, which may include a URI, a byte
+stream (possibly with a specified encoding), a base URI, and/or a
+character stream.
+
+The exact definitions of a byte stream and a character stream are
+binding dependent.
+
+The application is expected to provide objects that implement this
+interface whenever such objects are needed. The application can either
+provide its own objects that implement this interface, or it can use the
+generic factory method
+
+DOMImplementationLS.createLSOutput()
+
+to create objects that implement this interface.
+
+The
+
+LSSerializer
+
+will use the
+
+LSOutput
+
+object
+to determine where to serialize the output to. The
+
+LSSerializer
+
+will look at the different outputs specified in
+the
+
+LSOutput
+
+in the following order to know which one to
+output to, the first one that is not null and not an empty string will be
+used:
+
+- LSOutput.characterStream
+- LSOutput.byteStream
+- LSOutput.systemId
+
+LSOutput
+
+objects belong to the application. The DOM
+implementation will never modify them (though it may make copies and
+modify the copies, if necessary).
+
+See also the
+
+Document Object Model (DOM) Level 3 Load
+and Save Specification
+
+.
+
+**Since:** 1.5
+
+public interface
+
+LSOutput
+
+This interface represents an output destination for data.
+
+This interface allows an application to encapsulate information about
+an output destination in a single object, which may include a URI, a byte
+stream (possibly with a specified encoding), a base URI, and/or a
+character stream.
+
+The exact definitions of a byte stream and a character stream are
+binding dependent.
+
+The application is expected to provide objects that implement this
+interface whenever such objects are needed. The application can either
+provide its own objects that implement this interface, or it can use the
+generic factory method
+
+DOMImplementationLS.createLSOutput()
+
+to create objects that implement this interface.
+
+The
+
+LSSerializer
+
+will use the
+
+LSOutput
+
+object
+to determine where to serialize the output to. The
+
+LSSerializer
+
+will look at the different outputs specified in
+the
+
+LSOutput
+
+in the following order to know which one to
+output to, the first one that is not null and not an empty string will be
+used:
+
+- LSOutput.characterStream
+- LSOutput.byteStream
+- LSOutput.systemId
+
+LSOutput
+
+objects belong to the application. The DOM
+implementation will never modify them (though it may make copies and
+modify the copies, if necessary).
+
+See also the
+
+Document Object Model (DOM) Level 3 Load
+and Save Specification
+
+.
+
+This interface allows an application to encapsulate information about
+an output destination in a single object, which may include a URI, a byte
+stream (possibly with a specified encoding), a base URI, and/or a
+character stream.
+
+The exact definitions of a byte stream and a character stream are
+binding dependent.
+
+The application is expected to provide objects that implement this
+interface whenever such objects are needed. The application can either
+provide its own objects that implement this interface, or it can use the
+generic factory method
+
+DOMImplementationLS.createLSOutput()
+
+to create objects that implement this interface.
+
+The
+
+LSSerializer
+
+will use the
+
+LSOutput
+
+object
+to determine where to serialize the output to. The
+
+LSSerializer
+
+will look at the different outputs specified in
+the
+
+LSOutput
+
+in the following order to know which one to
+output to, the first one that is not null and not an empty string will be
+used:
+
+- LSOutput.characterStream
+- LSOutput.byteStream
+- LSOutput.systemId
+
+LSOutput
+
+objects belong to the application. The DOM
+implementation will never modify them (though it may make copies and
+modify the copies, if necessary).
+
+See also the
+
+Document Object Model (DOM) Level 3 Load
+and Save Specification
+
+.
+
+The exact definitions of a byte stream and a character stream are
+binding dependent.
+
+The application is expected to provide objects that implement this
+interface whenever such objects are needed. The application can either
+provide its own objects that implement this interface, or it can use the
+generic factory method
+
+DOMImplementationLS.createLSOutput()
+
+to create objects that implement this interface.
+
+The
+
+LSSerializer
+
+will use the
+
+LSOutput
+
+object
+to determine where to serialize the output to. The
+
+LSSerializer
+
+will look at the different outputs specified in
+the
+
+LSOutput
+
+in the following order to know which one to
+output to, the first one that is not null and not an empty string will be
+used:
+
+- LSOutput.characterStream
+- LSOutput.byteStream
+- LSOutput.systemId
+
+LSOutput
+
+objects belong to the application. The DOM
+implementation will never modify them (though it may make copies and
+modify the copies, if necessary).
+
+See also the
+
+Document Object Model (DOM) Level 3 Load
+and Save Specification
+
+.
+
+The application is expected to provide objects that implement this
+interface whenever such objects are needed. The application can either
+provide its own objects that implement this interface, or it can use the
+generic factory method
+
+DOMImplementationLS.createLSOutput()
+
+to create objects that implement this interface.
+
+The
+
+LSSerializer
+
+will use the
+
+LSOutput
+
+object
+to determine where to serialize the output to. The
+
+LSSerializer
+
+will look at the different outputs specified in
+the
+
+LSOutput
+
+in the following order to know which one to
+output to, the first one that is not null and not an empty string will be
+used:
+
+- LSOutput.characterStream
+- LSOutput.byteStream
+- LSOutput.systemId
+
+LSOutput
+
+objects belong to the application. The DOM
+implementation will never modify them (though it may make copies and
+modify the copies, if necessary).
+
+See also the
+
+Document Object Model (DOM) Level 3 Load
+and Save Specification
+
+.
+
+The
+
+LSSerializer
+
+will use the
+
+LSOutput
+
+object
+to determine where to serialize the output to. The
+
+LSSerializer
+
+will look at the different outputs specified in
+the
+
+LSOutput
+
+in the following order to know which one to
+output to, the first one that is not null and not an empty string will be
+used:
+
+- LSOutput.characterStream
+- LSOutput.byteStream
+- LSOutput.systemId
+
+LSOutput
+
+objects belong to the application. The DOM
+implementation will never modify them (though it may make copies and
+modify the copies, if necessary).
+
+See also the
+
+Document Object Model (DOM) Level 3 Load
+and Save Specification
+
+.
+
+LSOutput.characterStream
+
+LSOutput.byteStream
+
+LSOutput.systemId
+
+LSOutput
+
+objects belong to the application. The DOM
+implementation will never modify them (though it may make copies and
+modify the copies, if necessary).
+
+See also the
+
+Document Object Model (DOM) Level 3 Load
+and Save Specification
+
+.
+
+See also the
+
+Document Object Model (DOM) Level 3 Load
+and Save Specification
+
+.
+
+========== METHOD SUMMARY ===========
+
+- Method Summary
+
+All Methods
+
+Instance Methods
+
+Abstract Methods
+
+Modifier and Type
+
+Method
+
+Description
+
+OutputStream
+
+getByteStream
+
+()
+
+An attribute of a language and binding dependent type that represents
+a writable stream of bytes.
+
+Writer
+
+getCharacterStream
+
+()
+
+An attribute of a language and binding dependent type that represents
+a writable stream to which 16-bit units can be output.
+
+String
+
+getEncoding
+
+()
+
+The character encoding to use for the output.
+
+String
+
+getSystemId
+
+()
+
+The system identifier, a URI reference [
+
+IETF RFC 2396
+
+], for this
+output destination.
+
+void
+
+setByteStream
+
+​(
+
+OutputStream
+
+byteStream)
+
+An attribute of a language and binding dependent type that represents
+a writable stream of bytes.
+
+void
+
+setCharacterStream
+
+​(
+
+Writer
+
+characterStream)
+
+An attribute of a language and binding dependent type that represents
+a writable stream to which 16-bit units can be output.
+
+void
+
+setEncoding
+
+​(
+
+String
+
+encoding)
+
+The character encoding to use for the output.
+
+void
+
+setSystemId
+
+​(
+
+String
+
+systemId)
+
+The system identifier, a URI reference [
+
+IETF RFC 2396
+
+], for this
+output destination.
+
+Method Summary
+
+All Methods
+
+Instance Methods
+
+Abstract Methods
+
+Modifier and Type
+
+Method
+
+Description
+
+OutputStream
+
+getByteStream
+
+()
+
+An attribute of a language and binding dependent type that represents
+a writable stream of bytes.
+
+Writer
+
+getCharacterStream
+
+()
+
+An attribute of a language and binding dependent type that represents
+a writable stream to which 16-bit units can be output.
+
+String
+
+getEncoding
+
+()
+
+The character encoding to use for the output.
+
+String
+
+getSystemId
+
+()
+
+The system identifier, a URI reference [
+
+IETF RFC 2396
+
+], for this
+output destination.
+
+void
+
+setByteStream
+
+​(
+
+OutputStream
+
+byteStream)
+
+An attribute of a language and binding dependent type that represents
+a writable stream of bytes.
+
+void
+
+setCharacterStream
+
+​(
+
+Writer
+
+characterStream)
+
+An attribute of a language and binding dependent type that represents
+a writable stream to which 16-bit units can be output.
+
+void
+
+setEncoding
+
+​(
+
+String
+
+encoding)
+
+The character encoding to use for the output.
+
+void
+
+setSystemId
+
+​(
+
+String
+
+systemId)
+
+The system identifier, a URI reference [
+
+IETF RFC 2396
+
+], for this
+output destination.
+
+---
+
+#### Method Summary
+
+An attribute of a language and binding dependent type that represents
+a writable stream of bytes.
+
+An attribute of a language and binding dependent type that represents
+a writable stream to which 16-bit units can be output.
+
+The character encoding to use for the output.
+
+The system identifier, a URI reference [
+
+IETF RFC 2396
+
+], for this
+output destination.
+
+============ METHOD DETAIL ==========
+
+- Method Detail
+
+- getCharacterStream
+
+```java
+Writer
+getCharacterStream()
+```
+
+An attribute of a language and binding dependent type that represents
+a writable stream to which 16-bit units can be output.
+
+- setCharacterStream
+
+```java
+void setCharacterStream​(
+Writer
+characterStream)
+```
+
+An attribute of a language and binding dependent type that represents
+a writable stream to which 16-bit units can be output.
+
+- getByteStream
+
+```java
+OutputStream
+getByteStream()
+```
+
+An attribute of a language and binding dependent type that represents
+a writable stream of bytes.
+
+- setByteStream
+
+```java
+void setByteStream​(
+OutputStream
+byteStream)
+```
+
+An attribute of a language and binding dependent type that represents
+a writable stream of bytes.
+
+- getSystemId
+
+```java
+String
+getSystemId()
+```
+
+The system identifier, a URI reference [
+
+IETF RFC 2396
+
+], for this
+output destination.
+
+If the system ID is a relative URI reference (see section 5 in [
+
+IETF RFC 2396
+
+]), the
+behavior is implementation dependent.
+
+- setSystemId
+
+```java
+void setSystemId​(
+String
+systemId)
+```
+
+The system identifier, a URI reference [
+
+IETF RFC 2396
+
+], for this
+output destination.
+
+If the system ID is a relative URI reference (see section 5 in [
+
+IETF RFC 2396
+
+]), the
+behavior is implementation dependent.
+
+- getEncoding
+
+```java
+String
+getEncoding()
+```
+
+The character encoding to use for the output. The encoding must be a
+string acceptable for an XML encoding declaration ([
+
+XML 1.0
+
+] section
+4.3.3 "Character Encoding in Entities"), it is recommended that
+character encodings registered (as charsets) with the Internet
+Assigned Numbers Authority [
+
+IANA-CHARSETS
+
+]
+should be referred to using their registered names.
+
+- setEncoding
+
+```java
+void setEncoding​(
+String
+encoding)
+```
+
+The character encoding to use for the output. The encoding must be a
+string acceptable for an XML encoding declaration ([
+
+XML 1.0
+
+] section
+4.3.3 "Character Encoding in Entities"), it is recommended that
+character encodings registered (as charsets) with the Internet
+Assigned Numbers Authority [
+
+IANA-CHARSETS
+
+]
+should be referred to using their registered names.
+
+Method Detail
+
+- getCharacterStream
+
+```java
+Writer
+getCharacterStream()
+```
+
+An attribute of a language and binding dependent type that represents
+a writable stream to which 16-bit units can be output.
+
+- setCharacterStream
+
+```java
+void setCharacterStream​(
+Writer
+characterStream)
+```
+
+An attribute of a language and binding dependent type that represents
+a writable stream to which 16-bit units can be output.
+
+- getByteStream
+
+```java
+OutputStream
+getByteStream()
+```
+
+An attribute of a language and binding dependent type that represents
+a writable stream of bytes.
+
+- setByteStream
+
+```java
+void setByteStream​(
+OutputStream
+byteStream)
+```
+
+An attribute of a language and binding dependent type that represents
+a writable stream of bytes.
+
+- getSystemId
+
+```java
+String
+getSystemId()
+```
+
+The system identifier, a URI reference [
+
+IETF RFC 2396
+
+], for this
+output destination.
+
+If the system ID is a relative URI reference (see section 5 in [
+
+IETF RFC 2396
+
+]), the
+behavior is implementation dependent.
+
+- setSystemId
+
+```java
+void setSystemId​(
+String
+systemId)
+```
+
+The system identifier, a URI reference [
+
+IETF RFC 2396
+
+], for this
+output destination.
+
+If the system ID is a relative URI reference (see section 5 in [
+
+IETF RFC 2396
+
+]), the
+behavior is implementation dependent.
+
+- getEncoding
+
+```java
+String
+getEncoding()
+```
+
+The character encoding to use for the output. The encoding must be a
+string acceptable for an XML encoding declaration ([
+
+XML 1.0
+
+] section
+4.3.3 "Character Encoding in Entities"), it is recommended that
+character encodings registered (as charsets) with the Internet
+Assigned Numbers Authority [
+
+IANA-CHARSETS
+
+]
+should be referred to using their registered names.
+
+- setEncoding
+
+```java
+void setEncoding​(
+String
+encoding)
+```
+
+The character encoding to use for the output. The encoding must be a
+string acceptable for an XML encoding declaration ([
+
+XML 1.0
+
+] section
+4.3.3 "Character Encoding in Entities"), it is recommended that
+character encodings registered (as charsets) with the Internet
+Assigned Numbers Authority [
+
+IANA-CHARSETS
+
+]
+should be referred to using their registered names.
+
+---
+
+#### Method Detail
+
+getCharacterStream
+
+```java
+Writer
+getCharacterStream()
+```
+
+An attribute of a language and binding dependent type that represents
+a writable stream to which 16-bit units can be output.
+
+---
+
+#### getCharacterStream
+
+Writer
+
+getCharacterStream()
+
+An attribute of a language and binding dependent type that represents
+a writable stream to which 16-bit units can be output.
+
+setCharacterStream
+
+```java
+void setCharacterStream​(
+Writer
+characterStream)
+```
+
+An attribute of a language and binding dependent type that represents
+a writable stream to which 16-bit units can be output.
+
+---
+
+#### setCharacterStream
+
+void setCharacterStream​(
+
+Writer
+
+characterStream)
+
+An attribute of a language and binding dependent type that represents
+a writable stream to which 16-bit units can be output.
+
+getByteStream
+
+```java
+OutputStream
+getByteStream()
+```
+
+An attribute of a language and binding dependent type that represents
+a writable stream of bytes.
+
+---
+
+#### getByteStream
+
+OutputStream
+
+getByteStream()
+
+An attribute of a language and binding dependent type that represents
+a writable stream of bytes.
+
+setByteStream
+
+```java
+void setByteStream​(
+OutputStream
+byteStream)
+```
+
+An attribute of a language and binding dependent type that represents
+a writable stream of bytes.
+
+---
+
+#### setByteStream
+
+void setByteStream​(
+
+OutputStream
+
+byteStream)
+
+An attribute of a language and binding dependent type that represents
+a writable stream of bytes.
+
+getSystemId
+
+```java
+String
+getSystemId()
+```
+
+The system identifier, a URI reference [
+
+IETF RFC 2396
+
+], for this
+output destination.
+
+If the system ID is a relative URI reference (see section 5 in [
+
+IETF RFC 2396
+
+]), the
+behavior is implementation dependent.
+
+---
+
+#### getSystemId
+
+String
+
+getSystemId()
+
+The system identifier, a URI reference [
+
+IETF RFC 2396
+
+], for this
+output destination.
+
+If the system ID is a relative URI reference (see section 5 in [
+
+IETF RFC 2396
+
+]), the
+behavior is implementation dependent.
+
+setSystemId
+
+```java
+void setSystemId​(
+String
+systemId)
+```
+
+The system identifier, a URI reference [
+
+IETF RFC 2396
+
+], for this
+output destination.
+
+If the system ID is a relative URI reference (see section 5 in [
+
+IETF RFC 2396
+
+]), the
+behavior is implementation dependent.
+
+---
+
+#### setSystemId
+
+void setSystemId​(
+
+String
+
+systemId)
+
+The system identifier, a URI reference [
+
+IETF RFC 2396
+
+], for this
+output destination.
+
+If the system ID is a relative URI reference (see section 5 in [
+
+IETF RFC 2396
+
+]), the
+behavior is implementation dependent.
+
+getEncoding
+
+```java
+String
+getEncoding()
+```
+
+The character encoding to use for the output. The encoding must be a
+string acceptable for an XML encoding declaration ([
+
+XML 1.0
+
+] section
+4.3.3 "Character Encoding in Entities"), it is recommended that
+character encodings registered (as charsets) with the Internet
+Assigned Numbers Authority [
+
+IANA-CHARSETS
+
+]
+should be referred to using their registered names.
+
+---
+
+#### getEncoding
+
+String
+
+getEncoding()
+
+The character encoding to use for the output. The encoding must be a
+string acceptable for an XML encoding declaration ([
+
+XML 1.0
+
+] section
+4.3.3 "Character Encoding in Entities"), it is recommended that
+character encodings registered (as charsets) with the Internet
+Assigned Numbers Authority [
+
+IANA-CHARSETS
+
+]
+should be referred to using their registered names.
+
+setEncoding
+
+```java
+void setEncoding​(
+String
+encoding)
+```
+
+The character encoding to use for the output. The encoding must be a
+string acceptable for an XML encoding declaration ([
+
+XML 1.0
+
+] section
+4.3.3 "Character Encoding in Entities"), it is recommended that
+character encodings registered (as charsets) with the Internet
+Assigned Numbers Authority [
+
+IANA-CHARSETS
+
+]
+should be referred to using their registered names.
+
+---
+
+#### setEncoding
+
+void setEncoding​(
+
+String
+
+encoding)
+
+The character encoding to use for the output. The encoding must be a
+string acceptable for an XML encoding declaration ([
+
+XML 1.0
+
+] section
+4.3.3 "Character Encoding in Entities"), it is recommended that
+character encodings registered (as charsets) with the Internet
+Assigned Numbers Authority [
+
+IANA-CHARSETS
+
+]
+should be referred to using their registered names.
+
+---
+

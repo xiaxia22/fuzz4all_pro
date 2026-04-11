@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: webConnect
+  datasource:
+    url: jdbc:mysql://localhost:3306/java_fuzz_db?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: xwj123
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema_codes.sql,classpath:schema_prompts.sql,classpath:schema_bugs.sql
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true

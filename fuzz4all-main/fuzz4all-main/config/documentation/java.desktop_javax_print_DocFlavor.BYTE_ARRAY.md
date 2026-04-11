@@ -1,0 +1,3412 @@
+# Class DocFlavor.BYTE_ARRAY
+
+**Source:** `java.desktop\javax\print\DocFlavor.BYTE_ARRAY.html`
+
+### Class Description
+
+```java
+public static class
+DocFlavor.BYTE_ARRAY
+
+extends
+DocFlavor
+```
+
+Class
+
+DocFlavor.BYTE_ARRAY
+
+provides predefined static constant
+
+DocFlavor
+
+objects for example doc flavors using a byte array
+(
+
+byte[]
+
+) as the print data representation class.
+
+**All Implemented Interfaces:** Serializable
+
+,
+
+Cloneable
+
+---
+
+### Field Details
+
+#### public static final
+DocFlavor.BYTE_ARRAY
+TEXT_PLAIN_HOST
+
+Doc flavor with MIME type =
+
+"text/plain"
+
+, encoded in the host
+platform encoding. See
+
+hostEncoding
+
+.
+Print data representation class name =
+
+"[B"
+
+(byte array).
+
+---
+
+#### public static final
+DocFlavor.BYTE_ARRAY
+TEXT_PLAIN_UTF_8
+
+Doc flavor with MIME type =
+
+"text/plain; charset=utf-8"
+
+,
+print data representation class name =
+
+"[B"
+
+(byte array).
+
+---
+
+#### public static final
+DocFlavor.BYTE_ARRAY
+TEXT_PLAIN_UTF_16
+
+Doc flavor with MIME type =
+
+"text/plain; charset=utf-16"
+
+,
+print data representation class name =
+
+"[B"
+
+(byte array).
+
+---
+
+#### public static final
+DocFlavor.BYTE_ARRAY
+TEXT_PLAIN_UTF_16BE
+
+Doc flavor with MIME type =
+
+"text/plain; charset=utf-16be"
+
+(big-endian byte ordering), print data representation class name =
+
+"[B"
+
+(byte array).
+
+---
+
+#### public static final
+DocFlavor.BYTE_ARRAY
+TEXT_PLAIN_UTF_16LE
+
+Doc flavor with MIME type =
+
+"text/plain; charset=utf-16le"
+
+(little-endian byte ordering), print data representation class name =
+
+"[B"
+
+(byte array).
+
+---
+
+#### public static final
+DocFlavor.BYTE_ARRAY
+TEXT_PLAIN_US_ASCII
+
+Doc flavor with MIME type =
+
+"text/plain; charset=us-ascii"
+
+,
+print data representation class name =
+
+"[B"
+
+(byte array).
+
+---
+
+#### public static final
+DocFlavor.BYTE_ARRAY
+TEXT_HTML_HOST
+
+Doc flavor with MIME type =
+
+"text/html"
+
+, encoded in the host
+platform encoding. See
+
+hostEncoding
+
+.
+Print data representation class name =
+
+"[B"
+
+(byte array).
+
+---
+
+#### public static final
+DocFlavor.BYTE_ARRAY
+TEXT_HTML_UTF_8
+
+Doc flavor with MIME type =
+
+"text/html; charset=utf-8"
+
+, print
+data representation class name =
+
+"[B"
+
+(byte array).
+
+---
+
+#### public static final
+DocFlavor.BYTE_ARRAY
+TEXT_HTML_UTF_16
+
+Doc flavor with MIME type =
+
+"text/html; charset=utf-16"
+
+,
+print data representation class name =
+
+"[B"
+
+(byte array).
+
+---
+
+#### public static final
+DocFlavor.BYTE_ARRAY
+TEXT_HTML_UTF_16BE
+
+Doc flavor with MIME type =
+
+"text/html; charset=utf-16be"
+
+(big-endian byte ordering), print data representation class name =
+
+"[B"
+
+(byte array).
+
+---
+
+#### public static final
+DocFlavor.BYTE_ARRAY
+TEXT_HTML_UTF_16LE
+
+Doc flavor with MIME type =
+
+"text/html; charset=utf-16le"
+
+(little-endian byte ordering), print data representation class name =
+
+"[B"
+
+(byte array).
+
+---
+
+#### public static final
+DocFlavor.BYTE_ARRAY
+TEXT_HTML_US_ASCII
+
+Doc flavor with MIME type =
+
+"text/html; charset=us-ascii"
+
+,
+print data representation class name =
+
+"[B"
+
+(byte array).
+
+---
+
+#### public static final
+DocFlavor.BYTE_ARRAY
+PDF
+
+Doc flavor with MIME type =
+
+"application/pdf"
+
+, print data
+representation class name =
+
+"[B"
+
+(byte array).
+
+---
+
+#### public static final
+DocFlavor.BYTE_ARRAY
+POSTSCRIPT
+
+Doc flavor with MIME type =
+
+"application/postscript"
+
+, print
+data representation class name =
+
+"[B"
+
+(byte array).
+
+---
+
+#### public static final
+DocFlavor.BYTE_ARRAY
+PCL
+
+Doc flavor with MIME type =
+
+"application/vnd.hp-PCL"
+
+, print
+data representation class name =
+
+"[B"
+
+(byte array).
+
+---
+
+#### public static final
+DocFlavor.BYTE_ARRAY
+GIF
+
+Doc flavor with MIME type =
+
+"image/gif"
+
+, print data
+representation class name =
+
+"[B"
+
+(byte array).
+
+---
+
+#### public static final
+DocFlavor.BYTE_ARRAY
+JPEG
+
+Doc flavor with MIME type =
+
+"image/jpeg"
+
+, print data
+representation class name =
+
+"[B"
+
+(byte array).
+
+---
+
+#### public static final
+DocFlavor.BYTE_ARRAY
+PNG
+
+Doc flavor with MIME type =
+
+"image/png"
+
+, print data
+representation class name =
+
+"[B"
+
+(byte array).
+
+---
+
+#### public static final
+DocFlavor.BYTE_ARRAY
+AUTOSENSE
+
+Doc flavor with MIME type =
+
+"application/octet-stream"
+
+, print
+data representation class name =
+
+"[B"
+
+(byte array). The
+client must determine that data described using this
+
+DocFlavor
+
+is valid for the printer.
+
+---
+
+### Constructor Details
+
+#### public BYTE_ARRAY​(
+String
+mimeType)
+
+Constructs a new doc flavor with the given MIME type and a print data
+representation class name of
+
+"[B"
+
+(byte array).
+
+**Parameters:**
+- mimeType
+
+- MIME media type string
+
+**Throws:**
+- NullPointerException
+
+- if
+
+mimeType
+
+is
+
+null
+- IllegalArgumentException
+
+- if
+
+mimeType
+
+does not obey
+the syntax for a MIME media type string
+
+---
+
+### Method Details
+
+*No entries found.*
+
+### Additional Sections
+
+#### Class DocFlavor.BYTE_ARRAY
+
+java.lang.Object
+
+- javax.print.DocFlavor
+- - javax.print.DocFlavor.BYTE_ARRAY
+
+javax.print.DocFlavor
+
+- javax.print.DocFlavor.BYTE_ARRAY
+
+javax.print.DocFlavor.BYTE_ARRAY
+
+**All Implemented Interfaces:** Serializable
+
+,
+
+Cloneable
+
+**Enclosing class:** DocFlavor
+
+```java
+public static class
+DocFlavor.BYTE_ARRAY
+
+extends
+DocFlavor
+```
+
+Class
+
+DocFlavor.BYTE_ARRAY
+
+provides predefined static constant
+
+DocFlavor
+
+objects for example doc flavors using a byte array
+(
+
+byte[]
+
+) as the print data representation class.
+
+**See Also:** Serialized Form
+
+public static class
+
+DocFlavor.BYTE_ARRAY
+
+extends
+
+DocFlavor
+
+Class
+
+DocFlavor.BYTE_ARRAY
+
+provides predefined static constant
+
+DocFlavor
+
+objects for example doc flavors using a byte array
+(
+
+byte[]
+
+) as the print data representation class.
+
+======== NESTED CLASS SUMMARY ========
+
+- Nested Class Summary
+
+- Nested classes/interfaces declared in class javax.print.
+
+DocFlavor
+
+DocFlavor.BYTE_ARRAY
+
+,
+
+DocFlavor.CHAR_ARRAY
+
+,
+
+DocFlavor.INPUT_STREAM
+
+,
+
+DocFlavor.READER
+
+,
+
+DocFlavor.SERVICE_FORMATTED
+
+,
+
+DocFlavor.STRING
+
+,
+
+DocFlavor.URL
+
+=========== FIELD SUMMARY ===========
+
+- Field Summary
+
+Fields
+
+Modifier and Type
+
+Field
+
+Description
+
+static
+
+DocFlavor.BYTE_ARRAY
+
+AUTOSENSE
+
+Doc flavor with MIME type =
+
+"application/octet-stream"
+
+, print
+data representation class name =
+
+"[B"
+
+(byte array).
+
+static
+
+DocFlavor.BYTE_ARRAY
+
+GIF
+
+Doc flavor with MIME type =
+
+"image/gif"
+
+, print data
+representation class name =
+
+"[B"
+
+(byte array).
+
+static
+
+DocFlavor.BYTE_ARRAY
+
+JPEG
+
+Doc flavor with MIME type =
+
+"image/jpeg"
+
+, print data
+representation class name =
+
+"[B"
+
+(byte array).
+
+static
+
+DocFlavor.BYTE_ARRAY
+
+PCL
+
+Doc flavor with MIME type =
+
+"application/vnd.hp-PCL"
+
+, print
+data representation class name =
+
+"[B"
+
+(byte array).
+
+static
+
+DocFlavor.BYTE_ARRAY
+
+PDF
+
+Doc flavor with MIME type =
+
+"application/pdf"
+
+, print data
+representation class name =
+
+"[B"
+
+(byte array).
+
+static
+
+DocFlavor.BYTE_ARRAY
+
+PNG
+
+Doc flavor with MIME type =
+
+"image/png"
+
+, print data
+representation class name =
+
+"[B"
+
+(byte array).
+
+static
+
+DocFlavor.BYTE_ARRAY
+
+POSTSCRIPT
+
+Doc flavor with MIME type =
+
+"application/postscript"
+
+, print
+data representation class name =
+
+"[B"
+
+(byte array).
+
+static
+
+DocFlavor.BYTE_ARRAY
+
+TEXT_HTML_HOST
+
+Doc flavor with MIME type =
+
+"text/html"
+
+, encoded in the host
+platform encoding.
+
+static
+
+DocFlavor.BYTE_ARRAY
+
+TEXT_HTML_US_ASCII
+
+Doc flavor with MIME type =
+
+"text/html; charset=us-ascii"
+
+,
+print data representation class name =
+
+"[B"
+
+(byte array).
+
+static
+
+DocFlavor.BYTE_ARRAY
+
+TEXT_HTML_UTF_16
+
+Doc flavor with MIME type =
+
+"text/html; charset=utf-16"
+
+,
+print data representation class name =
+
+"[B"
+
+(byte array).
+
+static
+
+DocFlavor.BYTE_ARRAY
+
+TEXT_HTML_UTF_16BE
+
+Doc flavor with MIME type =
+
+"text/html; charset=utf-16be"
+
+(big-endian byte ordering), print data representation class name =
+
+"[B"
+
+(byte array).
+
+static
+
+DocFlavor.BYTE_ARRAY
+
+TEXT_HTML_UTF_16LE
+
+Doc flavor with MIME type =
+
+"text/html; charset=utf-16le"
+
+(little-endian byte ordering), print data representation class name =
+
+"[B"
+
+(byte array).
+
+static
+
+DocFlavor.BYTE_ARRAY
+
+TEXT_HTML_UTF_8
+
+Doc flavor with MIME type =
+
+"text/html; charset=utf-8"
+
+, print
+data representation class name =
+
+"[B"
+
+(byte array).
+
+static
+
+DocFlavor.BYTE_ARRAY
+
+TEXT_PLAIN_HOST
+
+Doc flavor with MIME type =
+
+"text/plain"
+
+, encoded in the host
+platform encoding.
+
+static
+
+DocFlavor.BYTE_ARRAY
+
+TEXT_PLAIN_US_ASCII
+
+Doc flavor with MIME type =
+
+"text/plain; charset=us-ascii"
+
+,
+print data representation class name =
+
+"[B"
+
+(byte array).
+
+static
+
+DocFlavor.BYTE_ARRAY
+
+TEXT_PLAIN_UTF_16
+
+Doc flavor with MIME type =
+
+"text/plain; charset=utf-16"
+
+,
+print data representation class name =
+
+"[B"
+
+(byte array).
+
+static
+
+DocFlavor.BYTE_ARRAY
+
+TEXT_PLAIN_UTF_16BE
+
+Doc flavor with MIME type =
+
+"text/plain; charset=utf-16be"
+
+(big-endian byte ordering), print data representation class name =
+
+"[B"
+
+(byte array).
+
+static
+
+DocFlavor.BYTE_ARRAY
+
+TEXT_PLAIN_UTF_16LE
+
+Doc flavor with MIME type =
+
+"text/plain; charset=utf-16le"
+
+(little-endian byte ordering), print data representation class name =
+
+"[B"
+
+(byte array).
+
+static
+
+DocFlavor.BYTE_ARRAY
+
+TEXT_PLAIN_UTF_8
+
+Doc flavor with MIME type =
+
+"text/plain; charset=utf-8"
+
+,
+print data representation class name =
+
+"[B"
+
+(byte array).
+
+- Fields declared in class javax.print.
+
+DocFlavor
+
+hostEncoding
+
+======== CONSTRUCTOR SUMMARY ========
+
+- Constructor Summary
+
+Constructors
+
+Constructor
+
+Description
+
+BYTE_ARRAY
+
+​(
+
+String
+
+mimeType)
+
+Constructs a new doc flavor with the given MIME type and a print data
+representation class name of
+
+"[B"
+
+(byte array).
+
+========== METHOD SUMMARY ===========
+
+- Method Summary
+
+- Methods declared in class javax.print.
+
+DocFlavor
+
+equals
+
+,
+
+getMediaSubtype
+
+,
+
+getMediaType
+
+,
+
+getMimeType
+
+,
+
+getParameter
+
+,
+
+getRepresentationClassName
+
+,
+
+hashCode
+
+,
+
+toString
+
+- Methods declared in class java.lang.
+
+Object
+
+clone
+
+,
+
+finalize
+
+,
+
+getClass
+
+,
+
+notify
+
+,
+
+notifyAll
+
+,
+
+wait
+
+,
+
+wait
+
+,
+
+wait
+
+Nested Class Summary
+
+- Nested classes/interfaces declared in class javax.print.
+
+DocFlavor
+
+DocFlavor.BYTE_ARRAY
+
+,
+
+DocFlavor.CHAR_ARRAY
+
+,
+
+DocFlavor.INPUT_STREAM
+
+,
+
+DocFlavor.READER
+
+,
+
+DocFlavor.SERVICE_FORMATTED
+
+,
+
+DocFlavor.STRING
+
+,
+
+DocFlavor.URL
+
+---
+
+#### Nested Class Summary
+
+Nested classes/interfaces declared in class javax.print.
+
+DocFlavor
+
+DocFlavor.BYTE_ARRAY
+
+,
+
+DocFlavor.CHAR_ARRAY
+
+,
+
+DocFlavor.INPUT_STREAM
+
+,
+
+DocFlavor.READER
+
+,
+
+DocFlavor.SERVICE_FORMATTED
+
+,
+
+DocFlavor.STRING
+
+,
+
+DocFlavor.URL
+
+---
+
+#### Nested classes/interfaces declared in class javax.print. DocFlavor
+
+Field Summary
+
+Fields
+
+Modifier and Type
+
+Field
+
+Description
+
+static
+
+DocFlavor.BYTE_ARRAY
+
+AUTOSENSE
+
+Doc flavor with MIME type =
+
+"application/octet-stream"
+
+, print
+data representation class name =
+
+"[B"
+
+(byte array).
+
+static
+
+DocFlavor.BYTE_ARRAY
+
+GIF
+
+Doc flavor with MIME type =
+
+"image/gif"
+
+, print data
+representation class name =
+
+"[B"
+
+(byte array).
+
+static
+
+DocFlavor.BYTE_ARRAY
+
+JPEG
+
+Doc flavor with MIME type =
+
+"image/jpeg"
+
+, print data
+representation class name =
+
+"[B"
+
+(byte array).
+
+static
+
+DocFlavor.BYTE_ARRAY
+
+PCL
+
+Doc flavor with MIME type =
+
+"application/vnd.hp-PCL"
+
+, print
+data representation class name =
+
+"[B"
+
+(byte array).
+
+static
+
+DocFlavor.BYTE_ARRAY
+
+PDF
+
+Doc flavor with MIME type =
+
+"application/pdf"
+
+, print data
+representation class name =
+
+"[B"
+
+(byte array).
+
+static
+
+DocFlavor.BYTE_ARRAY
+
+PNG
+
+Doc flavor with MIME type =
+
+"image/png"
+
+, print data
+representation class name =
+
+"[B"
+
+(byte array).
+
+static
+
+DocFlavor.BYTE_ARRAY
+
+POSTSCRIPT
+
+Doc flavor with MIME type =
+
+"application/postscript"
+
+, print
+data representation class name =
+
+"[B"
+
+(byte array).
+
+static
+
+DocFlavor.BYTE_ARRAY
+
+TEXT_HTML_HOST
+
+Doc flavor with MIME type =
+
+"text/html"
+
+, encoded in the host
+platform encoding.
+
+static
+
+DocFlavor.BYTE_ARRAY
+
+TEXT_HTML_US_ASCII
+
+Doc flavor with MIME type =
+
+"text/html; charset=us-ascii"
+
+,
+print data representation class name =
+
+"[B"
+
+(byte array).
+
+static
+
+DocFlavor.BYTE_ARRAY
+
+TEXT_HTML_UTF_16
+
+Doc flavor with MIME type =
+
+"text/html; charset=utf-16"
+
+,
+print data representation class name =
+
+"[B"
+
+(byte array).
+
+static
+
+DocFlavor.BYTE_ARRAY
+
+TEXT_HTML_UTF_16BE
+
+Doc flavor with MIME type =
+
+"text/html; charset=utf-16be"
+
+(big-endian byte ordering), print data representation class name =
+
+"[B"
+
+(byte array).
+
+static
+
+DocFlavor.BYTE_ARRAY
+
+TEXT_HTML_UTF_16LE
+
+Doc flavor with MIME type =
+
+"text/html; charset=utf-16le"
+
+(little-endian byte ordering), print data representation class name =
+
+"[B"
+
+(byte array).
+
+static
+
+DocFlavor.BYTE_ARRAY
+
+TEXT_HTML_UTF_8
+
+Doc flavor with MIME type =
+
+"text/html; charset=utf-8"
+
+, print
+data representation class name =
+
+"[B"
+
+(byte array).
+
+static
+
+DocFlavor.BYTE_ARRAY
+
+TEXT_PLAIN_HOST
+
+Doc flavor with MIME type =
+
+"text/plain"
+
+, encoded in the host
+platform encoding.
+
+static
+
+DocFlavor.BYTE_ARRAY
+
+TEXT_PLAIN_US_ASCII
+
+Doc flavor with MIME type =
+
+"text/plain; charset=us-ascii"
+
+,
+print data representation class name =
+
+"[B"
+
+(byte array).
+
+static
+
+DocFlavor.BYTE_ARRAY
+
+TEXT_PLAIN_UTF_16
+
+Doc flavor with MIME type =
+
+"text/plain; charset=utf-16"
+
+,
+print data representation class name =
+
+"[B"
+
+(byte array).
+
+static
+
+DocFlavor.BYTE_ARRAY
+
+TEXT_PLAIN_UTF_16BE
+
+Doc flavor with MIME type =
+
+"text/plain; charset=utf-16be"
+
+(big-endian byte ordering), print data representation class name =
+
+"[B"
+
+(byte array).
+
+static
+
+DocFlavor.BYTE_ARRAY
+
+TEXT_PLAIN_UTF_16LE
+
+Doc flavor with MIME type =
+
+"text/plain; charset=utf-16le"
+
+(little-endian byte ordering), print data representation class name =
+
+"[B"
+
+(byte array).
+
+static
+
+DocFlavor.BYTE_ARRAY
+
+TEXT_PLAIN_UTF_8
+
+Doc flavor with MIME type =
+
+"text/plain; charset=utf-8"
+
+,
+print data representation class name =
+
+"[B"
+
+(byte array).
+
+- Fields declared in class javax.print.
+
+DocFlavor
+
+hostEncoding
+
+---
+
+#### Field Summary
+
+Doc flavor with MIME type =
+
+"application/octet-stream"
+
+, print
+data representation class name =
+
+"[B"
+
+(byte array).
+
+Doc flavor with MIME type =
+
+"image/gif"
+
+, print data
+representation class name =
+
+"[B"
+
+(byte array).
+
+Doc flavor with MIME type =
+
+"image/jpeg"
+
+, print data
+representation class name =
+
+"[B"
+
+(byte array).
+
+Doc flavor with MIME type =
+
+"application/vnd.hp-PCL"
+
+, print
+data representation class name =
+
+"[B"
+
+(byte array).
+
+Doc flavor with MIME type =
+
+"application/pdf"
+
+, print data
+representation class name =
+
+"[B"
+
+(byte array).
+
+Doc flavor with MIME type =
+
+"image/png"
+
+, print data
+representation class name =
+
+"[B"
+
+(byte array).
+
+Doc flavor with MIME type =
+
+"application/postscript"
+
+, print
+data representation class name =
+
+"[B"
+
+(byte array).
+
+Doc flavor with MIME type =
+
+"text/html"
+
+, encoded in the host
+platform encoding.
+
+Doc flavor with MIME type =
+
+"text/html; charset=us-ascii"
+
+,
+print data representation class name =
+
+"[B"
+
+(byte array).
+
+Doc flavor with MIME type =
+
+"text/html; charset=utf-16"
+
+,
+print data representation class name =
+
+"[B"
+
+(byte array).
+
+Doc flavor with MIME type =
+
+"text/html; charset=utf-16be"
+
+(big-endian byte ordering), print data representation class name =
+
+"[B"
+
+(byte array).
+
+Doc flavor with MIME type =
+
+"text/html; charset=utf-16le"
+
+(little-endian byte ordering), print data representation class name =
+
+"[B"
+
+(byte array).
+
+Doc flavor with MIME type =
+
+"text/html; charset=utf-8"
+
+, print
+data representation class name =
+
+"[B"
+
+(byte array).
+
+Doc flavor with MIME type =
+
+"text/plain"
+
+, encoded in the host
+platform encoding.
+
+Doc flavor with MIME type =
+
+"text/plain; charset=us-ascii"
+
+,
+print data representation class name =
+
+"[B"
+
+(byte array).
+
+Doc flavor with MIME type =
+
+"text/plain; charset=utf-16"
+
+,
+print data representation class name =
+
+"[B"
+
+(byte array).
+
+Doc flavor with MIME type =
+
+"text/plain; charset=utf-16be"
+
+(big-endian byte ordering), print data representation class name =
+
+"[B"
+
+(byte array).
+
+Doc flavor with MIME type =
+
+"text/plain; charset=utf-16le"
+
+(little-endian byte ordering), print data representation class name =
+
+"[B"
+
+(byte array).
+
+Doc flavor with MIME type =
+
+"text/plain; charset=utf-8"
+
+,
+print data representation class name =
+
+"[B"
+
+(byte array).
+
+Fields declared in class javax.print.
+
+DocFlavor
+
+hostEncoding
+
+---
+
+#### Fields declared in class javax.print. DocFlavor
+
+Constructor Summary
+
+Constructors
+
+Constructor
+
+Description
+
+BYTE_ARRAY
+
+​(
+
+String
+
+mimeType)
+
+Constructs a new doc flavor with the given MIME type and a print data
+representation class name of
+
+"[B"
+
+(byte array).
+
+---
+
+#### Constructor Summary
+
+Constructs a new doc flavor with the given MIME type and a print data
+representation class name of
+
+"[B"
+
+(byte array).
+
+Method Summary
+
+- Methods declared in class javax.print.
+
+DocFlavor
+
+equals
+
+,
+
+getMediaSubtype
+
+,
+
+getMediaType
+
+,
+
+getMimeType
+
+,
+
+getParameter
+
+,
+
+getRepresentationClassName
+
+,
+
+hashCode
+
+,
+
+toString
+
+- Methods declared in class java.lang.
+
+Object
+
+clone
+
+,
+
+finalize
+
+,
+
+getClass
+
+,
+
+notify
+
+,
+
+notifyAll
+
+,
+
+wait
+
+,
+
+wait
+
+,
+
+wait
+
+---
+
+#### Method Summary
+
+Methods declared in class javax.print.
+
+DocFlavor
+
+equals
+
+,
+
+getMediaSubtype
+
+,
+
+getMediaType
+
+,
+
+getMimeType
+
+,
+
+getParameter
+
+,
+
+getRepresentationClassName
+
+,
+
+hashCode
+
+,
+
+toString
+
+---
+
+#### Methods declared in class javax.print. DocFlavor
+
+Methods declared in class java.lang.
+
+Object
+
+clone
+
+,
+
+finalize
+
+,
+
+getClass
+
+,
+
+notify
+
+,
+
+notifyAll
+
+,
+
+wait
+
+,
+
+wait
+
+,
+
+wait
+
+---
+
+#### Methods declared in class java.lang. Object
+
+============ FIELD DETAIL ===========
+
+- Field Detail
+
+- TEXT_PLAIN_HOST
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+TEXT_PLAIN_HOST
+```
+
+Doc flavor with MIME type =
+
+"text/plain"
+
+, encoded in the host
+platform encoding. See
+
+hostEncoding
+
+.
+Print data representation class name =
+
+"[B"
+
+(byte array).
+
+- TEXT_PLAIN_UTF_8
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+TEXT_PLAIN_UTF_8
+```
+
+Doc flavor with MIME type =
+
+"text/plain; charset=utf-8"
+
+,
+print data representation class name =
+
+"[B"
+
+(byte array).
+
+- TEXT_PLAIN_UTF_16
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+TEXT_PLAIN_UTF_16
+```
+
+Doc flavor with MIME type =
+
+"text/plain; charset=utf-16"
+
+,
+print data representation class name =
+
+"[B"
+
+(byte array).
+
+- TEXT_PLAIN_UTF_16BE
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+TEXT_PLAIN_UTF_16BE
+```
+
+Doc flavor with MIME type =
+
+"text/plain; charset=utf-16be"
+
+(big-endian byte ordering), print data representation class name =
+
+"[B"
+
+(byte array).
+
+- TEXT_PLAIN_UTF_16LE
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+TEXT_PLAIN_UTF_16LE
+```
+
+Doc flavor with MIME type =
+
+"text/plain; charset=utf-16le"
+
+(little-endian byte ordering), print data representation class name =
+
+"[B"
+
+(byte array).
+
+- TEXT_PLAIN_US_ASCII
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+TEXT_PLAIN_US_ASCII
+```
+
+Doc flavor with MIME type =
+
+"text/plain; charset=us-ascii"
+
+,
+print data representation class name =
+
+"[B"
+
+(byte array).
+
+- TEXT_HTML_HOST
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+TEXT_HTML_HOST
+```
+
+Doc flavor with MIME type =
+
+"text/html"
+
+, encoded in the host
+platform encoding. See
+
+hostEncoding
+
+.
+Print data representation class name =
+
+"[B"
+
+(byte array).
+
+- TEXT_HTML_UTF_8
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+TEXT_HTML_UTF_8
+```
+
+Doc flavor with MIME type =
+
+"text/html; charset=utf-8"
+
+, print
+data representation class name =
+
+"[B"
+
+(byte array).
+
+- TEXT_HTML_UTF_16
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+TEXT_HTML_UTF_16
+```
+
+Doc flavor with MIME type =
+
+"text/html; charset=utf-16"
+
+,
+print data representation class name =
+
+"[B"
+
+(byte array).
+
+- TEXT_HTML_UTF_16BE
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+TEXT_HTML_UTF_16BE
+```
+
+Doc flavor with MIME type =
+
+"text/html; charset=utf-16be"
+
+(big-endian byte ordering), print data representation class name =
+
+"[B"
+
+(byte array).
+
+- TEXT_HTML_UTF_16LE
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+TEXT_HTML_UTF_16LE
+```
+
+Doc flavor with MIME type =
+
+"text/html; charset=utf-16le"
+
+(little-endian byte ordering), print data representation class name =
+
+"[B"
+
+(byte array).
+
+- TEXT_HTML_US_ASCII
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+TEXT_HTML_US_ASCII
+```
+
+Doc flavor with MIME type =
+
+"text/html; charset=us-ascii"
+
+,
+print data representation class name =
+
+"[B"
+
+(byte array).
+
+- PDF
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+PDF
+```
+
+Doc flavor with MIME type =
+
+"application/pdf"
+
+, print data
+representation class name =
+
+"[B"
+
+(byte array).
+
+- POSTSCRIPT
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+POSTSCRIPT
+```
+
+Doc flavor with MIME type =
+
+"application/postscript"
+
+, print
+data representation class name =
+
+"[B"
+
+(byte array).
+
+- PCL
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+PCL
+```
+
+Doc flavor with MIME type =
+
+"application/vnd.hp-PCL"
+
+, print
+data representation class name =
+
+"[B"
+
+(byte array).
+
+- GIF
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+GIF
+```
+
+Doc flavor with MIME type =
+
+"image/gif"
+
+, print data
+representation class name =
+
+"[B"
+
+(byte array).
+
+- JPEG
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+JPEG
+```
+
+Doc flavor with MIME type =
+
+"image/jpeg"
+
+, print data
+representation class name =
+
+"[B"
+
+(byte array).
+
+- PNG
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+PNG
+```
+
+Doc flavor with MIME type =
+
+"image/png"
+
+, print data
+representation class name =
+
+"[B"
+
+(byte array).
+
+- AUTOSENSE
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+AUTOSENSE
+```
+
+Doc flavor with MIME type =
+
+"application/octet-stream"
+
+, print
+data representation class name =
+
+"[B"
+
+(byte array). The
+client must determine that data described using this
+
+DocFlavor
+
+is valid for the printer.
+
+========= CONSTRUCTOR DETAIL ========
+
+- Constructor Detail
+
+- BYTE_ARRAY
+
+```java
+public BYTE_ARRAY​(
+String
+mimeType)
+```
+
+Constructs a new doc flavor with the given MIME type and a print data
+representation class name of
+
+"[B"
+
+(byte array).
+
+**Parameters:** mimeType
+
+- MIME media type string
+**Throws:** NullPointerException
+
+- if
+
+mimeType
+
+is
+
+null
+**Throws:** IllegalArgumentException
+
+- if
+
+mimeType
+
+does not obey
+the syntax for a MIME media type string
+
+Field Detail
+
+- TEXT_PLAIN_HOST
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+TEXT_PLAIN_HOST
+```
+
+Doc flavor with MIME type =
+
+"text/plain"
+
+, encoded in the host
+platform encoding. See
+
+hostEncoding
+
+.
+Print data representation class name =
+
+"[B"
+
+(byte array).
+
+- TEXT_PLAIN_UTF_8
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+TEXT_PLAIN_UTF_8
+```
+
+Doc flavor with MIME type =
+
+"text/plain; charset=utf-8"
+
+,
+print data representation class name =
+
+"[B"
+
+(byte array).
+
+- TEXT_PLAIN_UTF_16
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+TEXT_PLAIN_UTF_16
+```
+
+Doc flavor with MIME type =
+
+"text/plain; charset=utf-16"
+
+,
+print data representation class name =
+
+"[B"
+
+(byte array).
+
+- TEXT_PLAIN_UTF_16BE
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+TEXT_PLAIN_UTF_16BE
+```
+
+Doc flavor with MIME type =
+
+"text/plain; charset=utf-16be"
+
+(big-endian byte ordering), print data representation class name =
+
+"[B"
+
+(byte array).
+
+- TEXT_PLAIN_UTF_16LE
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+TEXT_PLAIN_UTF_16LE
+```
+
+Doc flavor with MIME type =
+
+"text/plain; charset=utf-16le"
+
+(little-endian byte ordering), print data representation class name =
+
+"[B"
+
+(byte array).
+
+- TEXT_PLAIN_US_ASCII
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+TEXT_PLAIN_US_ASCII
+```
+
+Doc flavor with MIME type =
+
+"text/plain; charset=us-ascii"
+
+,
+print data representation class name =
+
+"[B"
+
+(byte array).
+
+- TEXT_HTML_HOST
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+TEXT_HTML_HOST
+```
+
+Doc flavor with MIME type =
+
+"text/html"
+
+, encoded in the host
+platform encoding. See
+
+hostEncoding
+
+.
+Print data representation class name =
+
+"[B"
+
+(byte array).
+
+- TEXT_HTML_UTF_8
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+TEXT_HTML_UTF_8
+```
+
+Doc flavor with MIME type =
+
+"text/html; charset=utf-8"
+
+, print
+data representation class name =
+
+"[B"
+
+(byte array).
+
+- TEXT_HTML_UTF_16
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+TEXT_HTML_UTF_16
+```
+
+Doc flavor with MIME type =
+
+"text/html; charset=utf-16"
+
+,
+print data representation class name =
+
+"[B"
+
+(byte array).
+
+- TEXT_HTML_UTF_16BE
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+TEXT_HTML_UTF_16BE
+```
+
+Doc flavor with MIME type =
+
+"text/html; charset=utf-16be"
+
+(big-endian byte ordering), print data representation class name =
+
+"[B"
+
+(byte array).
+
+- TEXT_HTML_UTF_16LE
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+TEXT_HTML_UTF_16LE
+```
+
+Doc flavor with MIME type =
+
+"text/html; charset=utf-16le"
+
+(little-endian byte ordering), print data representation class name =
+
+"[B"
+
+(byte array).
+
+- TEXT_HTML_US_ASCII
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+TEXT_HTML_US_ASCII
+```
+
+Doc flavor with MIME type =
+
+"text/html; charset=us-ascii"
+
+,
+print data representation class name =
+
+"[B"
+
+(byte array).
+
+- PDF
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+PDF
+```
+
+Doc flavor with MIME type =
+
+"application/pdf"
+
+, print data
+representation class name =
+
+"[B"
+
+(byte array).
+
+- POSTSCRIPT
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+POSTSCRIPT
+```
+
+Doc flavor with MIME type =
+
+"application/postscript"
+
+, print
+data representation class name =
+
+"[B"
+
+(byte array).
+
+- PCL
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+PCL
+```
+
+Doc flavor with MIME type =
+
+"application/vnd.hp-PCL"
+
+, print
+data representation class name =
+
+"[B"
+
+(byte array).
+
+- GIF
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+GIF
+```
+
+Doc flavor with MIME type =
+
+"image/gif"
+
+, print data
+representation class name =
+
+"[B"
+
+(byte array).
+
+- JPEG
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+JPEG
+```
+
+Doc flavor with MIME type =
+
+"image/jpeg"
+
+, print data
+representation class name =
+
+"[B"
+
+(byte array).
+
+- PNG
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+PNG
+```
+
+Doc flavor with MIME type =
+
+"image/png"
+
+, print data
+representation class name =
+
+"[B"
+
+(byte array).
+
+- AUTOSENSE
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+AUTOSENSE
+```
+
+Doc flavor with MIME type =
+
+"application/octet-stream"
+
+, print
+data representation class name =
+
+"[B"
+
+(byte array). The
+client must determine that data described using this
+
+DocFlavor
+
+is valid for the printer.
+
+---
+
+#### Field Detail
+
+TEXT_PLAIN_HOST
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+TEXT_PLAIN_HOST
+```
+
+Doc flavor with MIME type =
+
+"text/plain"
+
+, encoded in the host
+platform encoding. See
+
+hostEncoding
+
+.
+Print data representation class name =
+
+"[B"
+
+(byte array).
+
+---
+
+#### TEXT_PLAIN_HOST
+
+public static final
+
+DocFlavor.BYTE_ARRAY
+
+TEXT_PLAIN_HOST
+
+Doc flavor with MIME type =
+
+"text/plain"
+
+, encoded in the host
+platform encoding. See
+
+hostEncoding
+
+.
+Print data representation class name =
+
+"[B"
+
+(byte array).
+
+TEXT_PLAIN_UTF_8
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+TEXT_PLAIN_UTF_8
+```
+
+Doc flavor with MIME type =
+
+"text/plain; charset=utf-8"
+
+,
+print data representation class name =
+
+"[B"
+
+(byte array).
+
+---
+
+#### TEXT_PLAIN_UTF_8
+
+public static final
+
+DocFlavor.BYTE_ARRAY
+
+TEXT_PLAIN_UTF_8
+
+Doc flavor with MIME type =
+
+"text/plain; charset=utf-8"
+
+,
+print data representation class name =
+
+"[B"
+
+(byte array).
+
+TEXT_PLAIN_UTF_16
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+TEXT_PLAIN_UTF_16
+```
+
+Doc flavor with MIME type =
+
+"text/plain; charset=utf-16"
+
+,
+print data representation class name =
+
+"[B"
+
+(byte array).
+
+---
+
+#### TEXT_PLAIN_UTF_16
+
+public static final
+
+DocFlavor.BYTE_ARRAY
+
+TEXT_PLAIN_UTF_16
+
+Doc flavor with MIME type =
+
+"text/plain; charset=utf-16"
+
+,
+print data representation class name =
+
+"[B"
+
+(byte array).
+
+TEXT_PLAIN_UTF_16BE
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+TEXT_PLAIN_UTF_16BE
+```
+
+Doc flavor with MIME type =
+
+"text/plain; charset=utf-16be"
+
+(big-endian byte ordering), print data representation class name =
+
+"[B"
+
+(byte array).
+
+---
+
+#### TEXT_PLAIN_UTF_16BE
+
+public static final
+
+DocFlavor.BYTE_ARRAY
+
+TEXT_PLAIN_UTF_16BE
+
+Doc flavor with MIME type =
+
+"text/plain; charset=utf-16be"
+
+(big-endian byte ordering), print data representation class name =
+
+"[B"
+
+(byte array).
+
+TEXT_PLAIN_UTF_16LE
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+TEXT_PLAIN_UTF_16LE
+```
+
+Doc flavor with MIME type =
+
+"text/plain; charset=utf-16le"
+
+(little-endian byte ordering), print data representation class name =
+
+"[B"
+
+(byte array).
+
+---
+
+#### TEXT_PLAIN_UTF_16LE
+
+public static final
+
+DocFlavor.BYTE_ARRAY
+
+TEXT_PLAIN_UTF_16LE
+
+Doc flavor with MIME type =
+
+"text/plain; charset=utf-16le"
+
+(little-endian byte ordering), print data representation class name =
+
+"[B"
+
+(byte array).
+
+TEXT_PLAIN_US_ASCII
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+TEXT_PLAIN_US_ASCII
+```
+
+Doc flavor with MIME type =
+
+"text/plain; charset=us-ascii"
+
+,
+print data representation class name =
+
+"[B"
+
+(byte array).
+
+---
+
+#### TEXT_PLAIN_US_ASCII
+
+public static final
+
+DocFlavor.BYTE_ARRAY
+
+TEXT_PLAIN_US_ASCII
+
+Doc flavor with MIME type =
+
+"text/plain; charset=us-ascii"
+
+,
+print data representation class name =
+
+"[B"
+
+(byte array).
+
+TEXT_HTML_HOST
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+TEXT_HTML_HOST
+```
+
+Doc flavor with MIME type =
+
+"text/html"
+
+, encoded in the host
+platform encoding. See
+
+hostEncoding
+
+.
+Print data representation class name =
+
+"[B"
+
+(byte array).
+
+---
+
+#### TEXT_HTML_HOST
+
+public static final
+
+DocFlavor.BYTE_ARRAY
+
+TEXT_HTML_HOST
+
+Doc flavor with MIME type =
+
+"text/html"
+
+, encoded in the host
+platform encoding. See
+
+hostEncoding
+
+.
+Print data representation class name =
+
+"[B"
+
+(byte array).
+
+TEXT_HTML_UTF_8
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+TEXT_HTML_UTF_8
+```
+
+Doc flavor with MIME type =
+
+"text/html; charset=utf-8"
+
+, print
+data representation class name =
+
+"[B"
+
+(byte array).
+
+---
+
+#### TEXT_HTML_UTF_8
+
+public static final
+
+DocFlavor.BYTE_ARRAY
+
+TEXT_HTML_UTF_8
+
+Doc flavor with MIME type =
+
+"text/html; charset=utf-8"
+
+, print
+data representation class name =
+
+"[B"
+
+(byte array).
+
+TEXT_HTML_UTF_16
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+TEXT_HTML_UTF_16
+```
+
+Doc flavor with MIME type =
+
+"text/html; charset=utf-16"
+
+,
+print data representation class name =
+
+"[B"
+
+(byte array).
+
+---
+
+#### TEXT_HTML_UTF_16
+
+public static final
+
+DocFlavor.BYTE_ARRAY
+
+TEXT_HTML_UTF_16
+
+Doc flavor with MIME type =
+
+"text/html; charset=utf-16"
+
+,
+print data representation class name =
+
+"[B"
+
+(byte array).
+
+TEXT_HTML_UTF_16BE
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+TEXT_HTML_UTF_16BE
+```
+
+Doc flavor with MIME type =
+
+"text/html; charset=utf-16be"
+
+(big-endian byte ordering), print data representation class name =
+
+"[B"
+
+(byte array).
+
+---
+
+#### TEXT_HTML_UTF_16BE
+
+public static final
+
+DocFlavor.BYTE_ARRAY
+
+TEXT_HTML_UTF_16BE
+
+Doc flavor with MIME type =
+
+"text/html; charset=utf-16be"
+
+(big-endian byte ordering), print data representation class name =
+
+"[B"
+
+(byte array).
+
+TEXT_HTML_UTF_16LE
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+TEXT_HTML_UTF_16LE
+```
+
+Doc flavor with MIME type =
+
+"text/html; charset=utf-16le"
+
+(little-endian byte ordering), print data representation class name =
+
+"[B"
+
+(byte array).
+
+---
+
+#### TEXT_HTML_UTF_16LE
+
+public static final
+
+DocFlavor.BYTE_ARRAY
+
+TEXT_HTML_UTF_16LE
+
+Doc flavor with MIME type =
+
+"text/html; charset=utf-16le"
+
+(little-endian byte ordering), print data representation class name =
+
+"[B"
+
+(byte array).
+
+TEXT_HTML_US_ASCII
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+TEXT_HTML_US_ASCII
+```
+
+Doc flavor with MIME type =
+
+"text/html; charset=us-ascii"
+
+,
+print data representation class name =
+
+"[B"
+
+(byte array).
+
+---
+
+#### TEXT_HTML_US_ASCII
+
+public static final
+
+DocFlavor.BYTE_ARRAY
+
+TEXT_HTML_US_ASCII
+
+Doc flavor with MIME type =
+
+"text/html; charset=us-ascii"
+
+,
+print data representation class name =
+
+"[B"
+
+(byte array).
+
+PDF
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+PDF
+```
+
+Doc flavor with MIME type =
+
+"application/pdf"
+
+, print data
+representation class name =
+
+"[B"
+
+(byte array).
+
+---
+
+#### PDF
+
+public static final
+
+DocFlavor.BYTE_ARRAY
+
+PDF
+
+Doc flavor with MIME type =
+
+"application/pdf"
+
+, print data
+representation class name =
+
+"[B"
+
+(byte array).
+
+POSTSCRIPT
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+POSTSCRIPT
+```
+
+Doc flavor with MIME type =
+
+"application/postscript"
+
+, print
+data representation class name =
+
+"[B"
+
+(byte array).
+
+---
+
+#### POSTSCRIPT
+
+public static final
+
+DocFlavor.BYTE_ARRAY
+
+POSTSCRIPT
+
+Doc flavor with MIME type =
+
+"application/postscript"
+
+, print
+data representation class name =
+
+"[B"
+
+(byte array).
+
+PCL
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+PCL
+```
+
+Doc flavor with MIME type =
+
+"application/vnd.hp-PCL"
+
+, print
+data representation class name =
+
+"[B"
+
+(byte array).
+
+---
+
+#### PCL
+
+public static final
+
+DocFlavor.BYTE_ARRAY
+
+PCL
+
+Doc flavor with MIME type =
+
+"application/vnd.hp-PCL"
+
+, print
+data representation class name =
+
+"[B"
+
+(byte array).
+
+GIF
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+GIF
+```
+
+Doc flavor with MIME type =
+
+"image/gif"
+
+, print data
+representation class name =
+
+"[B"
+
+(byte array).
+
+---
+
+#### GIF
+
+public static final
+
+DocFlavor.BYTE_ARRAY
+
+GIF
+
+Doc flavor with MIME type =
+
+"image/gif"
+
+, print data
+representation class name =
+
+"[B"
+
+(byte array).
+
+JPEG
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+JPEG
+```
+
+Doc flavor with MIME type =
+
+"image/jpeg"
+
+, print data
+representation class name =
+
+"[B"
+
+(byte array).
+
+---
+
+#### JPEG
+
+public static final
+
+DocFlavor.BYTE_ARRAY
+
+JPEG
+
+Doc flavor with MIME type =
+
+"image/jpeg"
+
+, print data
+representation class name =
+
+"[B"
+
+(byte array).
+
+PNG
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+PNG
+```
+
+Doc flavor with MIME type =
+
+"image/png"
+
+, print data
+representation class name =
+
+"[B"
+
+(byte array).
+
+---
+
+#### PNG
+
+public static final
+
+DocFlavor.BYTE_ARRAY
+
+PNG
+
+Doc flavor with MIME type =
+
+"image/png"
+
+, print data
+representation class name =
+
+"[B"
+
+(byte array).
+
+AUTOSENSE
+
+```java
+public static final
+DocFlavor.BYTE_ARRAY
+AUTOSENSE
+```
+
+Doc flavor with MIME type =
+
+"application/octet-stream"
+
+, print
+data representation class name =
+
+"[B"
+
+(byte array). The
+client must determine that data described using this
+
+DocFlavor
+
+is valid for the printer.
+
+---
+
+#### AUTOSENSE
+
+public static final
+
+DocFlavor.BYTE_ARRAY
+
+AUTOSENSE
+
+Doc flavor with MIME type =
+
+"application/octet-stream"
+
+, print
+data representation class name =
+
+"[B"
+
+(byte array). The
+client must determine that data described using this
+
+DocFlavor
+
+is valid for the printer.
+
+Constructor Detail
+
+- BYTE_ARRAY
+
+```java
+public BYTE_ARRAY​(
+String
+mimeType)
+```
+
+Constructs a new doc flavor with the given MIME type and a print data
+representation class name of
+
+"[B"
+
+(byte array).
+
+**Parameters:** mimeType
+
+- MIME media type string
+**Throws:** NullPointerException
+
+- if
+
+mimeType
+
+is
+
+null
+**Throws:** IllegalArgumentException
+
+- if
+
+mimeType
+
+does not obey
+the syntax for a MIME media type string
+
+---
+
+#### Constructor Detail
+
+BYTE_ARRAY
+
+```java
+public BYTE_ARRAY​(
+String
+mimeType)
+```
+
+Constructs a new doc flavor with the given MIME type and a print data
+representation class name of
+
+"[B"
+
+(byte array).
+
+**Parameters:** mimeType
+
+- MIME media type string
+**Throws:** NullPointerException
+
+- if
+
+mimeType
+
+is
+
+null
+**Throws:** IllegalArgumentException
+
+- if
+
+mimeType
+
+does not obey
+the syntax for a MIME media type string
+
+---
+
+#### BYTE_ARRAY
+
+public BYTE_ARRAY​(
+
+String
+
+mimeType)
+
+Constructs a new doc flavor with the given MIME type and a print data
+representation class name of
+
+"[B"
+
+(byte array).
+
+---
+
