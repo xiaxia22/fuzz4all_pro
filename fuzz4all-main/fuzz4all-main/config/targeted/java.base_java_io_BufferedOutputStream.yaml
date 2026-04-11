@@ -15,6 +15,8 @@ fuzzing:
 
 target:
   language: java
+  java_version: 21
+  enable_preview: true
   path_documentation: config/documentation/java.base_java_io_BufferedOutputStream.md
   path_example_code:
   trigger_to_generate_input: "/* Please create a very short Java program that uses java.io.BufferedOutputStream in diverse and tricky ways. Exercise realistic API calls, edge-case argument combinations, nested types when relevant, and error-prone usage patterns that still try to compile. */"
