@@ -1,0 +1,814 @@
+# Java Prompt Feedback Loop 落地改造方案
+
+## 1. 目标
+
+这份方案的目标不是泛泛而谈“可以优化提示词”，而是把你当前的代码改造成一个真正可落地的闭环：
+
+1. 先用文档或 autoprompt 生成一个初始 prompt
+2. 模型生成 Java 程序
+3. `javac` 编译验证
+4. 从编译日志中提炼结构化失败规则
+5. 用“失败规则 + 成功样本”重建运行时 prompt
+6. 周期性地重写并重评分 prompt，替换当前活跃 prompt
+
+其中第 4、5 步是最关键的第一阶段；第 6 步是更接近原版 Fuzz4All 的第二阶段。
+
+## 2. 总体改造原则
+
+### 原则 1
+
+不要继续直接把 raw stderr 原样拼进 prompt。
+
+理由：
+- 噪声太大
+- 信息冗余
+- 不能形成稳定规则
+
+### 原则 2
+
+把 prompt 分成三层，而不是都堆在一个字符串里：
+
+- `base_prompt`
+- `adaptive_constraints`
+- `positive_examples`
+
+理由：
+- 便于维护
+- 便于定位优化是否生效
+- 便于以后做 prompt re-ranking
+
+### 原则 3
+
+Java 的错误归纳逻辑应该放在 `JAVATarget` 中，不应该全放在通用 `Target` 中。
+
+理由：
+- Java 编译错误模式很有语言特异性
+- `cannot find symbol`、`protected access`、`unreported exception` 这种模式只有 Java target 最懂怎么解释
+
+## 3. 本次建议修改的文件
+
+建议改动以下 3 个文件：
+
+1. `Fuzz4All/target/target.py`
+2. `Fuzz4All/target/JAVA/JAVA.py`
+3. `config/targeted/java.base_java_io_BufferedOutputStream.yaml`
+
+可选新增 1 个文件：
+
+4. `config/prompts/java_bufferedoutputstream_runtime_prompt.md`
+
+第 4 个不是必须，但如果你想把“运行时约束模板”独立出来，维护会更方便。
+
+## 4. 文件一：`Fuzz4All/target/target.py`
+
+这个文件是闭环的总控层。这里不要写太多 Java 特有逻辑，但要补齐“运行时 prompt 管理”的基础设施。
+
+---
+
+### 4.1 在 `Target.__init__()` 中新增状态字段
+
+当前已有：
+
+- `self.prompt`
+- `self.initial_prompt`
+- `self.prev_example`
+- `self.feedback_history`
+
+建议新增：
+
+```python
+self.base_prompt = None
+self.runtime_prompt = None
+self.safe_examples = []
+self.failure_rules = []
+self.failure_rule_counts = {}
+self.batch_feedback_window = []
+self.update_round = 0
+self.prompt_refresh_interval = 5
+self.max_feedback_rules = 5
+self.max_safe_examples = 2
+```
+
+理由：
+
+- `base_prompt`：保存初始化后的稳定 prompt，不被后续覆盖
+- `runtime_prompt`：保存每轮真正用于生成的 prompt
+- `safe_examples`：保存最近的成功样本，而不是只存一个 `prev_example`
+- `failure_rules`：保存归纳后的规则，不保存 raw stderr
+- `failure_rule_counts`：统计高频错误，便于选最重要规则
+- `batch_feedback_window`：存一轮/几轮内的反馈，后面做 prompt 重写会用到
+- `update_round`：记录第几轮更新
+- `prompt_refresh_interval`：控制多久重写一次 prompt
+
+---
+
+### 4.2 新增通用 hook：`summarize_feedback_message()`
+
+在 `Target` 中新增默认实现：
+
+```python
+def summarize_feedback_message(self, result: FResult, message: str) -> List[str]:
+    summary = self._sanitize_feedback(message)
+    return [summary] if summary else []
+```
+
+理由：
+
+- 这是给各语言 target 的可覆写 hook
+- 默认行为仍兼容旧逻辑
+- Java 可以在子类里做更强的规则归纳
+
+---
+
+### 4.3 新增通用 hook：`select_safe_examples()`
+
+新增函数：
+
+```python
+def select_safe_examples(self, prev: List[Tuple[FResult, str]]) -> List[str]:
+    examples = []
+    for result, code in prev:
+        if result == FResult.SAFE and self.filter(code):
+            cleaned = self.clean_code(code)
+            if cleaned and cleaned not in examples:
+                examples.append(cleaned)
+    return examples[: self.max_safe_examples]
+```
+
+理由：
+
+- 现在只取一个 `new_code`
+- 这样容易被偶然样本带偏
+- 改成 1-2 个安全样本更稳
+
+---
+
+### 4.4 新增函数：`_merge_failure_rules()`
+
+新增函数：
+
+```python
+def _merge_failure_rules(self, rules: List[str]) -> List[str]:
+    for rule in rules:
+        self.failure_rule_counts[rule] = self.failure_rule_counts.get(rule, 0) + 1
+    sorted_rules = sorted(
+        self.failure_rule_counts.items(),
+        key=lambda item: (-item[1], item[0])
+    )
+    self.failure_rules = [rule for rule, _ in sorted_rules[: self.max_feedback_rules]]
+    return self.failure_rules
+```
+
+理由：
+
+- 同样的编译错误应该升权
+- 高频错误说明是当前模型稳定盲点
+- prompt 里只保留最重要的 3-5 条
+
+---
+
+### 4.5 替换 `_create_feedback_prompt()` 为分层构造
+
+现有 `_create_feedback_prompt()` 太简单，建议保留名称但改签名：
+
+```python
+def _create_feedback_prompt(
+    self,
+    safe_examples: List[str],
+    failure_rules: List[str],
+) -> str:
+```
+
+新逻辑：
+
+1. 先拼 `self.base_prompt`
+2. 如果有失败规则，加入一个规则区块
+3. 如果有成功样本，加入一个成功样本区块
+4. 最后补 `separator` 和 `begin`
+
+建议结构：
+
+```text
+[base prompt]
+
+/* Avoid these known compiler mistakes:
+- ...
+- ...
+*/
+
+/* Recent valid examples to imitate structurally:
+...example 1...
+...example 2...
+*/
+
+[separator]
+[begin]
+```
+
+理由：
+
+- 让 prompt 层次更稳定
+- 把“约束”和“示例”分开
+- 方便后续替换为 prompt rewrite 版本
+
+---
+
+### 4.6 新增函数：`_dump_runtime_prompt_snapshot()`
+
+新增函数：
+
+```python
+def _dump_runtime_prompt_snapshot(self):
+    prompt_dir = os.path.join(self.folder, "prompts")
+    os.makedirs(prompt_dir, exist_ok=True)
+    round_id = self.update_round
+    with open(os.path.join(prompt_dir, f"runtime_prompt_{round_id}.txt"), "w", encoding="utf-8") as f:
+        f.write(self.runtime_prompt or self.prompt or "")
+    with open(os.path.join(prompt_dir, f"runtime_rules_{round_id}.txt"), "w", encoding="utf-8") as f:
+        for rule in self.failure_rules:
+            f.write(rule + "\n")
+```
+
+理由：
+
+- 让你能直接看到 prompt 是否真的在演化
+- 便于实验对比
+- 也方便论文或报告截图
+
+---
+
+### 4.7 重写 `initialize()`
+
+当前：
+
+- `self.initial_prompt = self.auto_prompt(...)`
+- `self.prompt = self.initial_prompt`
+
+建议改成：
+
+```python
+self.base_prompt = self.auto_prompt(...)
+self.initial_prompt = self.base_prompt
+self.runtime_prompt = self.base_prompt
+self.prompt = self.runtime_prompt
+```
+
+理由：
+
+- 不要让 `initial_prompt` 同时承担“当前 prompt”
+- `base_prompt` 是后续所有 runtime prompt 的基础
+
+---
+
+### 4.8 重写 `update()`
+
+当前 `update()` 的问题是：
+
+- 只留一个 SAFE 样本
+- 直接保留 raw stderr
+- 不统计高频错误
+- 不区分“运行时增量 prompt”与“重写后的 prompt”
+
+建议改成以下步骤：
+
+#### Step A
+
+调用 `select_safe_examples(kwargs["prev"])` 获取最近 1-2 个 SAFE 示例
+
+#### Step B
+
+遍历 `kwargs["feedback"]`，调用：
+
+```python
+rules = self.summarize_feedback_message(result, message)
+```
+
+把规则汇总到列表
+
+#### Step C
+
+调用 `_merge_failure_rules(all_rules)`
+
+#### Step D
+
+更新 `self.safe_examples`
+
+建议逻辑：
+
+```python
+for example in new_safe_examples:
+    if example not in self.safe_examples:
+        self.safe_examples.append(example)
+self.safe_examples = self.safe_examples[-self.max_safe_examples:]
+```
+
+#### Step E
+
+更新 `self.update_round += 1`
+
+#### Step F
+
+先构造普通 runtime prompt：
+
+```python
+self.runtime_prompt = self._create_feedback_prompt(
+    self.safe_examples,
+    self.failure_rules,
+)
+self.prompt = self.runtime_prompt
+```
+
+#### Step G
+
+如果达到 `prompt_refresh_interval`，则进入 prompt rewrite 流程
+
+即：
+
+```python
+if self.update_round % self.prompt_refresh_interval == 0:
+    refreshed = self.refresh_prompt_from_feedback()
+    if refreshed:
+        self.base_prompt = refreshed
+        self.runtime_prompt = self._create_feedback_prompt(
+            self.safe_examples,
+            self.failure_rules,
+        )
+        self.prompt = self.runtime_prompt
+```
+
+#### Step H
+
+调用 `_dump_runtime_prompt_snapshot()`
+
+理由：
+
+- 把“普通更新”和“周期性重写”分成两层
+- 普通更新低成本高频
+- 重写更新低频高收益
+
+---
+
+### 4.9 新增函数：`build_prompt_refresh_request()`
+
+新增函数：
+
+```python
+def build_prompt_refresh_request(self) -> str:
+    ...
+```
+
+建议输入来源：
+
+- `self.prompt_used["docstring"]`
+- `self.failure_rules`
+- `self.safe_examples`
+
+建议输出内容：
+
+- 一段发给 autoprompt 模型的元提示
+- 要求它“生成更适合当前目标 API 的代码生成 prompt”
+- 明确强调：
+  - 避免高频失败模式
+  - 强调仅使用公开 API
+  - 强调 checked exception 处理
+
+理由：
+
+- 这是“从日志重写 prompt”的核心桥梁
+
+---
+
+### 4.10 新增函数：`refresh_prompt_from_feedback()`
+
+新增函数：
+
+```python
+def refresh_prompt_from_feedback(self) -> Union[str, None]:
+    ...
+```
+
+建议流程：
+
+1. 调 `build_prompt_refresh_request()`
+2. 走和 `auto_prompt()` 类似的候选生成流程
+3. 生成 `greedy + N candidates`
+4. 用 `validate_prompt()` 打分
+5. 如果最佳 prompt 分数高于当前基线或至少非零，返回它
+6. 同时把结果写到：
+   - `prompts/refreshed_prompt_round_{k}.txt`
+   - `prompts/refreshed_scores_round_{k}.txt`
+
+理由：
+
+- 复用现有 `validate_prompt()` 机制
+- 不用重新发明 prompt 评分器
+
+## 5. 文件二：`Fuzz4All/target/JAVA/JAVA.py`
+
+这个文件要负责把 Java 的编译错误变成“可学习规则”。
+
+---
+
+### 5.1 在文件顶部增加 `re` 导入
+
+新增：
+
+```python
+import re
+```
+
+理由：
+
+- 需要用正则归类 `javac` 报错
+
+---
+
+### 5.2 在 `JAVATarget.__init__()` 中增加 Java 专用配置读取
+
+目前只读取：
+
+- `FORCED_JAVA_VERSION`
+- `FORCE_ENABLE_PREVIEW`
+
+建议新增从 `config_dict["target"]` 读取：
+
+```python
+self.runtime_feedback_mode = target_cfg.get("runtime_feedback_mode", "normalized")
+self.max_feedback_rules = target_cfg.get("max_feedback_rules", 5)
+self.max_safe_examples = target_cfg.get("max_safe_examples", 2)
+self.prompt_refresh_interval = target_cfg.get("prompt_refresh_interval", 5)
+```
+
+理由：
+
+- 让实验参数可配置
+- 便于你后续调参
+
+---
+
+### 5.3 新增函数：`extract_javac_error_categories()`
+
+建议新增：
+
+```python
+def extract_javac_error_categories(self, message: str) -> List[str]:
+```
+
+职责：
+
+- 只做“错误类别检测”
+- 不负责最终人类可读规则文本
+
+建议匹配模式：
+
+1. `cannot find symbol`
+2. `has protected access`
+3. `void type not allowed here`
+4. `no suitable method found for write`
+5. `unreported exception IOException`
+6. `possible lossy conversion`
+7. `class ... is public, should be declared in a file named ...`
+8. `reference to ... is ambiguous`
+
+返回类似：
+
+```python
+[
+    "missing_public_method",
+    "protected_member_access",
+    "write_used_as_expression",
+]
+```
+
+理由：
+
+- 先分类，再生成规则，结构更清晰
+
+---
+
+### 5.4 新增函数：`map_error_categories_to_rules()`
+
+建议新增：
+
+```python
+def map_error_categories_to_rules(self, categories: List[str], message: str) -> List[str]:
+```
+
+映射建议：
+
+- `missing_public_method`
+  -> `Use only documented public methods of BufferedOutputStream; do not invent helper APIs.`
+
+- `protected_member_access`
+  -> `Do not access protected/internal fields such as buf or count from external code.`
+
+- `write_used_as_expression`
+  -> `Do not use write(...) in comparisons or expressions; BufferedOutputStream.write methods return void.`
+
+- `invalid_write_overload`
+  -> `Use only valid overloads: write(int), write(byte[]), write(byte[], int, int).`
+
+- `unchecked_ioexception`
+  -> `Handle checked IOExceptions with try/catch or declare throws where appropriate.`
+
+- `lossy_conversion`
+  -> `Use explicit byte casts when putting int values into byte arrays.`
+
+理由：
+
+- prompt 不应该看错误栈，而应该看规则
+
+---
+
+### 5.5 新增/覆写函数：`summarize_feedback_message()`
+
+在 `JAVATarget` 中覆写：
+
+```python
+def summarize_feedback_message(self, result: FResult, message: str) -> List[str]:
+```
+
+推荐逻辑：
+
+1. 如果 `result` 不是 `FAILURE/ERROR/TIMED_OUT`，直接返回空列表
+2. 调 `extract_javac_error_categories(message)`
+3. 调 `map_error_categories_to_rules(categories, message)`
+4. 去重后返回规则列表
+5. 如果一条都没命中，再退回 `_sanitize_feedback(message, limit=200)`
+
+理由：
+
+- 这是 Java target 最关键的新入口
+- 会直接影响运行时 prompt 的质量
+
+---
+
+### 5.6 可选新增函数：`extract_target_api_misuse_examples()`
+
+建议新增：
+
+```python
+def extract_target_api_misuse_examples(self, message: str) -> List[str]:
+```
+
+功能：
+
+- 从错误信息中提取具体误用 API 名称
+
+比如：
+
+- `checkError`
+- `getBufferSize`
+- `write(byte[], int, int, int)`
+
+然后把规则写得更精确：
+
+- `Do not call undocumented methods such as checkError() or getBufferSize() on BufferedOutputStream.`
+
+理由：
+
+- 会显著增强 prompt 的针对性
+
+---
+
+### 5.7 可选覆写 `update()`
+
+这里有两种实现路线：
+
+#### 路线 A
+
+只在 `Target.update()` 中走 hook，不覆写 `JAVATarget.update()`
+
+优点：
+- 改动小
+- 通用性更好
+
+#### 路线 B
+
+在 `JAVATarget.update()` 中增加 Java 特有逻辑，再调用父类
+
+比如：
+
+- 当发现高频错误为 `protected_member_access` 时，额外加入一条强约束
+- 当发现高频错误为 `invalid_write_overload` 时，在 prompt 中加入合法签名列表
+
+我建议先走路线 A。
+
+理由：
+
+- 先用 hook 跑通
+- 复杂逻辑后面再下沉到 Java 子类
+
+## 6. 文件三：`config/targeted/java.base_java_io_BufferedOutputStream.yaml`
+
+这个配置文件现在只有基本 fuzzing 配置，建议加几个运行时反馈参数。
+
+在 `target:` 下新增：
+
+```yaml
+  runtime_feedback_mode: normalized
+  max_feedback_rules: 5
+  max_safe_examples: 2
+  prompt_refresh_interval: 5
+  prompt_refresh_candidates: 3
+```
+
+在 `llm:` 下新增：
+
+```yaml
+  runtime_autoprompt_model: deepseek-chat
+  runtime_autoprompt_temperature: 0.7
+  runtime_autoprompt_max_tokens: 256
+```
+
+理由：
+
+- 让“初始化 autoprompt”与“运行中 prompt 重写”分开配置
+- 避免两个阶段参数完全绑死
+
+## 7. 可选文件四：运行时 prompt 模板文件
+
+可选新增：
+
+- `config/prompts/java_bufferedoutputstream_runtime_prompt.md`
+
+作用：
+
+- 存放固定模板，例如：
+  - 如何插入错误规则区块
+  - 如何插入 SAFE 示例区块
+
+如果不想多文件维护，也可以不新增，直接在 `target.py` 里拼字符串。
+
+我个人建议第一版不要新增这个文件。
+
+理由：
+
+- 当前逻辑还在探索期
+- 先把代码逻辑跑通更重要
+
+## 8. 推荐的具体实现顺序
+
+### 第一阶段：先做“规则化反馈”
+
+改动：
+
+1. `target.py`
+   - 增加状态字段
+   - 增加 hook
+   - 改造 `update()`
+2. `JAVA.py`
+   - 增加错误分类与规则映射
+   - 覆写 `summarize_feedback_message()`
+3. `yaml`
+   - 增加参数
+
+这一阶段完成后，你应该能看到：
+
+- `prompts/runtime_prompt_*.txt`
+- `prompts/runtime_rules_*.txt`
+- prompt 中不再是原始 stderr，而是短规则
+
+### 第二阶段：再做“周期性 prompt 重写”
+
+改动：
+
+1. `target.py`
+   - 新增 `build_prompt_refresh_request()`
+   - 新增 `refresh_prompt_from_feedback()`
+2. `yaml`
+   - 调整 refresh 间隔和候选数
+
+这一阶段完成后，你应该能看到：
+
+- `prompts/refreshed_prompt_round_*.txt`
+- `prompts/refreshed_scores_round_*.txt`
+
+## 9. 每个关键函数的落地位置与调用关系
+
+### 调用链 1：普通生成闭环
+
+```text
+fuzz.py
+  -> target.generate()
+  -> target.validate_individual()
+  -> target.parse_validation_message()
+  -> target.update()
+```
+
+这里你要改的是最后的 `target.update()`
+
+新逻辑：
+
+```text
+update()
+  -> select_safe_examples()
+  -> summarize_feedback_message()   # Java 子类覆写
+  -> _merge_failure_rules()
+  -> _create_feedback_prompt()
+  -> _dump_runtime_prompt_snapshot()
+```
+
+### 调用链 2：周期性 prompt 重写
+
+```text
+update()
+  -> if update_round % prompt_refresh_interval == 0
+       -> build_prompt_refresh_request()
+       -> refresh_prompt_from_feedback()
+       -> validate_prompt()
+       -> replace base_prompt
+```
+
+## 10. 为什么这样拆分最合适
+
+### 原因 1
+
+改动面可控。
+
+你不用重写整个框架，只是在现有 `Target` 上补一个更合理的 runtime feedback 层。
+
+### 原因 2
+
+兼容当前代码结构。
+
+现有框架已经有：
+
+- `auto_prompt()`
+- `validate_prompt()`
+- `update()`
+
+你只是在把它从“弱反馈”升级成“结构化反馈 + 周期性重写”。
+
+### 原因 3
+
+便于实验验证。
+
+你可以分阶段验证：
+
+1. 只做错误规则化，编译成功率是否上升
+2. 再加 prompt 重写，是否继续上升
+
+这样容易判断哪一层真正有效。
+
+## 11. 第一版不建议做的事情
+
+### 不建议 1
+
+不要一开始就上复杂 embedding、聚类、向量检索。
+
+理由：
+- 实现成本高
+- 你当前错误模式已经足够规则化，不需要这么重
+
+### 不建议 2
+
+不要一开始就为所有语言 target 通用化 Java 的错误规则。
+
+理由：
+- Java 的错误模式和 C/C++/Go 完全不同
+- 先让 Java target 成功，再抽象通用层
+
+### 不建议 3
+
+不要把所有 SAFE 样本都堆到 prompt 里。
+
+理由：
+- prompt 很快会膨胀
+- 模型会过拟合最近样本
+
+保留 1-2 个就够了。
+
+## 12. 预期结果
+
+如果按上面方案实施，第一版应达到的直接效果是：
+
+1. `BufferedOutputStream` 目标上的重复错误会减少
+2. prompt 文件会真实演化，而不是只停留在 `best_prompt.txt`
+3. 运行日志里能看到“规则化反馈”参与了 prompt 更新
+4. 编译成功率预计会比现在更稳
+
+最重要的是：
+
+这套结构不是临时 patch，而是可以继续扩展到别的 Java API target 的。
+
+## 13. 最终推荐实施版本
+
+如果只选一个最合适的落地范围，我建议你做下面这个版本：
+
+### 必做
+
+1. 改 `Target.__init__()`
+2. 改 `Target.update()`
+3. 改 `_create_feedback_prompt()`
+4. 增加 `Target.summarize_feedback_message()` hook
+5. 在 `JAVATarget` 中实现 Java 编译错误归纳
+6. 在 YAML 中增加运行时反馈参数
+7. 输出 `runtime_prompt_*.txt` 和 `runtime_rules_*.txt`
+
+### 第二步再做
+
+8. 实现 `refresh_prompt_from_feedback()`
+9. 周期性重写并重评分 prompt
+
+这会是最稳、最容易验证价值、也最符合你当前阶段的方案。
