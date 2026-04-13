@@ -40,7 +40,11 @@ llm:
   autoprompt_temperature: 0.9
   autoprompt_greedy_temperature: 0.2
   autoprompt_max_tokens: 256
-  prompt_refresh_candidates: 3
+  autoprompt_validation_batch_size: 8
+  autoprompt_validation_max_length: 512
+  prompt_refresh_candidates: 2
   runtime_autoprompt_model: deepseek-chat
   runtime_autoprompt_temperature: 0.7
   runtime_autoprompt_max_tokens: 256
+  runtime_refresh_validation_batch_size: 4
+  runtime_refresh_validation_max_length: 384

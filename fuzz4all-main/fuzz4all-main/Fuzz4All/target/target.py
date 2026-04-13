@@ -92,6 +92,7 @@ class Target(object):
         self.max_safe_examples = kwargs.get("max_safe_examples", 2)
         self.base_prompt_score = None
         self.last_refresh_round = 0
+        self.last_refresh_rule_signature = None
         # prompt strategies
         self.se_prompt = self.wrap_in_comment(
             "Please create a semantically equivalent program to the previous "
@@ -174,11 +175,18 @@ class Target(object):
 
     # each target defines their way of validating prompts (can overwrite)
     def validate_prompt(self, prompt: str):
+        llm_config = getattr(self, "config_dict", {}).get("llm", {})
+        eval_batch_size = llm_config.get(
+            "autoprompt_validation_batch_size", self.batch_size
+        )
+        eval_max_length = llm_config.get(
+            "autoprompt_validation_max_length", self.max_length
+        )
         fos = self._generate_with_prompt(
             prompt,
-            batch_size=self.batch_size,
+            batch_size=eval_batch_size,
             temperature=self.temperature,
-            max_length=self.max_length,
+            max_length=eval_max_length,
         )
         unique_set = set()
         score = 0
@@ -449,6 +457,20 @@ class Target(object):
             "runtime_autoprompt_max_tokens",
             llm_config.get("autoprompt_max_tokens", 256),
         )
+        refresh_eval_batch_size = llm_config.get(
+            "runtime_refresh_validation_batch_size",
+            llm_config.get(
+                "autoprompt_validation_batch_size",
+                self.batch_size,
+            ),
+        )
+        refresh_eval_max_length = llm_config.get(
+            "runtime_refresh_validation_max_length",
+            llm_config.get(
+                "autoprompt_validation_max_length",
+                self.max_length,
+            ),
+        )
 
         prompt_dir = os.path.join(self.folder, "prompts")
         os.makedirs(prompt_dir, exist_ok=True)
@@ -485,7 +507,9 @@ class Target(object):
             encoding="utf-8",
         ) as f:
             f.write(greedy_wrapped)
-        greedy_score = self.validate_prompt(greedy_wrapped)
+        greedy_score = self._score_prompt_for_refresh(
+            greedy_wrapped, refresh_eval_batch_size, refresh_eval_max_length
+        )
         scored_prompts.append((greedy_score, greedy_wrapped, "greedy"))
 
         for index, summary_candidate in enumerate(candidate_summaries):
@@ -496,7 +520,9 @@ class Target(object):
                 encoding="utf-8",
             ) as f:
                 f.write(wrapped_prompt)
-            score = self.validate_prompt(wrapped_prompt)
+            score = self._score_prompt_for_refresh(
+                wrapped_prompt, refresh_eval_batch_size, refresh_eval_max_length
+            )
             scored_prompts.append((score, wrapped_prompt, f"candidate_{index}"))
 
         best_score, best_prompt, best_name = max(scored_prompts, key=lambda item: item[0])
@@ -542,6 +568,30 @@ class Target(object):
             level=LEVEL.INFO,
         )
         return None
+
+    def _score_prompt_for_refresh(
+        self, prompt: str, batch_size: int, max_length: int
+    ) -> int:
+        fos = self._generate_with_prompt(
+            prompt,
+            batch_size=batch_size,
+            temperature=self.temperature,
+            max_length=max_length,
+        )
+        unique_set = set()
+        score = 0
+        for fo in fos:
+            code = self.prompt_used["begin"] + "\n" + fo
+            wb_file = self.write_back_file(code)
+            result, _ = self.validate_individual(wb_file)
+            if (
+                result == FResult.SAFE
+                and self.filter(code)
+                and self.clean_code(code) not in unique_set
+            ):
+                unique_set.add(self.clean_code(code))
+                score += 1
+        return score
 
     def auto_prompt(self, **kwargs) -> str:
         os.makedirs(self.folder + "/prompts", exist_ok=True)
@@ -780,13 +830,18 @@ class Target(object):
 
         if self.safe_examples or self.failure_rules:
             refreshed_prompt = None
-            if (
+            current_rule_signature = tuple(self.failure_rules)
+            should_refresh = (
                 self.prompt_refresh_interval > 0
                 and self.update_round % self.prompt_refresh_interval == 0
-            ):
+                and current_rule_signature
+                and current_rule_signature != self.last_refresh_rule_signature
+            )
+            if should_refresh:
                 refreshed_prompt = self.refresh_prompt_from_feedback()
                 if refreshed_prompt:
                     self.base_prompt = refreshed_prompt
+                self.last_refresh_rule_signature = current_rule_signature
             self.runtime_prompt = self._create_feedback_prompt(
                 self.safe_examples, self.failure_rules
             )
