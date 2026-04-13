@@ -78,8 +78,18 @@ class Target(object):
         self.prompt_used = None
         self.prompt = None
         self.initial_prompt = None
+        self.base_prompt = None
+        self.runtime_prompt = None
         self.prev_example = None
         self.feedback_history = []
+        self.safe_examples = []
+        self.failure_rules = []
+        self.failure_rule_counts = {}
+        self.batch_feedback_window = []
+        self.update_round = 0
+        self.prompt_refresh_interval = kwargs.get("prompt_refresh_interval", 5)
+        self.max_feedback_rules = kwargs.get("max_feedback_rules", 5)
+        self.max_safe_examples = kwargs.get("max_safe_examples", 2)
         # prompt strategies
         self.se_prompt = self.wrap_in_comment(
             "Please create a semantically equivalent program to the previous "
@@ -134,6 +144,10 @@ class Target(object):
             return ""
         text = " ".join(text.split())
         return text[:limit]
+
+    def summarize_feedback_message(self, result: FResult, message: str) -> List[str]:
+        summary = self._sanitize_feedback(message)
+        return [summary] if summary else []
 
     def _build_handwritten_prompt(self, manual_prompt: str = None) -> str:
         parts = []
@@ -202,35 +216,75 @@ class Target(object):
             first="",
         )
 
-    def _create_feedback_prompt(self, new_code: str, feedback_items: List[str]) -> str:
-        feedback_block = ""
-        if feedback_items:
-            feedback_lines = "\n".join(
-                [self.wrap_in_comment(f"Recent compiler feedback: {item}") for item in feedback_items]
-            )
-            feedback_block = f"{feedback_lines}\n"
-        return (
-            self.initial_prompt
-            + feedback_block
-            + self.update_strategy(new_code)
-            + self.prompt_used["begin"]
-            + "\n"
-        )
+    def _create_feedback_prompt(
+        self, safe_examples: List[str], failure_rules: List[str]
+    ) -> str:
+        prompt_parts = [self.base_prompt or self.initial_prompt or ""]
 
-    def _create_feedback_only_prompt(self, feedback_items: List[str]) -> str:
-        feedback_lines = "\n".join(
-            [self.wrap_in_comment(f"Recent compiler feedback: {item}") for item in feedback_items]
+        if failure_rules:
+            rules_block = "\n".join([f"- {rule}" for rule in failure_rules])
+            prompt_parts.append(
+                self.wrap_in_comment(
+                    "Avoid these known compiler mistakes:\n" + rules_block
+                )
+            )
+
+        if safe_examples:
+            examples = []
+            for index, example in enumerate(safe_examples, start=1):
+                examples.append(
+                    f"Example {index}:\n```{self.language}\n{example}\n```"
+                )
+            prompt_parts.append(
+                self.wrap_in_comment(
+                    "Recent valid examples to imitate structurally:\n"
+                    + "\n\n".join(examples)
+                )
+            )
+
+        prompt_parts.append(self.prompt_used["separator"])
+        prompt_parts.append(self.prompt_used["begin"])
+        return "\n".join([part for part in prompt_parts if part != ""]) + "\n"
+
+    def select_safe_examples(self, prev: List[Tuple[FResult, str]]) -> List[str]:
+        examples = []
+        for result, code in prev:
+            if result == FResult.SAFE and self.filter(code):
+                cleaned = self.clean_code(code)
+                if cleaned and cleaned not in examples:
+                    examples.append(cleaned)
+        return examples[: self.max_safe_examples]
+
+    def _merge_failure_rules(self, rules: List[str]) -> List[str]:
+        for rule in rules:
+            if not rule:
+                continue
+            self.failure_rule_counts[rule] = self.failure_rule_counts.get(rule, 0) + 1
+        sorted_rules = sorted(
+            self.failure_rule_counts.items(), key=lambda item: (-item[1], item[0])
         )
-        return (
-            self.initial_prompt
-            + "\n"
-            + feedback_lines
-            + "\n"
-            + self.prompt_used["separator"]
-            + "\n"
-            + self.prompt_used["begin"]
-            + "\n"
-        )
+        self.failure_rules = [
+            rule for rule, _ in sorted_rules[: self.max_feedback_rules]
+        ]
+        return self.failure_rules
+
+    def _dump_runtime_prompt_snapshot(self):
+        prompt_dir = os.path.join(self.folder, "prompts")
+        os.makedirs(prompt_dir, exist_ok=True)
+        round_id = self.update_round
+        with open(
+            os.path.join(prompt_dir, f"runtime_prompt_{round_id}.txt"),
+            "w",
+            encoding="utf-8",
+        ) as f:
+            f.write(self.runtime_prompt or self.prompt or "")
+        with open(
+            os.path.join(prompt_dir, f"runtime_rules_{round_id}.txt"),
+            "w",
+            encoding="utf-8",
+        ) as f:
+            for rule in self.failure_rules:
+                f.write(rule + "\n")
 
     def _generate_with_prompt(
         self,
@@ -437,13 +491,15 @@ class Target(object):
             )
             self.m_logger.logo("HuggingFace model loaded", level=LEVEL.INFO)
 
-        self.initial_prompt = self.auto_prompt(
+        self.base_prompt = self.auto_prompt(
             message=self.prompt_used["docstring"],
             hw_prompt=self.prompt_used["hw_prompt"] if self.hw else None,
             hw=self.hw,
             no_input_prompt=self.no_input_prompt,
         )
-        self.prompt = self.initial_prompt
+        self.initial_prompt = self.base_prompt
+        self.runtime_prompt = self.base_prompt
+        self.prompt = self.runtime_prompt
         self.m_logger.logo(
             f"Initial prompt prepared ({len(self.initial_prompt)} chars).",
             level=LEVEL.INFO,
@@ -510,40 +566,43 @@ class Target(object):
 
     # update
     def update(self, **kwargs):
-        new_code = ""
-        feedback_items = []
-        for result, code in kwargs["prev"]:
-            if (
-                result == FResult.SAFE
-                and self.filter(code)
-                and self.clean_code(code) != self.prev_example
-            ):
-                new_code = self.clean_code(code)
+        if self.p_strategy == -1:
+            self.m_logger.logo(
+                "Prompt unchanged: prompt strategy disabled.", level=LEVEL.INFO
+            )
+            return
+
+        new_safe_examples = self.select_safe_examples(kwargs["prev"])
+        feedback_rules = []
         for result, message, _ in kwargs.get("feedback", []):
             if result in (FResult.FAILURE, FResult.ERROR, FResult.TIMED_OUT):
-                summary = self._sanitize_feedback(message)
-                if summary != "":
-                    feedback_items.append(summary)
-        if feedback_items:
-            self.feedback_history.extend(feedback_items)
-            self.feedback_history = self.feedback_history[-3:]
-        if new_code != "" and self.p_strategy != -1:
-            self.prompt = self._create_feedback_prompt(
-                new_code, self.feedback_history[-3:]
+                feedback_rules.extend(self.summarize_feedback_message(result, message))
+
+        if feedback_rules:
+            self.batch_feedback_window.extend(feedback_rules)
+            self.feedback_history.extend(feedback_rules)
+            self.feedback_history = self.feedback_history[-self.max_feedback_rules :]
+            self._merge_failure_rules(feedback_rules)
+
+        for example in new_safe_examples:
+            if example and example not in self.safe_examples:
+                self.safe_examples.append(example)
+        self.safe_examples = self.safe_examples[-self.max_safe_examples :]
+
+        if self.safe_examples:
+            self.prev_example = self.safe_examples[-1]
+
+        self.update_round += 1
+
+        if self.safe_examples or self.failure_rules:
+            self.runtime_prompt = self._create_feedback_prompt(
+                self.safe_examples, self.failure_rules
             )
-            self.prev_example = new_code
+            self.prompt = self.runtime_prompt
+            self._dump_runtime_prompt_snapshot()
             self.m_logger.logo(
-                "Prompt updated from a SAFE sample"
-                f" (feedback items kept: {len(self.feedback_history[-3:])}).",
-                level=LEVEL.INFO,
-            )
-        elif self.feedback_history and self.p_strategy != -1:
-            self.prompt = self._create_feedback_only_prompt(
-                self.feedback_history[-3:]
-            )
-            self.m_logger.logo(
-                "Prompt updated from compiler feedback only"
-                f" (feedback items kept: {len(self.feedback_history[-3:])}).",
+                "Prompt updated from structured feedback"
+                f" (rules: {len(self.failure_rules)}, safe examples: {len(self.safe_examples)}).",
                 level=LEVEL.INFO,
             )
         else:
