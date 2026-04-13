@@ -90,6 +90,8 @@ class Target(object):
         self.prompt_refresh_interval = kwargs.get("prompt_refresh_interval", 5)
         self.max_feedback_rules = kwargs.get("max_feedback_rules", 5)
         self.max_safe_examples = kwargs.get("max_safe_examples", 2)
+        self.base_prompt_score = None
+        self.last_refresh_round = 0
         # prompt strategies
         self.se_prompt = self.wrap_in_comment(
             "Please create a semantically equivalent program to the previous "
@@ -216,6 +218,22 @@ class Target(object):
             first="",
         )
 
+    def _create_prompt_refresh_message(self, summary: str) -> List[dict]:
+        target_api = self.prompt_used.get("target_api") or "the target language feature"
+        instruction = (
+            "Please rewrite the fuzzing prompt so that a code model generates programs "
+            f"for {target_api} that are more likely to compile successfully. "
+            "Incorporate the observed successful patterns, and explicitly avoid the repeated compiler mistakes. "
+            "Do not explain the analysis. Produce only a concise improved prompt for code generation."
+        )
+        return create_chatgpt_docstring_template(
+            system_message=self.AP_SYSTEM_MESSAGE,
+            user_message=instruction,
+            docstring=self.prompt_used.get("docstring") or "",
+            example=summary,
+            first="",
+        )
+
     def _create_feedback_prompt(
         self, safe_examples: List[str], failure_rules: List[str]
     ) -> str:
@@ -316,14 +334,15 @@ class Target(object):
             max_length=max_length,
         )
 
-    def _request_auto_prompt_candidates(self, message: str) -> Tuple[str, List[str]]:
-        llm_config = getattr(self, "config_dict", {}).get("llm", {})
-        autoprompt_model = llm_config.get("autoprompt_model", "deepseek-chat")
-        candidate_count = llm_config.get("autoprompt_candidates", 3)
-        greedy_temperature = llm_config.get("autoprompt_greedy_temperature", 0.2)
-        candidate_temperature = llm_config.get("autoprompt_temperature", 0.9)
-        max_tokens = llm_config.get("autoprompt_max_tokens", 256)
-        messages = self._create_auto_prompt_message(message)
+    def _request_prompt_candidates_from_messages(
+        self,
+        messages: List[dict],
+        model_name: str,
+        candidate_count: int,
+        greedy_temperature: float,
+        candidate_temperature: float,
+        max_tokens: int,
+    ) -> Tuple[str, List[str]]:
 
         def request_one_openai(temp: float) -> str:
             config = create_config(
@@ -331,7 +350,7 @@ class Target(object):
                 messages=messages,
                 max_tokens=max_tokens,
                 temperature=temp,
-                model=autoprompt_model,
+                model=model_name,
             )
             ret = request_engine(config)
             return ret.choices[0].message.content.strip()
@@ -360,6 +379,169 @@ class Target(object):
         greedy_prompt = request_one(greedy_temperature)
         candidates = [request_one(candidate_temperature) for _ in range(candidate_count)]
         return greedy_prompt, candidates
+
+    def _request_auto_prompt_candidates(self, message: str) -> Tuple[str, List[str]]:
+        llm_config = getattr(self, "config_dict", {}).get("llm", {})
+        autoprompt_model = llm_config.get("autoprompt_model", "deepseek-chat")
+        candidate_count = llm_config.get("autoprompt_candidates", 3)
+        greedy_temperature = llm_config.get("autoprompt_greedy_temperature", 0.2)
+        candidate_temperature = llm_config.get("autoprompt_temperature", 0.9)
+        max_tokens = llm_config.get("autoprompt_max_tokens", 256)
+        messages = self._create_auto_prompt_message(message)
+        return self._request_prompt_candidates_from_messages(
+            messages=messages,
+            model_name=autoprompt_model,
+            candidate_count=candidate_count,
+            greedy_temperature=greedy_temperature,
+            candidate_temperature=candidate_temperature,
+            max_tokens=max_tokens,
+        )
+
+    def build_prompt_refresh_request(self) -> str:
+        parts = []
+        target_api = self.prompt_used.get("target_api") or "the target API"
+        parts.append(f"Target API: {target_api}")
+        if self.failure_rules:
+            parts.append(
+                "Observed repeated compiler mistakes:\n"
+                + "\n".join([f"- {rule}" for rule in self.failure_rules])
+            )
+        if self.safe_examples:
+            examples = []
+            for index, example in enumerate(self.safe_examples, start=1):
+                examples.append(f"Successful example {index}:\n```{self.language}\n{example}\n```")
+            parts.append("Recent successful patterns:\n" + "\n\n".join(examples))
+        if self.batch_feedback_window:
+            recent = self.batch_feedback_window[-self.max_feedback_rules :]
+            parts.append(
+                "Most recent normalized feedback items:\n"
+                + "\n".join([f"- {item}" for item in recent])
+            )
+        return "\n\n".join(parts)
+
+    def refresh_prompt_from_feedback(self) -> Union[str, None]:
+        summary = self.build_prompt_refresh_request()
+        if not summary.strip():
+            return None
+
+        llm_config = getattr(self, "config_dict", {}).get("llm", {})
+        target_config = getattr(self, "config_dict", {}).get("target", {})
+        refresh_model = llm_config.get(
+            "runtime_autoprompt_model",
+            llm_config.get("autoprompt_model", "deepseek-chat"),
+        )
+        candidate_count = target_config.get(
+            "prompt_refresh_candidates",
+            llm_config.get(
+                "prompt_refresh_candidates",
+                llm_config.get("runtime_prompt_refresh_candidates", 3),
+            ),
+        )
+        greedy_temperature = llm_config.get(
+            "runtime_autoprompt_greedy_temperature",
+            llm_config.get("autoprompt_greedy_temperature", 0.2),
+        )
+        candidate_temperature = llm_config.get(
+            "runtime_autoprompt_temperature",
+            llm_config.get("autoprompt_temperature", 0.7),
+        )
+        max_tokens = llm_config.get(
+            "runtime_autoprompt_max_tokens",
+            llm_config.get("autoprompt_max_tokens", 256),
+        )
+
+        prompt_dir = os.path.join(self.folder, "prompts")
+        os.makedirs(prompt_dir, exist_ok=True)
+        round_id = self.update_round
+        with open(
+            os.path.join(prompt_dir, f"refreshed_request_round_{round_id}.txt"),
+            "w",
+            encoding="utf-8",
+        ) as f:
+            f.write(summary)
+
+        try:
+            messages = self._create_prompt_refresh_message(summary)
+            greedy_prompt, candidate_summaries = self._request_prompt_candidates_from_messages(
+                messages=messages,
+                model_name=refresh_model,
+                candidate_count=candidate_count,
+                greedy_temperature=greedy_temperature,
+                candidate_temperature=candidate_temperature,
+                max_tokens=max_tokens,
+            )
+        except Exception as exc:
+            self.m_logger.logo(
+                f"Runtime prompt refresh failed: {exc}", level=LEVEL.INFO
+            )
+            return None
+
+        scored_prompts = []
+
+        greedy_wrapped = self.wrap_prompt(greedy_prompt)
+        with open(
+            os.path.join(prompt_dir, f"refreshed_greedy_round_{round_id}.txt"),
+            "w",
+            encoding="utf-8",
+        ) as f:
+            f.write(greedy_wrapped)
+        greedy_score = self.validate_prompt(greedy_wrapped)
+        scored_prompts.append((greedy_score, greedy_wrapped, "greedy"))
+
+        for index, summary_candidate in enumerate(candidate_summaries):
+            wrapped_prompt = self.wrap_prompt(summary_candidate)
+            with open(
+                os.path.join(prompt_dir, f"refreshed_prompt_round_{round_id}_{index}.txt"),
+                "w",
+                encoding="utf-8",
+            ) as f:
+                f.write(wrapped_prompt)
+            score = self.validate_prompt(wrapped_prompt)
+            scored_prompts.append((score, wrapped_prompt, f"candidate_{index}"))
+
+        best_score, best_prompt, best_name = max(scored_prompts, key=lambda item: item[0])
+        with open(
+            os.path.join(prompt_dir, f"refreshed_scores_round_{round_id}.txt"),
+            "w",
+            encoding="utf-8",
+        ) as f:
+            for score, _, name in scored_prompts:
+                f.write(f"{name}\t{score}\n")
+            f.write(f"best\t{best_name}\t{best_score}\n")
+
+        should_accept = False
+        if self.base_prompt_score is None:
+            should_accept = best_score > 0
+        else:
+            should_accept = best_score >= self.base_prompt_score
+
+        if should_accept:
+            self.base_prompt_score = best_score
+            self.last_refresh_round = round_id
+            with open(
+                os.path.join(prompt_dir, f"accepted_refreshed_prompt_round_{round_id}.txt"),
+                "w",
+                encoding="utf-8",
+            ) as f:
+                f.write(best_prompt)
+            with open(
+                os.path.join(prompt_dir, "best_prompt.txt"),
+                "w",
+                encoding="utf-8",
+            ) as f:
+                f.write(best_prompt)
+            self.m_logger.logo(
+                f"Accepted refreshed prompt from round {round_id}: {best_name} (score {best_score}).",
+                level=LEVEL.INFO,
+            )
+            self.batch_feedback_window = []
+            return best_prompt
+
+        self.m_logger.logo(
+            f"Rejected refreshed prompt from round {round_id}: best score {best_score} did not beat baseline {self.base_prompt_score}.",
+            level=LEVEL.INFO,
+        )
+        return None
 
     def auto_prompt(self, **kwargs) -> str:
         os.makedirs(self.folder + "/prompts", exist_ok=True)
@@ -423,6 +605,7 @@ class Target(object):
                 best_score, best_prompt, best_prompt_name = max(
                     scored_prompts, key=lambda item: item[0]
                 )
+                self.base_prompt_score = best_score
                 with open(
                     self.folder + "/prompts/scores.txt", "w", encoding="utf-8"
                 ) as f:
@@ -439,6 +622,7 @@ class Target(object):
                     level=LEVEL.INFO,
                 )
                 best_prompt = self._build_handwritten_prompt()
+                self.base_prompt_score = None
                 self.m_logger.logo(
                     "Prompt source: fallback documentation/examples prompt.",
                     level=LEVEL.INFO,
@@ -595,6 +779,14 @@ class Target(object):
         self.update_round += 1
 
         if self.safe_examples or self.failure_rules:
+            refreshed_prompt = None
+            if (
+                self.prompt_refresh_interval > 0
+                and self.update_round % self.prompt_refresh_interval == 0
+            ):
+                refreshed_prompt = self.refresh_prompt_from_feedback()
+                if refreshed_prompt:
+                    self.base_prompt = refreshed_prompt
             self.runtime_prompt = self._create_feedback_prompt(
                 self.safe_examples, self.failure_rules
             )
