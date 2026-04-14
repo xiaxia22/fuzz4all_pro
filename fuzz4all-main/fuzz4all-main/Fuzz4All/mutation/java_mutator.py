@@ -6,8 +6,16 @@ class JavaMutator:
     def __init__(self, profile: Dict[str, Any]) -> None:
         self.profile = profile
 
-    def generate_mutations(self, code: str, budget: int = 2) -> List[Dict[str, Any]]:
+    def generate_mutations(
+        self,
+        code: str,
+        budget: int = 2,
+        operator_offset: int = 0,
+    ) -> List[Dict[str, Any]]:
         operators = self.profile.get("priority_operators", [])
+        if operators:
+            normalized_offset = operator_offset % len(operators)
+            operators = operators[normalized_offset:] + operators[:normalized_offset]
         candidates_by_operator = []
         for operator in operators:
             handler = getattr(self, operator, None)

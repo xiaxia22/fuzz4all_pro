@@ -352,11 +352,14 @@ class Target(object):
     def _collect_mutated_samples(self, code: str, parent_index: int) -> List[Tuple[str, Dict[str, Any]]]:
         if not self.enable_mutation or self.mutator is None or self.mutation_budget_per_seed <= 0:
             return []
+        if not self._is_viable_mutation_seed(code):
+            return []
 
         mutated = []
         for item in self.mutator.generate_mutations(
             code,
             budget=self.mutation_budget_per_seed,
+            operator_offset=self.update_round + parent_index,
         ):
             metadata = self._make_sample_metadata(
                 source_type="mutated",
@@ -366,6 +369,46 @@ class Target(object):
             )
             mutated.append((self.clean(item["code"]), metadata))
         return mutated
+
+    def _is_viable_mutation_seed(self, code: str) -> bool:
+        if self.language != "java":
+            return True
+
+        normalized = " ".join((code or "").split())
+        obvious_hallucinations = [
+            ".size()",
+            ".getBufSize()",
+            ".getBufferSize()",
+            ".isClosed()",
+            "defaultBufferSize",
+            "DEFAULT_BUFFER_SIZE",
+            "largeOffsetArray",
+            "sun.reflect",
+        ]
+        if any(token in normalized for token in obvious_hallucinations):
+            return False
+
+        # Skip seeds with unfinished structure or very likely syntax truncation.
+        if normalized.count("{") != normalized.count("}"):
+            return False
+        if normalized.endswith(("valid", "write(", "try {")):
+            return False
+
+        # Skip helper-style hallucinations such as bare write(...) inside the class body.
+        suspicious_bare_calls = [
+            " write(new FileOutputStream(",
+            " write(new ByteArrayOutputStream(",
+            " write(System.out,",
+            " write(null,",
+        ]
+        if any(token in normalized for token in suspicious_bare_calls):
+            return False
+
+        # If Arrays is used without import, mutation usually just replicates the same failure.
+        if "Arrays." in code and "import java.util.Arrays;" not in code:
+            return False
+
+        return True
 
     def consume_last_generation_metadata(self) -> List[Dict[str, Any]]:
         metadata = list(self.pending_sample_records)

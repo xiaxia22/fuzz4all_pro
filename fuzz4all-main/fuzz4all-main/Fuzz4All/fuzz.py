@@ -81,6 +81,8 @@ def fuzz(
             prev = []
             feedback = []
             for index, fo in enumerate(fos):
+                if count >= number_of_iterations:
+                    break
                 file_name = os.path.join(output_folder, f"{count}.fuzz")
                 write_to_file(fo, file_name)
                 metadata = sample_metadata[index] if index < len(sample_metadata) else None
