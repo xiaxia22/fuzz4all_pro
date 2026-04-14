@@ -2,6 +2,7 @@ import glob
 import json
 import os
 import random
+import re
 import time
 from enum import Enum
 from typing import Any, Dict, List, Tuple, Union
@@ -367,8 +368,105 @@ class Target(object):
                 parent_index=parent_index,
                 mutation_profile=item.get("profile"),
             )
-            mutated.append((self.clean(item["code"]), metadata))
+            prepared = self._prepare_generated_code(item["code"])
+            if prepared is None:
+                continue
+            mutated.append((prepared, metadata))
         return mutated
+
+    def _rewrite_numeric_byte_literals(self, text: str) -> str:
+        def rewrite_csv_literals(body: str) -> str:
+            parts = [part.strip() for part in body.split(",")]
+            rewritten = []
+            for part in parts:
+                if re.fullmatch(r"-?\d+", part):
+                    value = int(part)
+                    if value < -128 or value > 127:
+                        rewritten.append(f"(byte) {part}")
+                    else:
+                        rewritten.append(part)
+                else:
+                    rewritten.append(part)
+            return ", ".join(rewritten)
+
+        patterns = [
+            re.compile(r"(new\s+byte\[\]\s*\{)([^{}]*)(\})"),
+            re.compile(r"(byte\[\]\s+[A-Za-z_][A-Za-z0-9_]*\s*=\s*\{)([^{}]*)(\})"),
+        ]
+
+        rewritten = text
+        for pattern in patterns:
+            rewritten = pattern.sub(
+                lambda m: f"{m.group(1)}{rewrite_csv_literals(m.group(2))}{m.group(3)}",
+                rewritten,
+            )
+
+        return re.sub(
+            r"(\bbyte\s+[A-Za-z_][A-Za-z0-9_]*\s*=\s*)(-?\d+)(\s*;)",
+            lambda m: (
+                f"{m.group(1)}(byte) {m.group(2)}{m.group(3)}"
+                if int(m.group(2)) < -128 or int(m.group(2)) > 127
+                else m.group(0)
+            ),
+            rewritten,
+        )
+
+    def _ensure_java_import(self, code: str, import_line: str, signal: str) -> str:
+        if signal not in code or import_line in code:
+            return code
+
+        lines = code.splitlines()
+        insert_at = 0
+        for index, line in enumerate(lines):
+            if line.startswith("import "):
+                insert_at = index + 1
+        lines.insert(insert_at, import_line)
+        return "\n".join(lines)
+
+    def _repair_java_code(self, code: str) -> str:
+        repaired = code
+        repaired = self._rewrite_numeric_byte_literals(repaired)
+        repaired = self._ensure_java_import(
+            repaired,
+            "import java.util.Arrays;",
+            "Arrays.",
+        )
+        return repaired
+
+    def _is_viable_generated_code(self, code: str) -> bool:
+        if self.language != "java":
+            return True
+
+        normalized = " ".join((code or "").split())
+        obvious_hallucinations = [
+            ".size()",
+            ".getBufSize()",
+            ".getBufferSize()",
+            ".getBuffer()",
+            ".isClosed()",
+            "defaultBufferSize",
+            "DEFAULT_BUFFER_SIZE",
+            "largeOffsetArray",
+            "sun.reflect",
+        ]
+        if any(token in normalized for token in obvious_hallucinations):
+            return False
+        if normalized.count("{") != normalized.count("}"):
+            return False
+        if ".write(" in normalized and "==" in normalized:
+            if re.search(r"\.write\([^\n;]*\)\s*==", normalized):
+                return False
+        if normalized.endswith(("valid", "write(", "try {", "Buffered")):
+            return False
+        return True
+
+    def _prepare_generated_code(self, code: str) -> Union[str, None]:
+        prepared = self.clean(code)
+        if self.language == "java":
+            prepared = self._repair_java_code(prepared)
+            if not self._is_viable_generated_code(prepared):
+                return None
+        return prepared
 
     def _is_viable_mutation_seed(self, code: str) -> bool:
         if self.language != "java":
@@ -389,12 +487,9 @@ class Target(object):
             return False
 
         # Skip seeds with unfinished structure or very likely syntax truncation.
-        if normalized.count("{") != normalized.count("}"):
-            return False
-        if normalized.endswith(("valid", "write(", "try {")):
+        if not self._is_viable_generated_code(code):
             return False
 
-        # Skip helper-style hallucinations such as bare write(...) inside the class body.
         suspicious_bare_calls = [
             " write(new FileOutputStream(",
             " write(new ByteArrayOutputStream(",
@@ -402,10 +497,6 @@ class Target(object):
             " write(null,",
         ]
         if any(token in normalized for token in suspicious_bare_calls):
-            return False
-
-        # If Arrays is used without import, mutation usually just replicates the same failure.
-        if "Arrays." in code and "import java.util.Arrays;" not in code:
             return False
 
         return True
@@ -977,7 +1068,11 @@ class Target(object):
         seen_codes = set()
         for index, fo in enumerate(fos):
             self.g_logger.logo("========== sample =========", level=LEVEL.VERBOSE)
-            cleaned_code = self.clean(self.prompt_used["begin"] + "\n" + fo)
+            cleaned_code = self._prepare_generated_code(
+                self.prompt_used["begin"] + "\n" + fo
+            )
+            if cleaned_code is None:
+                continue
             if cleaned_code in seen_codes:
                 continue
             seen_codes.add(cleaned_code)
