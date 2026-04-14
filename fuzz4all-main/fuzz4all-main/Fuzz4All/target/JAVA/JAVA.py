@@ -92,7 +92,11 @@ class JAVATarget(Target):
             categories.append("write_used_as_expression")
         if "no suitable method found for write" in normalized:
             categories.append("invalid_write_overload")
+        if "no suitable constructor found" in normalized:
+            categories.append("invalid_constructor")
         if "unreported exception IOException" in normalized:
+            categories.append("unchecked_ioexception")
+        if "unreported exception FileNotFoundException" in normalized:
             categories.append("unchecked_ioexception")
         if "possible lossy conversion" in normalized:
             categories.append("lossy_conversion")
@@ -100,6 +104,35 @@ class JAVATarget(Target):
             categories.append("public_class_filename_mismatch")
         if "reference to" in normalized and "is ambiguous" in normalized:
             categories.append("ambiguous_reference")
+        if "reached end of file while parsing" in normalized:
+            categories.append("incomplete_structure")
+        if "'try' without 'catch', 'finally' or resource declarations" in normalized:
+            categories.append("invalid_try_structure")
+        if "not a statement" in normalized:
+            categories.append("invalid_statement")
+        if "exception IOException is never thrown in body of corresponding try statement" in normalized:
+            categories.append("invalid_exception_handling")
+        if "cannot find symbol" in normalized and (
+            "DEFAULT_BUFFER_SIZE" in normalized
+            or "defaultBufferSize" in normalized
+        ):
+            categories.append("invented_buffer_constant")
+        if "cannot find symbol" in normalized and "sun.reflect" in normalized:
+            categories.append("internal_jdk_api")
+        if "import sun.reflect" in normalized:
+            categories.append("internal_jdk_api")
+        if "attempting to assign weaker access privileges" in normalized:
+            categories.append("weaker_override_access")
+        if "cannot be converted to OutputStream" in normalized:
+            categories.append("invalid_constructor_argument")
+        if "method setByte in class Field cannot be applied" in normalized:
+            categories.append("reflection_api_misuse")
+        if "Field cannot be converted to int" in normalized:
+            categories.append("reflection_api_misuse")
+        if "int cannot be dereferenced" in normalized:
+            categories.append("reflection_api_misuse")
+        if "cannot find symbol" in normalized and "Arrays" in normalized:
+            categories.append("missing_import")
 
         return categories
 
@@ -144,6 +177,10 @@ class JAVATarget(Target):
             rules.append(
                 "Use only valid overloads: write(int), write(byte[]), and write(byte[], int, int)."
             )
+        if "invalid_constructor" in categories:
+            rules.append(
+                "Use only documented BufferedOutputStream constructors and valid argument lists."
+            )
         if "unchecked_ioexception" in categories:
             rules.append(
                 "Handle checked IOExceptions with try/catch or declare throws where required."
@@ -159,6 +196,46 @@ class JAVATarget(Target):
         if "ambiguous_reference" in categories:
             rules.append(
                 "Avoid ambiguous imports or duplicate type references; keep imports minimal and consistent."
+            )
+        if "incomplete_structure" in categories:
+            rules.append(
+                "Generate complete Java syntax with balanced braces, closed methods, and closed classes."
+            )
+        if "invalid_try_structure" in categories:
+            rules.append(
+                "Every try block must include catch/finally or use try-with-resources."
+            )
+        if "invalid_statement" in categories:
+            rules.append(
+                "Emit only complete Java statements; do not leave method calls or expressions unfinished."
+            )
+        if "invalid_exception_handling" in categories:
+            rules.append(
+                "Catch only exceptions that the enclosed code can actually throw."
+            )
+        if "invented_buffer_constant" in categories:
+            rules.append(
+                "Do not invent default buffer constants or undocumented size fields for BufferedOutputStream."
+            )
+        if "internal_jdk_api" in categories:
+            rules.append(
+                "Do not import or rely on internal sun.* JDK APIs."
+            )
+        if "weaker_override_access" in categories:
+            rules.append(
+                "When overriding inherited methods, keep visibility compatible with the parent public method."
+            )
+        if "invalid_constructor_argument" in categories:
+            rules.append(
+                "Pass a real OutputStream instance into BufferedOutputStream constructors, not raw byte arrays or unrelated objects."
+            )
+        if "reflection_api_misuse" in categories:
+            rules.append(
+                "If reflection is used, match Field and Method APIs with correct parameter types and receiver objects."
+            )
+        if "missing_import" in categories:
+            rules.append(
+                "Add required public imports for referenced utility classes, or avoid using undocumented helpers."
             )
 
         deduped = []

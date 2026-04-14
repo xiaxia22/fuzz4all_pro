@@ -1,0 +1,75 @@
+# Fuzz4All: Universal Fuzzing with LLMs
+
+Fuzz4All is a universal fuzzer that leverages Large Language Models (LLMs) as generation and mutation engines to target diverse input languages and features. It uses a novel autoprompting technique to create effective fuzzing prompts and an LLM-powered fuzzing loop that iteratively updates prompts based on feedback.
+
+## Project Overview
+
+- **Core Idea:** Using LLMs (like Qwen, StarCoder, Llama) to generate and mutate test cases for any language (C, C++, Java, Go, SMT2, Qiskit).
+- **Key Components:**
+  - **Autoprompting:** Automatically generates initial prompts for a target language or API.
+  - **Fuzzing Loop:** Generates test cases, validates them against a target (e.g., compiler, solver), and updates the prompt using feedback.
+  - **Multi-Target Support:** Extensible architecture to support various languages via a common `Target` interface.
+
+## Technical Stack
+
+- **Language:** Python 3.10
+- **LLM Backends:** 
+  - HuggingFace `transformers` (Local GPU/CPU)
+  - `ollama` (Local API)
+  - OpenAI/DeepSeek (Remote API)
+- **Infrastructure:** `PyTorch`, `Rich` (CLI), `PyYAML` (Config), `Click` (CLI parsing).
+- **Project Structure:**
+  - `Fuzz4All/fuzz.py`: Main entry point and fuzzing loop.
+  - `Fuzz4All/model.py`: Interface for LLM generation backends.
+  - `Fuzz4All/target/`: Language-specific logic (C, CPP, GO, JAVA, QISKIT, SMT).
+  - `configs/`: YAML configuration files for different fuzzing scenarios.
+  - `scripts/`: Utility scripts for API classification and configuration generation.
+  - `outputs/`: Default directory for fuzzing results and logs.
+
+## Building and Running
+
+### Setup
+```bash
+# Create and activate environment
+conda create -n fuzz4all python=3.10
+conda activate fuzz4all
+
+# Install dependencies
+pip install -r requirements.txt
+pip install -e .
+```
+
+### Environment Variables
+```bash
+export FUZZING_BATCH_SIZE=30
+export FUZZING_MODEL="Qwen/Qwen2.5-Coder-7B-Instruct" # or "ollama/qwen2.5-coder:7b"
+export FUZZING_DEVICE="gpu" # or "cpu"
+export DEEPSEEK_API_KEY={your_key} # optional for autoprompting
+```
+
+### Execution
+```bash
+python Fuzz4All/fuzz.py --config {config_file.yaml} main_with_config \
+                        --folder outputs/fuzzing_outputs \
+                        --batch_size {batch_size} \
+                        --model_name {model_name} \
+                        --target {target_name}
+```
+
+## Recent Developments & Ongoing Work
+
+As of April 2026, the project is focusing on:
+1.  **Java API Classification:** Implementing a 5-dimensional classification system (Resource, Buffer, Batch Op, etc.) to drive more targeted mutation strategies for Java APIs.
+2.  **Performance Optimization:** Reducing initialization and prompt refresh costs by using smaller validation batches for prompt scoring.
+3.  **Structured Feedback:** Enhancing the fuzzing loop to absorb compilation/runtime logs into structured "rules" that refine the LLM prompts in real-time.
+4.  **Ollama Integration:** Optimized support for local LLMs via Ollama.
+
+## Development Conventions
+
+- **Configurations:** All runs should be driven by YAML files in `configs/`.
+- **Validation:** Use `--otf` (on-the-fly) flag in `fuzz.py` to validate generated samples during the fuzzing process.
+- **Logging:** 
+  - `log.txt`: General process and potential bugs.
+  - `log_generation.txt`: LLM interaction details.
+  - `log_validation.txt`: Target execution results (e.g., compiler errors).
+- **Target Implementation:** When adding a new language, inherit from `Fuzz4All.target.target.Target` and implement `generate()`, `update()`, and `validate_individual()`.

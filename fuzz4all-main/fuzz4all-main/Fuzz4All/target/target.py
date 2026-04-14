@@ -1,4 +1,5 @@
 import glob
+import json
 import os
 import random
 import time
@@ -8,6 +9,7 @@ from typing import Any, Dict, List, Tuple, Union
 import torch
 from rich.progress import track
 
+from Fuzz4All.mutation import JavaMutator, load_mutation_profile
 from Fuzz4All.model import make_model
 from Fuzz4All.util.Logger import LEVEL, Logger
 from Fuzz4All.util.api_request import create_config, request_engine
@@ -93,6 +95,15 @@ class Target(object):
         self.base_prompt_score = None
         self.last_refresh_round = 0
         self.last_refresh_rule_signature = None
+        self.enable_mutation = False
+        self.mutation_budget_per_seed = 0
+        self.mutation_profile = None
+        self.mutator = None
+        self.pending_sample_records = []
+        self.sample_records_by_file = {}
+        self.mutation_stats = {}
+        self.last_mutation_summary = []
+        self.manifest_path = os.path.join(self.folder, "mutation_manifest.jsonl")
         # prompt strategies
         self.se_prompt = self.wrap_in_comment(
             "Please create a semantically equivalent program to the previous "
@@ -188,20 +199,7 @@ class Target(object):
             temperature=self.temperature,
             max_length=eval_max_length,
         )
-        unique_set = set()
-        score = 0
-        for fo in fos:
-            code = self.prompt_used["begin"] + "\n" + fo
-            wb_file = self.write_back_file(code)
-            result, _ = self.validate_individual(wb_file)
-            if (
-                result == FResult.SAFE
-                and self.filter(code)
-                and self.clean_code(code) not in unique_set
-            ):
-                unique_set.add(self.clean_code(code))
-                score += 1
-        return score
+        return self._score_generated_samples(fos)
 
     # each target defines their way of validating prompts
     # for example we might want to encode the prompt as a docstring comment to facilitate better generation using
@@ -311,6 +309,132 @@ class Target(object):
         ) as f:
             for rule in self.failure_rules:
                 f.write(rule + "\n")
+
+    def _init_mutation_components(self):
+        config_dict = getattr(self, "config_dict", {})
+        target_cfg = config_dict.get("target", {})
+        self.enable_mutation = bool(target_cfg.get("enable_mutation", False))
+        self.mutation_budget_per_seed = int(target_cfg.get("mutation_budget_per_seed", 0))
+        self.mutation_profile = None
+        self.mutator = None
+        if not self.enable_mutation or self.language != "java":
+            return
+
+        self.mutation_profile = load_mutation_profile(config_dict)
+        profile_override = target_cfg.get("mutation_profile_override")
+        if profile_override:
+            self.mutation_profile["mutation_profile"] = profile_override
+        if target_cfg.get("mutation_operator_topk"):
+            topk = int(target_cfg["mutation_operator_topk"])
+            self.mutation_profile["priority_operators"] = self.mutation_profile.get(
+                "priority_operators", []
+            )[:topk]
+        self.mutator = JavaMutator(self.mutation_profile)
+
+    def _make_sample_metadata(
+        self,
+        source_type: str,
+        operator: str,
+        parent_index: int = None,
+        mutation_profile: str = None,
+    ) -> Dict[str, Any]:
+        return {
+            "source_type": source_type,
+            "operator": operator,
+            "parent_index": parent_index,
+            "target_api": self.prompt_used.get("target_api", ""),
+            "mutation_profile": mutation_profile
+            or (self.mutation_profile or {}).get("mutation_profile"),
+            "primary_tag": (self.mutation_profile or {}).get("primary_tag"),
+            "all_tags": (self.mutation_profile or {}).get("all_tags", []),
+        }
+
+    def _collect_mutated_samples(self, code: str, parent_index: int) -> List[Tuple[str, Dict[str, Any]]]:
+        if not self.enable_mutation or self.mutator is None or self.mutation_budget_per_seed <= 0:
+            return []
+
+        mutated = []
+        for item in self.mutator.generate_mutations(
+            code,
+            budget=self.mutation_budget_per_seed,
+        ):
+            metadata = self._make_sample_metadata(
+                source_type="mutated",
+                operator=item["operator"],
+                parent_index=parent_index,
+                mutation_profile=item.get("profile"),
+            )
+            mutated.append((self.clean(item["code"]), metadata))
+        return mutated
+
+    def consume_last_generation_metadata(self) -> List[Dict[str, Any]]:
+        metadata = list(self.pending_sample_records)
+        self.pending_sample_records = []
+        return metadata
+
+    def register_sample_output(self, file_name: str, metadata: Dict[str, Any] = None):
+        if metadata is None:
+            if not self.pending_sample_records:
+                metadata = self._make_sample_metadata("generated", "llm_seed")
+            else:
+                metadata = self.pending_sample_records.pop(0)
+        metadata["file_name"] = file_name
+        self.sample_records_by_file[file_name] = metadata
+
+    def _update_mutation_stats(self, metadata: Dict[str, Any], result: Union["FResult", None]):
+        operator = metadata.get("operator", "unknown")
+        stats = self.mutation_stats.setdefault(
+            operator,
+            {"generated": 0, "safe": 0, "failure": 0, "error": 0, "timed_out": 0},
+        )
+        stats["generated"] += 1
+        if result is None:
+            return
+        if result == FResult.SAFE:
+            stats["safe"] += 1
+        elif result == FResult.FAILURE:
+            stats["failure"] += 1
+        elif result == FResult.ERROR:
+            stats["error"] += 1
+        elif result == FResult.TIMED_OUT:
+            stats["timed_out"] += 1
+
+    def record_sample_result(
+        self,
+        file_name: str,
+        result: Union["FResult", None],
+        message: str = "",
+    ):
+        metadata = self.sample_records_by_file.pop(file_name, None)
+        if metadata is None:
+            metadata = self._make_sample_metadata("generated", "llm_seed")
+            metadata["file_name"] = file_name
+
+        metadata["compile_result"] = result.name if result is not None else "UNKNOWN"
+        metadata["feedback_summary"] = self.summarize_feedback_message(result, message) if result is not None else []
+        metadata["sanitized_message"] = self._sanitize_feedback(message, limit=240)
+        self._update_mutation_stats(metadata, result)
+
+        os.makedirs(self.folder, exist_ok=True)
+        with open(self.manifest_path, "a", encoding="utf-8") as f:
+            f.write(json.dumps(metadata, ensure_ascii=False) + "\n")
+
+    def summarize_mutation_feedback(self) -> List[str]:
+        ranked = []
+        for operator, stats in self.mutation_stats.items():
+            generated = max(stats["generated"], 1)
+            safe_rate = stats["safe"] / generated
+            ranked.append((safe_rate, stats["safe"], operator, stats))
+        ranked.sort(reverse=True)
+
+        summary = []
+        for _, _, operator, stats in ranked[:3]:
+            summary.append(
+                f"{operator}: generated={stats['generated']}, safe={stats['safe']}, "
+                f"failure={stats['failure']}, error={stats['error']}, timed_out={stats['timed_out']}"
+            )
+        self.last_mutation_summary = summary
+        return summary
 
     def _generate_with_prompt(
         self,
@@ -424,6 +548,12 @@ class Target(object):
             parts.append(
                 "Most recent normalized feedback items:\n"
                 + "\n".join([f"- {item}" for item in recent])
+            )
+        mutation_summary = self.summarize_mutation_feedback()
+        if mutation_summary:
+            parts.append(
+                "Recent mutation operator performance:\n"
+                + "\n".join([f"- {item}" for item in mutation_summary])
             )
         return "\n\n".join(parts)
 
@@ -578,20 +708,53 @@ class Target(object):
             temperature=self.temperature,
             max_length=max_length,
         )
-        unique_set = set()
-        score = 0
+        return self._score_generated_samples(fos)
+
+    def _score_generated_samples(self, fos: List[str]) -> int:
+        unique_safe = set()
+        safe_count = 0
+        structured_failure_count = 0
+        syntax_failure_count = 0
+
         for fo in fos:
             code = self.prompt_used["begin"] + "\n" + fo
             wb_file = self.write_back_file(code)
-            result, _ = self.validate_individual(wb_file)
+            result, message = self.validate_individual(wb_file)
+            cleaned = self.clean_code(code)
+
             if (
                 result == FResult.SAFE
                 and self.filter(code)
-                and self.clean_code(code) not in unique_set
+                and cleaned not in unique_safe
             ):
-                unique_set.add(self.clean_code(code))
-                score += 1
-        return score
+                unique_safe.add(cleaned)
+                safe_count += 1
+                continue
+
+            if result in (FResult.FAILURE, FResult.ERROR):
+                summarized = self.summarize_feedback_message(result, message)
+                sanitized = self._sanitize_feedback(message, limit=200).lower()
+                if summarized:
+                    structured_failure_count += 1
+                if any(
+                    token in sanitized
+                    for token in [
+                        "reached end of file while parsing",
+                        "'try' without 'catch'",
+                        "not a statement",
+                        "class, interface, enum, or record expected",
+                        "illegal start of expression",
+                        "illegal start of type",
+                    ]
+                ):
+                    syntax_failure_count += 1
+
+        score = (
+            safe_count * 3
+            + structured_failure_count
+            - syntax_failure_count * 2
+        )
+        return max(score, 0)
 
     def auto_prompt(self, **kwargs) -> str:
         os.makedirs(self.folder + "/prompts", exist_ok=True)
@@ -734,6 +897,14 @@ class Target(object):
         self.initial_prompt = self.base_prompt
         self.runtime_prompt = self.base_prompt
         self.prompt = self.runtime_prompt
+        self._init_mutation_components()
+        if self.enable_mutation and self.mutation_profile:
+            self.m_logger.logo(
+                "Mutation enabled with profile "
+                f"{self.mutation_profile.get('mutation_profile')} "
+                f"and operators {self.mutation_profile.get('priority_operators', [])}.",
+                level=LEVEL.INFO,
+            )
         self.m_logger.logo(
             f"Initial prompt prepared ({len(self.initial_prompt)} chars).",
             level=LEVEL.INFO,
@@ -759,13 +930,40 @@ class Target(object):
             torch.cuda.empty_cache()
             return False
         new_fos = []
-        for fo in fos:
+        metadata_records = []
+        seen_codes = set()
+        for index, fo in enumerate(fos):
             self.g_logger.logo("========== sample =========", level=LEVEL.VERBOSE)
-            new_fos.append(self.clean(self.prompt_used["begin"] + "\n" + fo))
+            cleaned_code = self.clean(self.prompt_used["begin"] + "\n" + fo)
+            if cleaned_code in seen_codes:
+                continue
+            seen_codes.add(cleaned_code)
+            new_fos.append(cleaned_code)
+            metadata_records.append(
+                self._make_sample_metadata(
+                    source_type="generated",
+                    operator="llm_seed",
+                    parent_index=index,
+                )
+            )
             self.g_logger.logo(
-                self.clean(self.prompt_used["begin"] + "\n" + fo), level=LEVEL.VERBOSE
+                cleaned_code, level=LEVEL.VERBOSE
             )
             self.g_logger.logo("========== sample =========", level=LEVEL.VERBOSE)
+            for mutated_code, metadata in self._collect_mutated_samples(cleaned_code, index):
+                if mutated_code in seen_codes:
+                    continue
+                seen_codes.add(mutated_code)
+                new_fos.append(mutated_code)
+                metadata_records.append(metadata)
+                self.g_logger.logo(
+                    "========== mutated sample =========", level=LEVEL.VERBOSE
+                )
+                self.g_logger.logo(mutated_code, level=LEVEL.VERBOSE)
+                self.g_logger.logo(
+                    "========== mutated sample =========", level=LEVEL.VERBOSE
+                )
+        self.pending_sample_records = metadata_records
         return new_fos
 
     # helper for updating

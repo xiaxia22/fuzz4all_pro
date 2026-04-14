@@ -1,0 +1,975 @@
+# 面向 JVM 差分测试的分类感知变异增强方案总文档
+
+## 1. 当前项目状态与我对现状的判断
+
+你当前已经实现的主链路并不是一个“只有大模型在乱写代码”的原型，而是一条已经具备闭环能力的定向生成链：
+
+1. `config/documentation` 中的 API 文档作为知识源。
+2. `config/targeted` 中的 YAML 负责指定目标 API、提示触发语、输入前缀和运行参数。
+3. DeepSeek 负责把文档压缩成更适合代码生成的 fuzzing prompt。
+4. Qwen 负责根据 prompt 生成 Java 测试代码。
+5. 编译器运行后产生日志。
+6. `Fuzz4All/target/target.py` 与 `Fuzz4All/target/JAVA/JAVA.py` 已经支持把日志归纳成规则，再回灌到下一轮 prompt 中。
+
+这说明你现在已经有了：
+
+- 文档驱动
+- 目标定向
+- 编译反馈闭环
+- prompt 动态刷新
+- SAFE 样例记忆
+
+也就是说，项目已经完成了“生成式 API 定向样例探索器”的第一阶段。
+
+但从最新输出 `outputs/targeted/java.base_java_io_BufferedOutputStreamsxia2` 看，当前瓶颈也很明显：
+
+- 生成代码大多还是“看起来复杂，实际很普通”的 API 调用组合。
+- 大量失败样例集中在“编译期低级错误”，例如访问受保护字段、虚构 API、构造器参数不合法、语法截断。
+- 这些失败虽然能帮助 prompt 收敛，但不足以形成高价值的 JVM 差异触发样例。
+- 当前闭环偏向“让代码更容易编译成功”，但还没有显式优化“让代码更容易触发版本差异”。
+
+所以你现在加“变异”这一步，方向是正确的，而且不是锦上添花，而是下一阶段必须要加的能力。
+
+## 2. 可行性判断
+
+### 2.1 总体结论
+
+结论：可行，而且非常适合现在就做。
+
+### 2.2 为什么现在做最合适
+
+原因有三点：
+
+1. 你的基础闭环已经成立。
+   现在不是从零做 mutation，而是在已有 `文档 -> prompt -> 生成 -> 编译 -> 日志 -> prompt 优化` 的链路上加一个“高价值扰动层”。这类增强比重写主框架风险低很多。
+
+2. 你已经有分类基础。
+   当前仓库里已经有：
+   - `scripts/classify_java_apis.py`
+   - `outputs/api_classification/java_api_5d_classification.json`
+   - `outputs/api_classification/java_api_5d_classification.csv`
+   - `outputs/api_classification/java_api_5d_summary.md`
+
+   也就是说，“五维全息分类漏斗 + api_classify” 并不是一句想法，而是已经有初步资产，完全可以继续扩展成 mutation profile 的上游输入。
+
+3. 你的最新输出正好能证明 mutation 的必要性。
+   `BufferedOutputStreamsxia2` 的失败日志里已经出现了大量可模式化的错误：
+   - 构造器参数类型不对
+   - 访问 `buf` / `count` / `out` 等受保护成员
+   - 虚构字段或方法
+   - `off/len` 类边界值错误
+   - 语法结构截断
+   - 反射 API 用错
+
+这些错误非常适合反推“什么样的 mutation 不该做”“什么样的 mutation 应该保留”，因此 mutation 系统可以天然复用你现有的日志反馈机制。
+
+## 3. 我对最新输出的关键观察
+
+重点查看目录：`outputs/targeted/java.base_java_io_BufferedOutputStreamsxia2`
+
+### 3.1 已经验证成立的部分
+
+- `log.txt` 显示：
+  - 已完成初始化
+  - 已完成 auto-prompt
+  - 已完成两轮 runtime feedback prompt update
+
+- `prompts/` 目录中存在：
+  - `best_prompt.txt`
+  - `runtime_prompt_1.txt`
+  - `runtime_prompt_2.txt`
+  - `runtime_rules_1.txt`
+  - `runtime_rules_2.txt`
+
+这说明你的“日志归纳 -> 运行时 prompt 演化”机制已经真的跑起来了，不是只停留在代码里。
+
+### 3.2 当前样例质量的问题
+
+以 `BufferedOutputStream` 为例，当前生成结果有两个典型问题：
+
+1. 表面复杂，实质低信息量。
+   例如把多个 write/flush/构造器调用简单堆叠在一起，但这些堆叠没有强结构约束，也没有针对 JVM 行为差异专门设计状态转换路径。
+
+2. 失败样例里“无效噪声”比例偏高。
+   比如：
+   - `new BufferedOutputStream(new byte[0])`
+   - 直接访问 `bos.buf`
+   - 虚构 `DEFAULT_BUFFER_SIZE`
+   - 虚构 `getBuf()`、`size()`
+   - 截断的 `try`
+
+这类错误对 prompt 纠偏有价值，但对后续差分测试价值不高。
+
+### 3.3 由此得到的设计原则
+
+接下来 mutation 不能做成“再多加一些随机错误”。
+
+正确方向应当是：
+
+- 先生成“编译成功概率较高的基础种子”
+- 再对基础种子做“分类感知、边界导向、状态导向”的结构变异
+- 把 mutation 的结果和日志绑定起来
+- 最后让 DeepSeek 学的是“哪类 mutation 更有产出”，而不是只学“哪些写法别再犯错”
+
+## 4. 建议采用的总体方案
+
+我建议把你要加的能力定义为：
+
+**分类感知反馈驱动变异框架**
+
+英文可以写成：
+
+**Classification-Aware Feedback-Guided Mutation Framework for JVM Differential Testing**
+
+### 4.1 核心思想
+
+把当前系统从单一的“prompt 优化器”，升级为“双通道候选生成器”：
+
+1. 通道 A：大模型生成基础种子程序。
+2. 通道 B：基于 API 分类画像和反馈日志，对基础种子程序做定制化 mutation。
+
+最终参与编译和后续差分测试的，不再只有“Qwen 直接写出来的代码”，而是：
+
+- 原始生成样例
+- 结构变异样例
+- 状态序列变异样例
+- 参数边界变异样例
+- 组合链路变异样例
+
+### 4.2 为什么这个方案同时满足“容易落地”和“有创新”
+
+容易落地，因为：
+
+- 不需要推倒重写现有框架。
+- 可以先用轻量文本/模板/规则变异，不必一上来就做完整 AST 重写器。
+- 可以复用现有反馈闭环、日志结构、目标配置和 prompt 刷新机制。
+
+有创新，因为：
+
+- 不是传统随机 mutation。
+- 也不是单纯让 LLM 再写几份变体。
+- 而是把“文档分类结果、API 风险画像、编译反馈、变异算子表现”联合起来做自适应变异。
+
+这在答辩时会显得你的工作重点是“系统设计 + 机制构造 + 工程实现 + 实验验证”，而不是“调用几个模型接口”。
+
+## 5. 最优落地架构
+
+我建议采用四层架构。
+
+### 5.1 第一层：API 分类层
+
+输入：
+
+- `config/documentation/*.md`
+- `api_classify.doc`
+- `五维全息分类漏斗 .doc`
+
+当前已有产物：
+
+- `outputs/api_classification/java_api_5d_classification.json`
+
+这一层的任务不只是给 API 打标签，而是进一步输出：
+
+- `primary_tag`
+- `secondary_tags`
+- `risk_points`
+- `allowed_mutation_families`
+- `discouraged_mutation_families`
+- `priority_operators`
+
+也就是说，分类结果要从“描述性标签”升级为“可执行的 mutation profile”。
+
+### 5.2 第二层：基础种子生成层
+
+保持现有主流程：
+
+- DeepSeek 从文档抽取 prompt
+- Qwen 生成基础样例
+- 编译器产生日志
+- DeepSeek 根据日志优化 prompt
+
+但这里要新增一个原则：
+
+**LLM 更偏向负责“生成语义骨架”，不负责直接覆盖所有极端边界。**
+
+原因是边界扰动更适合交给可控 mutation 层来做，成功率更高，也更容易归因。
+
+### 5.3 第三层：分类感知 mutation 层
+
+这是本次改造的核心。
+
+输入：
+
+- 基础种子代码
+- 当前目标 API 的分类结果
+- 当前轮次失败规则
+- 历史 SAFE 样例
+
+输出：
+
+- 若干条带有算子标签的变异样例
+
+每条变异样例都应记录：
+
+- 来源 seed id
+- mutation profile
+- operator 名称
+- operator 参数
+- 是否编译成功
+- 失败日志摘要
+- 是否进入差分执行池
+
+### 5.4 第四层：反馈学习层
+
+DeepSeek 下一轮看到的不应该只有“编译失败日志”，还应该看到：
+
+- 哪类 mutation 成功率高
+- 哪类 mutation 经常制造无效噪声
+- 哪类 mutation 更接近目标 API 的边界行为
+
+这样 prompt 优化方向就会从“避免低级错误”提升为“优先生成更适合高价值变异的基础骨架”。
+
+## 6. 分类体系如何真正服务 mutation
+
+你提到“按照五维全息分类漏斗和 api_classify 进行分类，再按不同类别定制不同变异机制”，这个思路是完全正确的。
+
+但我建议不要把分类直接停在“标签名字”上，而要继续映射为“变异策略簇”。
+
+### 6.1 推荐分类到变异策略的映射
+
+#### `RESOURCE`
+
+适用对象：
+
+- `InputStream`
+- `OutputStream`
+- `Reader`
+- `Writer`
+- `Session`
+
+重点变异：
+
+- 生命周期顺序变异：`write -> flush -> close -> write`
+- 重复释放变异：多次 `close` / `flush`
+- 包装层级变异：嵌套 stream / wrapper
+- 异常路径变异：中途关闭、空底层对象、替换底层对象
+
+#### `BUFFER`
+
+重点变异：
+
+- 缓冲区尺寸变异：`0 / 1 / 2 / 7 / 8 / 8192 / MAX`
+- `off/len` 组合变异
+- 边界对齐与跨界变异
+- 共享数组别名变异
+- 写入后修改源数组的时序变异
+
+#### `BATCH_OP`
+
+重点变异：
+
+- 批量长度变异
+- 零长度 / 单长度 / 超长写入
+- 多次 partial write 组合
+- 分块顺序重排
+
+#### `FILE`
+
+重点变异：
+
+- 路径合法性变异
+- 相对/绝对路径切换
+- 不存在路径、权限不足路径、特殊字符路径
+- 文件状态切换：先创建后删除、先关闭后操作
+
+#### `CONCURRENT`
+
+重点变异：
+
+- 双线程交错访问
+- 关闭与写入竞争
+- 同一底层对象多包装器共享
+- 可见性和顺序扰动
+
+#### `SECURITY`
+
+重点变异：
+
+- provider 切换
+- 权限对象边界值
+- 非法算法名/合法近邻算法名
+- 安全上下文顺序扰动
+
+#### `REFLECT`
+
+重点变异：
+
+- `getDeclaredField/getField` 切换
+- `setAccessible` 时机
+- 参数类型错位的近邻变异
+- 私有/受保护成员访问链变异
+
+注意：这一类很容易制造无效编译错误，所以默认只在 `primary_tag=REFLECT` 或 `secondary_tags` 强命中时启用。
+
+#### `CALLBACK`
+
+重点变异：
+
+- 注册/反注册顺序
+- 重复注册
+- 空回调与匿名类变体
+- 回调中再入调用
+
+#### `TIME`
+
+重点变异：
+
+- 极值时间戳
+- 时区边界
+- 负 duration
+- 跨单位转换
+
+#### `NETWORK`
+
+重点变异：
+
+- 半开连接
+- bind/connect 顺序扰动
+- 超时边界
+- loopback / unresolved host
+
+#### `UTILITY` 与 `GENERIC`
+
+作为兜底类：
+
+- `null`
+- `0/-1/MAX`
+- 类型近邻替换
+- 调用顺序重排
+
+### 6.2 多标签场景的最优处理
+
+不要只用 `primary_tag`。
+
+最优做法是：
+
+- `primary_tag` 决定主 mutation profile
+- 前 2 到 3 个 `secondary_tags` 决定补充算子
+
+例如 `BufferedOutputStream` 当前分类结果可理解为：
+
+- 主标签：`RESOURCE`
+- 强次标签：`BATCH_OP`、`BUFFER`
+
+因此它最适合的变异组合不是单纯随机 write，而是：
+
+- 资源生命周期变异
+- 缓冲边界变异
+- 批量写入长度变异
+
+这比“让模型胡乱加反射、sun.*、虚构成员”更有价值。
+
+## 7. 我建议的 mutation 设计：三阶段最优方案
+
+为了兼顾稳定性和创新性，我建议分三阶段做。
+
+### 7.1 阶段一：Prompt 级变异先验
+
+目标：
+
+让 DeepSeek 和 Qwen 先生成更适合被二次 mutation 的骨架程序。
+
+做法：
+
+在 prompt 中加入 profile-aware 指令，但不让模型直接把所有极端值一次性写死。
+
+例如对 `BufferedOutputStream`，prompt 不再只是“多写一些 tricky 用法”，而是引导模型产出：
+
+- 具有清晰方法拆分的程序
+- 显式保留 `byte[]`、`off/len`、构造器 size、wrapper chain 等可变异槽位
+- 尽量保留可替换参数位和调用序列位
+
+这一层的优势是：
+
+- 不需要改很多代码
+- 能立刻提升后续 mutation 可操作性
+
+### 7.2 阶段二：代码级定制 mutation
+
+目标：
+
+把基础样例系统化扩展成更丰富、更靠近边界、更适合差分的变体。
+
+这是必须实现的主层。
+
+我建议先做“AST-lite 轻量变异”，不要一开始就上完整 Java AST 重写器。
+
+所谓 AST-lite，是指：
+
+- 先基于规则和正则找到稳定槽位
+- 再做定向替换、插入、重排、包裹
+- 对每个 operator 只做窄范围变动
+
+这样开发成本低、可控性高、演示效果好。
+
+### 7.3 阶段三：反馈驱动算子调度
+
+目标：
+
+让 mutation 不再是固定比例，而是根据最近产出动态调整权重。
+
+例如：
+
+- 某算子连续 20 次都只产生编译噪声，则降权。
+- 某算子经常产生 SAFE 且边界行为丰富，则升权。
+- 某类 API 对某类算子始终低质量，则在该 profile 中禁用。
+
+这一层是你方案里最有“研究味”和“工作量展示度”的部分。
+
+## 8. 针对 `BufferedOutputStream` 的专属变异方案
+
+你最新重点对象正好是 `BufferedOutputStream`，这个 API 非常适合作为第一批 showcase。
+
+### 8.1 推荐 profile
+
+`BufferedOutputStream`
+
+- `primary_tag = RESOURCE`
+- `secondary_tags = BATCH_OP, BUFFER`
+
+### 8.2 推荐优先算子
+
+#### 算子 A：构造器 size 边界变异
+
+候选值：
+
+- `1`
+- `2`
+- `7`
+- `8`
+- `8191`
+- `8192`
+- `8193`
+- `0`
+- `-1`
+- `Integer.MAX_VALUE`
+
+策略：
+
+- 合法值优先
+- 非法值少量保留，作为异常路径样例
+
+#### 算子 B：`write(int)` 单字节边界变异
+
+候选值：
+
+- `0`
+- `1`
+- `127`
+- `128`
+- `255`
+- `256`
+- `-1`
+
+这里重点不只是“值本身”，而是：
+
+- 写入前后是否 flush
+- close 后是否继续 write
+- 包装层是否嵌套
+
+#### 算子 C：`write(byte[], off, len)` 组合边界变异
+
+候选组合：
+
+- `(0, 0)`
+- `(0, 1)`
+- `(0, n)`
+- `(n-1, 1)`
+- `(-1, 1)`
+- `(0, -1)`
+- `(n+1, 1)`
+- `(0, n+1)`
+- `(1, n-1)`
+
+其中：
+
+- 合法组合应占主体
+- 非法组合用于异常路径覆盖
+
+#### 算子 D：共享数组别名变异
+
+例子：
+
+- 先写 `shared`
+- 修改 `shared[i]`
+- 再写 `shared` 子区间
+- 多个 `BufferedOutputStream` 共享同一底层 `ByteArrayOutputStream`
+
+这个方向更容易构造状态差异。
+
+#### 算子 E：生命周期顺序变异
+
+顺序候选：
+
+- `write -> flush -> close`
+- `write -> close -> flush`
+- `flush -> write`
+- `close -> write`
+- `write -> flush -> write`
+
+#### 算子 F：wrapper chain 变异
+
+例子：
+
+- `new BufferedOutputStream(new ByteArrayOutputStream(), size)`
+- `new BufferedOutputStream(new BufferedOutputStream(new ByteArrayOutputStream()))`
+
+#### 算子 G：异常处理外壳变异
+
+例子：
+
+- 普通 try/catch
+- try-with-resources
+- 仅 throws
+- 局部 catch 后继续写
+
+### 8.3 不建议默认开启的算子
+
+以下算子对 `BufferedOutputStream` 首批版本不建议默认开启：
+
+- 反射篡改 `buf` / `count`
+- 继承后覆盖受保护/公有方法
+- `sun.*` / 内部 JDK API 引入
+
+原因不是这些不重要，而是它们现在更容易制造编译噪声，短期会拉低产出质量。
+
+正确做法是把它们作为“进阶实验组”而不是默认主路径。
+
+## 9. 代码层面最优改法
+
+下面是我认为最优的改造方式。原则是：小步扩展、尽量复用现有结构、避免把逻辑打散。
+
+### 9.1 新增一个 mutation 子模块
+
+建议新增目录：
+
+- `Fuzz4All/mutation/`
+
+建议包含：
+
+- `Fuzz4All/mutation/__init__.py`
+- `Fuzz4All/mutation/profile_loader.py`
+- `Fuzz4All/mutation/operator_registry.py`
+- `Fuzz4All/mutation/java_mutator.py`
+- `Fuzz4All/mutation/mutation_logger.py`
+
+职责划分：
+
+- `profile_loader.py`
+  - 加载分类结果
+  - 把分类标签映射成 mutation profile
+
+- `operator_registry.py`
+  - 管理不同 profile 可用的 operator
+  - 维护 operator 到标签的映射关系
+
+- `java_mutator.py`
+  - 实现 Java 专属变异逻辑
+  - 输入 seed code，输出多个 mutated code
+
+- `mutation_logger.py`
+  - 记录每条 mutated sample 的来源、算子、结果、日志摘要
+
+### 9.2 扩展 `scripts/classify_java_apis.py`
+
+当前它已经能输出：
+
+- `primary_tag`
+- `all_tags`
+- `scores`
+- `dimensions`
+
+建议继续扩展为输出：
+
+- `risk_points`
+- `mutation_profile`
+- `priority_operators`
+- `discouraged_operators`
+
+最优做法不是另起一份完全独立的分类文件，而是在现有输出上自然增强。
+
+这样好处是：
+
+- 你前期分类工作能自然承接到 mutation
+- PPT 中可以明确展示“已有分类成果 -> 后续 mutation profile”
+
+### 9.3 扩展 `config/targeted/*.yaml`
+
+建议新增字段：
+
+- `enable_mutation: true`
+- `mutation_budget_per_seed`
+- `mutation_profile_override`
+- `mutation_safe_bias`
+- `mutation_enable_feedback_adaptation`
+- `mutation_operator_topk`
+- `path_classification_result`
+
+对 `BufferedOutputStream` 可先加入：
+
+- `mutation_profile_override: resource_buffer_batch`
+
+这样即使分类输出暂时还不完美，也能先跑起来。
+
+### 9.4 修改 `Fuzz4All/make_target.py`
+
+这里改动最轻：
+
+- 把 mutation 相关配置一起传给 target
+
+不建议在 `make_target.py` 里堆太多逻辑，它只保留“组装配置”的职责即可。
+
+### 9.5 重点修改 `Fuzz4All/target/target.py`
+
+这是最优主改造点。
+
+建议新增状态：
+
+- `self.enable_mutation`
+- `self.mutation_budget_per_seed`
+- `self.mutation_profile`
+- `self.mutation_stats`
+- `self.mutation_history`
+
+建议新增方法：
+
+- `load_mutation_profile()`
+- `mutate_generated_samples(fos)`
+- `record_mutation_feedback(...)`
+- `summarize_mutation_feedback()`
+
+最关键的接入点有两个。
+
+#### 接入点一：`generate()`
+
+当前逻辑是：
+
+- 直接把模型输出清洗后返回
+
+建议改成：
+
+1. 先生成基础样例
+2. 过滤明显无效样例
+3. 对高质量 seed 做 mutation
+4. 按预算合并原始样例和变异样例
+5. 给每条样例附带 metadata
+
+也就是说，`generate()` 最终返回的不应再只是字符串列表，而应该逐步过渡成：
+
+- 样例代码
+- 样例来源
+- mutation operator
+- parent seed id
+
+如果你暂时不想大改函数签名，也可以先：
+
+- 保持 `generate()` 返回代码列表
+- 但在内部同时把 metadata 写入 `mutation_manifest.jsonl`
+
+这是第一阶段更稳的做法。
+
+#### 接入点二：`update()`
+
+当前 `update()` 已经会根据 SAFE 样例和失败规则更新 runtime prompt。
+
+建议新增：
+
+- 统计各 mutation operator 的成功率
+- 统计各 operator 的常见失败类型
+- 选择下一轮更值得保留的 operator
+- 在 `build_prompt_refresh_request()` 中加入 mutation 观察总结
+
+这样 DeepSeek 下一轮看到的就不仅仅是：
+
+- 哪些编译错误重复出现
+
+还会看到：
+
+- 哪类变异在当前 API 上有效
+- 哪类变异不适合当前 API
+
+### 9.6 修改 `Fuzz4All/target/JAVA/JAVA.py`
+
+这里负责 Java 专属能力，应该是 mutation 真正落地的第二主战场。
+
+建议新增内容：
+
+- Java API 到 mutation profile 的映射加载
+- Java 专属 operator 实现
+- Java 编译日志到 mutation 类别的归因
+
+建议增加的方法：
+
+- `build_java_mutation_slots(code)`
+- `mutate_constructor_args(code, profile)`
+- `mutate_call_sequence(code, profile)`
+- `mutate_buffer_boundaries(code, profile)`
+- `mutate_exception_shell(code, profile)`
+- `rank_mutation_candidates(candidates)`
+
+同时，当前 `extract_javac_error_categories()` 只偏向 prompt 纠错，还可以继续补充：
+
+- `mutation_noise`
+- `invalid_profile_operator`
+- `stateful_sequence_break`
+- `boundary_candidate`
+
+这样日志反馈会更利于 operator 调度。
+
+### 9.7 适度修改 `Fuzz4All/fuzz.py`
+
+这里不必重构太多，但建议做一件很值的事：
+
+在输出目录里额外落：
+
+- `mutation_manifest.jsonl`
+
+每条记录至少包含：
+
+- `sample_id`
+- `parent_id`
+- `source_type` (`generated` / `mutated`)
+- `operator`
+- `profile`
+- `target_api`
+- `compile_result`
+- `error_categories`
+
+这是后面做实验分析、写论文、做 PPT 的高价值材料。
+
+因为一旦你有这个文件，很多工作量就“可见”了：
+
+- 不是大模型随便写
+- 而是你自己做了 operator 系统、调度系统、反馈统计系统
+
+## 10. 我建议的实施顺序
+
+为了保证“容易落地”，不要一次做满。
+
+### 第一阶段：两天到四天可完成的版本
+
+目标：
+
+先跑通“分类结果 -> mutation profile -> 基础代码二次变异 -> 输出日志”。
+
+优先做：
+
+1. 扩展 `scripts/classify_java_apis.py`
+2. 新增 `Fuzz4All/mutation/java_mutator.py`
+3. 在 `target.py` 的 `generate()` 中接入 mutation
+4. 在输出目录新增 `mutation_manifest.jsonl`
+5. 先只支持 3 个 profile：
+   - `resource_buffer_batch`
+   - `file_path_state`
+   - `concurrent_sequence`
+
+第一阶段不要追求全标签覆盖，先把 showcase 做强。
+
+### 第二阶段：一周内可完成的版本
+
+目标：
+
+把反馈真正接进 mutation 调度。
+
+新增：
+
+- operator 成功率统计
+- operator 降权/升权
+- prompt refresh 中加入 mutation 表现摘要
+
+这一阶段完成后，系统就从“有 mutation”升级为“反馈驱动 mutation”。
+
+### 第三阶段：论文/答辩强化版
+
+目标：
+
+形成实验体系和对比组。
+
+实验组建议：
+
+1. 无 mutation，仅 prompt feedback
+2. 通用 mutation
+3. 分类感知 mutation
+4. 分类感知 + 反馈自适应 mutation
+
+指标建议：
+
+- 编译成功率
+- 独特 SAFE 样例数
+- 覆盖的异常路径数
+- 差分执行池样例数
+- 不同 JVM 版本行为差异数
+
+## 11. 创新点建议你在 PPT 里这样讲
+
+这里给你一个比较适合答辩的表达。
+
+### 创新点一：把静态文档分类转化成动态变异配置
+
+不是只给 API 打标签，而是把标签落成：
+
+- 风险画像
+- 算子优先级
+- 不适用算子黑名单
+
+### 创新点二：提出“生成 + 变异”双通道协同
+
+不是单靠 Qwen 一次性生成复杂程序，而是：
+
+- LLM 负责生成语义骨架
+- 规则变异负责精准打边界
+
+### 创新点三：把编译反馈从 prompt 优化扩展到 mutation 调度
+
+让系统不仅学“怎么写更容易编译”，还学“哪类扰动更有价值”。
+
+### 创新点四：构建可追踪的变异谱系
+
+通过 `mutation_manifest.jsonl` 记录：
+
+- 来源样例
+- 使用算子
+- 编译结果
+- 后续是否进入差分测试
+
+这一点非常适合展示你做了完整工程链，而不是只写了 prompt。
+
+## 12. 怎么保证老师不会说“都是大模型做的”
+
+这是你方案里很重要的现实目标，我建议你明确把工作拆成三块来讲。
+
+### 12.1 你自己的核心工作
+
+你真正的工作重点应当被表达为：
+
+- 构建 Java API 文档清洗与五维分类体系
+- 设计分类到变异画像的映射机制
+- 实现 Java 专属 mutation operator 库
+- 实现反馈驱动的 operator 调度与日志归因
+- 实现可用于差分测试前处理的样例筛选链路
+
+这些都是你的系统设计和工程实现，不是模型自动替你完成的。
+
+### 12.2 大模型在系统中的定位
+
+把大模型定位成：
+
+- 文档压缩器
+- 基础骨架生成器
+- 反馈摘要辅助器
+
+而不是“全部逻辑的主导者”。
+
+### 12.3 PPT 中应避免的说法
+
+不要说：
+
+- “模型自动帮我生成所有测试代码”
+
+应改成：
+
+- “我设计了一个分类感知、反馈驱动的生成与变异协同框架，大模型只负责其中的基础骨架生成和反馈摘要。”
+
+## 13. 这次我已经给你落下来的具体产出
+
+本次我没有直接把整套 mutation 代码一次性硬改进主流程，原因是那样风险太高，也不利于你后面讲“方案设计”。
+
+这次我优先完成了更关键的一步：
+
+- 基于你当前仓库真实代码、真实配置、真实输出，整理出一份可以直接拿去做方案介绍 PPT 的总文档。
+
+本次实际新增产出：
+
+- 根目录文档：`inall`
+
+文档内容已经覆盖：
+
+- 当前系统状态判断
+- 最新输出问题分析
+- 变异方案可行性结论
+- 分类到变异机制的设计映射
+- `BufferedOutputStream` 的具体 mutation 定制方案
+- 最优代码改造点
+- 分阶段实施计划
+- 创新点表达方式
+- 如何突出你自己的工作量
+
+## 14. 后续最优执行计划
+
+如果按“最稳、最好讲、最容易出结果”的路径走，我建议你下一步按下面顺序推进。
+
+### 第一步
+
+先把 `scripts/classify_java_apis.py` 增强成 profile 生成器。
+
+输出新增字段：
+
+- `mutation_profile`
+- `priority_operators`
+- `risk_points`
+
+### 第二步
+
+新建 `Fuzz4All/mutation/java_mutator.py`，先只做 `BufferedOutputStream` 的 6 到 8 个专属 operator。
+
+### 第三步
+
+把 `target.py` 的 `generate()` 改成：
+
+- 原始生成
+- 轻量评分
+- 对高质量 seed 做 mutation
+- 合并进入编译池
+
+### 第四步
+
+在输出目录落 `mutation_manifest.jsonl`，把每个样例的 mutation 来源记录下来。
+
+### 第五步
+
+把 mutation 表现摘要并入 `build_prompt_refresh_request()`，让 DeepSeek 在下一轮不只看错误，还看算子表现。
+
+## 15. 最后给你的明确建议
+
+### 15.1 方案是否值得做
+
+值得，而且应该尽快做。
+
+### 15.2 最优切入点是什么
+
+最优切入点不是先写一堆复杂 AST 代码，而是：
+
+- 先把分类结果变成 mutation profile
+- 再做 Java 专属的轻量可控 mutation
+- 最后接入反馈自适应调度
+
+### 15.3 第一批 showcase 目标
+
+我建议你先重点做这三个：
+
+1. `BufferedOutputStream`
+2. `BufferedInputStream`
+3. `FileOutputStream` 或 `ByteArrayOutputStream`
+
+这几个 API 互相相关，容易形成一个完整故事，也方便证明分类感知 mutation 的效果。
+
+---
+
+如果后续继续按“直接帮你改”的方式推进，最优下一步就是我继续在仓库里给你补第一版 mutation 框架骨架，优先落：
+
+- `scripts/classify_java_apis.py` 扩展
+- `Fuzz4All/mutation/java_mutator.py`
+- `target.py` 中的 mutation 接口
+- `BufferedOutputStream` 的专属算子
+
+这会是最容易出一个能跑、能讲、也能体现你工作量的版本。

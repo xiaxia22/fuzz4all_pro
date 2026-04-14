@@ -144,6 +144,56 @@ TAG_RULES = {
 }
 
 
+PROFILE_RULES = {
+    "resource_buffer_batch": ["RESOURCE", "BUFFER", "BATCH_OP"],
+    "file_path_state": ["FILE"],
+    "concurrent_sequence": ["CONCURRENT"],
+    "generic_java": ["GENERIC"],
+}
+
+
+PROFILE_OPERATORS = {
+    "resource_buffer_batch": [
+        "constructor_size_edge",
+        "write_bulk_edge",
+        "lifecycle_sequence",
+        "write_single_edge",
+    ],
+    "file_path_state": [
+        "constructor_size_edge",
+        "lifecycle_sequence",
+    ],
+    "concurrent_sequence": [
+        "lifecycle_sequence",
+        "write_single_edge",
+    ],
+    "generic_java": [
+        "constructor_size_edge",
+        "write_single_edge",
+    ],
+}
+
+
+PROFILE_RISK_POINTS = {
+    "resource_buffer_batch": [
+        "resource_lifecycle",
+        "buffer_size_boundary",
+        "write_offset_length",
+    ],
+    "file_path_state": [
+        "path_argument",
+        "file_state_transition",
+    ],
+    "concurrent_sequence": [
+        "interleaving_order",
+        "shared_state",
+    ],
+    "generic_java": [
+        "general_boundary",
+    ],
+}
+
+
 def normalize(text: str) -> str:
     return " ".join(text.lower().split())
 
@@ -160,6 +210,17 @@ def extract_section(text: str, start_header: str, end_headers: list[str]) -> str
 
 def extract_headings(section_text: str) -> list[str]:
     return re.findall(r"^####\s+(.+)$", section_text, flags=re.MULTILINE)
+
+
+def derive_mutation_profile(primary_tag: str, all_tags: list[str]) -> str:
+    tags = set(all_tags)
+    if primary_tag == "RESOURCE" and ("BUFFER" in tags or "BATCH_OP" in tags):
+        return "resource_buffer_batch"
+    if primary_tag == "FILE":
+        return "file_path_state"
+    if primary_tag == "CONCURRENT":
+        return "concurrent_sequence"
+    return "generic_java"
 
 
 def classify_doc(path: Path) -> dict:
@@ -225,6 +286,7 @@ def classify_doc(path: Path) -> dict:
 
     all_tags = sorted(scores.keys(), key=lambda tag: (-scores[tag], TAG_PRIORITY.index(tag) if tag in TAG_PRIORITY else 999, tag))
     primary_tag = all_tags[0]
+    mutation_profile = derive_mutation_profile(primary_tag, all_tags)
 
     return {
         "file": str(path.relative_to(ROOT)).replace("\\", "/"),
@@ -233,6 +295,9 @@ def classify_doc(path: Path) -> dict:
         "source": source,
         "primary_tag": primary_tag,
         "all_tags": all_tags,
+        "mutation_profile": mutation_profile,
+        "priority_operators": PROFILE_OPERATORS[mutation_profile],
+        "risk_points": PROFILE_RISK_POINTS[mutation_profile],
         "scores": dict(sorted(scores.items(), key=lambda item: (-item[1], item[0]))),
         "dimensions": {tag: dict(dim_map) for tag, dim_map in evidence.items()},
         "field_count": len(fields),
@@ -262,6 +327,9 @@ def main():
                 "source",
                 "primary_tag",
                 "all_tags",
+                "mutation_profile",
+                "priority_operators",
+                "risk_points",
                 "field_count",
                 "method_count",
             ],
@@ -276,6 +344,9 @@ def main():
                     "source": item["source"],
                     "primary_tag": item["primary_tag"],
                     "all_tags": ",".join(item["all_tags"]),
+                    "mutation_profile": item["mutation_profile"],
+                    "priority_operators": ",".join(item["priority_operators"]),
+                    "risk_points": ",".join(item["risk_points"]),
                     "field_count": item["field_count"],
                     "method_count": item["method_count"],
                 }
@@ -306,6 +377,8 @@ def main():
             f.write(f"### {name}\n\n")
             f.write(f"- Primary tag: {item['primary_tag']}\n")
             f.write(f"- All tags: {', '.join(item['all_tags'])}\n")
+            f.write(f"- Mutation profile: {item['mutation_profile']}\n")
+            f.write(f"- Priority operators: {', '.join(item['priority_operators'])}\n")
             f.write(f"- File: `{item['file']}`\n\n")
 
     print(f"Classified {len(results)} docs.")

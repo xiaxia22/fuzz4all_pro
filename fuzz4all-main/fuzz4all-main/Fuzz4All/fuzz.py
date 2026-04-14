@@ -75,19 +75,29 @@ def fuzz(
             if not fos:
                 target.initialize()
                 continue
+            sample_metadata = []
+            if hasattr(target, "consume_last_generation_metadata"):
+                sample_metadata = target.consume_last_generation_metadata()
             prev = []
             feedback = []
             for index, fo in enumerate(fos):
                 file_name = os.path.join(output_folder, f"{count}.fuzz")
                 write_to_file(fo, file_name)
+                metadata = sample_metadata[index] if index < len(sample_metadata) else None
+                if hasattr(target, "register_sample_output"):
+                    target.register_sample_output(file_name, metadata)
                 count += 1
                 p.update(task, advance=1)
                 # validation on the fly
                 if otf:
                     f_result, message = target.validate_individual(file_name)
+                    if hasattr(target, "record_sample_result"):
+                        target.record_sample_result(file_name, f_result, message)
                     target.parse_validation_message(f_result, message, file_name)
                     prev.append((f_result, fo))
                     feedback.append((f_result, message, file_name))
+                elif hasattr(target, "record_sample_result"):
+                    target.record_sample_result(file_name, None, "")
             target.update(prev=prev, feedback=feedback)
 
 
