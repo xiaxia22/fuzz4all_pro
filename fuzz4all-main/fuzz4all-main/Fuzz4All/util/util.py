@@ -61,6 +61,6 @@ def natural_sort_key(s):
 
 def load_config_file(filepath: str):
     """Load the config file."""
-    with open(filepath, "r") as f:
+    with open(filepath, "r", encoding="utf-8") as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
     return config

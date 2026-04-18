@@ -22,9 +22,13 @@ class JAVATarget(Target):
             config_dict = kwargs["config_dict"]
             self.prompt_used = self._create_prompt_from_config(config_dict)
             self.config_dict = config_dict
-            self.java_version = self.FORCED_JAVA_VERSION
-            self.enable_preview = self.FORCE_ENABLE_PREVIEW
             target_cfg = config_dict.get("target", {})
+            self.java_version = str(
+                target_cfg.get("java_version", self.FORCED_JAVA_VERSION)
+            )
+            self.enable_preview = bool(
+                target_cfg.get("enable_preview", self.FORCE_ENABLE_PREVIEW)
+            )
             self.runtime_feedback_mode = target_cfg.get(
                 "runtime_feedback_mode", "normalized"
             )
@@ -92,6 +96,8 @@ class JAVATarget(Target):
             categories.append("write_used_as_expression")
         if "no suitable method found for write" in normalized:
             categories.append("invalid_write_overload")
+        if "cannot be applied to given types" in normalized:
+            categories.append("invalid_method_signature")
         if "no suitable constructor found" in normalized:
             categories.append("invalid_constructor")
         if "unreported exception IOException" in normalized:
@@ -125,6 +131,8 @@ class JAVATarget(Target):
             categories.append("weaker_override_access")
         if "cannot be converted to OutputStream" in normalized:
             categories.append("invalid_constructor_argument")
+        if "incompatible types" in normalized:
+            categories.append("incompatible_types")
         if "method setByte in class Field cannot be applied" in normalized:
             categories.append("reflection_api_misuse")
         if "Field cannot be converted to int" in normalized:
@@ -132,6 +140,8 @@ class JAVATarget(Target):
         if "int cannot be dereferenced" in normalized:
             categories.append("reflection_api_misuse")
         if "cannot find symbol" in normalized and "Arrays" in normalized:
+            categories.append("missing_import")
+        if re.search(r"package\s+[A-Za-z0-9_.]+\s+does not exist", normalized):
             categories.append("missing_import")
 
         return categories
@@ -152,6 +162,8 @@ class JAVATarget(Target):
     def map_error_categories_to_rules(
         self, categories: List[str], message: str
     ) -> List[str]:
+        target_api = self.prompt_used.get("target_api", "the target API")
+        primary_tag = (self.mutation_profile or {}).get("primary_tag", "")
         rules = []
         misuse_symbols = self.extract_target_api_misuse_examples(message)
 
@@ -160,26 +172,30 @@ class JAVATarget(Target):
                 rules.append(
                     "Do not call undocumented methods such as "
                     + ", ".join(f"{name}()" if "(" not in name else name for name in misuse_symbols)
-                    + " on BufferedOutputStream."
+                    + f" on {target_api}."
                 )
             rules.append(
-                "Use only documented public methods of BufferedOutputStream and related stream types."
+                f"Use only documented public methods and nested types of {target_api}."
             )
         if "protected_member_access" in categories:
             rules.append(
-                "Do not access protected or internal fields such as buf and count from external code."
+                f"Do not access protected or internal fields of {target_api} from external code."
             )
         if "write_used_as_expression" in categories:
             rules.append(
-                "Do not use BufferedOutputStream.write(...) as an expression; write methods return void."
+                "Do not use void-returning API calls as expressions or values."
             )
         if "invalid_write_overload" in categories:
             rules.append(
-                "Use only valid overloads: write(int), write(byte[]), and write(byte[], int, int)."
+                f"Match method overloads of {target_api} exactly; do not invent write(...) or off/len signatures."
+            )
+        if "invalid_method_signature" in categories:
+            rules.append(
+                f"Match argument types and arity exactly to the documented signatures of {target_api}."
             )
         if "invalid_constructor" in categories:
             rules.append(
-                "Use only documented BufferedOutputStream constructors and valid argument lists."
+                f"Use only documented constructors and valid argument lists for {target_api}."
             )
         if "unchecked_ioexception" in categories:
             rules.append(
@@ -215,7 +231,7 @@ class JAVATarget(Target):
             )
         if "invented_buffer_constant" in categories:
             rules.append(
-                "Do not invent default buffer constants or undocumented size fields for BufferedOutputStream."
+                f"Do not invent undocumented constants, size fields, or helper members for {target_api}."
             )
         if "internal_jdk_api" in categories:
             rules.append(
@@ -227,7 +243,7 @@ class JAVATarget(Target):
             )
         if "invalid_constructor_argument" in categories:
             rules.append(
-                "Pass a real OutputStream instance into BufferedOutputStream constructors, not raw byte arrays or unrelated objects."
+                f"Pass constructor arguments with the exact documented runtime types expected by {target_api}."
             )
         if "reflection_api_misuse" in categories:
             rules.append(
@@ -235,7 +251,52 @@ class JAVATarget(Target):
             )
         if "missing_import" in categories:
             rules.append(
-                "Add required public imports for referenced utility classes, or avoid using undocumented helpers."
+                "Add required public imports for referenced JDK classes, or avoid undocumented helpers."
+            )
+        if "incompatible_types" in categories:
+            rules.append(
+                f"Keep variable, receiver, and return types consistent with the documented contracts of {target_api}."
+            )
+
+        if primary_tag == "SECURITY":
+            rules.append(
+                f"For {target_api}, prefer documented algorithms, providers, and key/material sizes instead of guessed values."
+            )
+        elif primary_tag == "FILE":
+            rules.append(
+                f"For {target_api}, keep file/path objects and lifecycle state transitions explicit and type-correct."
+            )
+        elif primary_tag == "CONCURRENT":
+            rules.append(
+                f"For {target_api}, keep thread/interleaving helpers syntactically isolated so concurrency scaffolding still compiles."
+            )
+        elif primary_tag == "REFLECT":
+            rules.append(
+                f"For {target_api}, keep reflected member names, receiver objects, and accessibility changes consistent with the reflection API."
+            )
+        elif primary_tag == "CALLBACK":
+            rules.append(
+                f"For {target_api}, keep listener registration order valid and callback argument types concrete."
+            )
+        elif primary_tag == "TIME":
+            rules.append(
+                f"For {target_api}, keep epoch, duration, and zone arguments within the documented API forms."
+            )
+        elif primary_tag == "NETWORK":
+            rules.append(
+                f"For {target_api}, keep endpoint objects, timeout values, and connect/bind order aligned with the documented lifecycle."
+            )
+        elif primary_tag == "JVM_MGMT":
+            rules.append(
+                f"For {target_api}, use documented MXBean/runtime query entry points and valid management object names."
+            )
+        elif primary_tag == "MARK_SUPPORT":
+            rules.append(
+                f"For {target_api}, keep mark/reset usage tied to the documented stream or reader lifecycle."
+            )
+        elif primary_tag == "UTILITY":
+            rules.append(
+                f"For {target_api}, prefer documented parse/format/value helpers and avoid guessed helper methods."
             )
 
         deduped = []
@@ -280,8 +341,8 @@ class JAVATarget(Target):
         except:
             pass
 
-        java_version = self.FORCED_JAVA_VERSION
-        preview_flag = " --enable-preview" if self.FORCE_ENABLE_PREVIEW else ""
+        java_version = self.java_version
+        preview_flag = " --enable-preview" if self.enable_preview else ""
         compile_cmd = (
             f"{self.target_name} --source {java_version}{preview_flag}"
             f" --target {java_version} {write_back_name}"

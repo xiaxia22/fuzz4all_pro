@@ -24,8 +24,7 @@ target:
   prompt_refresh_candidates: 2
   enable_mutation: true
   mutation_budget_per_seed: 2
-  mutation_operator_topk: 4
-  mutation_profile_override: resource_buffer_batch
+  mutation_operator_topk: 8
   path_classification_result: outputs/api_classification/java_api_5d_classification.json
   path_documentation: config/documentation/java.base_java_io_BufferedOutputStream.md
   path_example_code:

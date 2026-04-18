@@ -322,9 +322,6 @@ class Target(object):
             return
 
         self.mutation_profile = load_mutation_profile(config_dict)
-        profile_override = target_cfg.get("mutation_profile_override")
-        if profile_override:
-            self.mutation_profile["mutation_profile"] = profile_override
         if target_cfg.get("mutation_operator_topk"):
             topk = int(target_cfg["mutation_operator_topk"])
             self.mutation_profile["priority_operators"] = self.mutation_profile.get(
@@ -348,6 +345,7 @@ class Target(object):
             or (self.mutation_profile or {}).get("mutation_profile"),
             "primary_tag": (self.mutation_profile or {}).get("primary_tag"),
             "all_tags": (self.mutation_profile or {}).get("all_tags", []),
+            "active_profiles": (self.mutation_profile or {}).get("active_profiles", []),
         }
 
     def _collect_mutated_samples(self, code: str, parent_index: int) -> List[Tuple[str, Dict[str, Any]]]:
@@ -411,8 +409,10 @@ class Target(object):
             rewritten,
         )
 
-    def _ensure_java_import(self, code: str, import_line: str, signal: str) -> str:
-        if signal not in code or import_line in code:
+    def _ensure_java_import(self, code: str, import_line: str) -> str:
+        import_name = import_line.replace("import ", "").replace(";", "")
+        signal = import_name.split(".")[-1] + "."
+        if signal not in code or f"import {import_name};" in code:
             return code
 
         lines = code.splitlines()
@@ -420,42 +420,43 @@ class Target(object):
         for index, line in enumerate(lines):
             if line.startswith("import "):
                 insert_at = index + 1
-        lines.insert(insert_at, import_line)
+        lines.insert(insert_at, f"import {import_name};")
         return "\n".join(lines)
+
+    def _profile_repair_java_code(self, code: str) -> str:
+        repaired = code
+        repair_rules = (self.mutation_profile or {}).get("repair_rules", {})
+        if repair_rules.get("byte_literal_cast"):
+            repaired = self._rewrite_numeric_byte_literals(repaired)
+        for import_line in repair_rules.get("imports", []):
+            repaired = self._ensure_java_import(repaired, import_line)
+        return repaired
 
     def _repair_java_code(self, code: str) -> str:
         repaired = code
-        repaired = self._rewrite_numeric_byte_literals(repaired)
-        repaired = self._ensure_java_import(
-            repaired,
-            "import java.util.Arrays;",
-            "Arrays.",
-        )
+        repaired = self._profile_repair_java_code(repaired)
         return repaired
+
+    def _profile_rejects_generated_code(self, normalized: str) -> bool:
+        filter_rules = (self.mutation_profile or {}).get("filter_rules", {})
+        if any(
+            token in normalized for token in filter_rules.get("reject_tokens", [])
+        ):
+            return True
+        for pattern in filter_rules.get("reject_patterns", []):
+            if re.search(pattern, normalized):
+                return True
+        return False
 
     def _is_viable_generated_code(self, code: str) -> bool:
         if self.language != "java":
             return True
 
         normalized = " ".join((code or "").split())
-        obvious_hallucinations = [
-            ".size()",
-            ".getBufSize()",
-            ".getBufferSize()",
-            ".getBuffer()",
-            ".isClosed()",
-            "defaultBufferSize",
-            "DEFAULT_BUFFER_SIZE",
-            "largeOffsetArray",
-            "sun.reflect",
-        ]
-        if any(token in normalized for token in obvious_hallucinations):
+        if self._profile_rejects_generated_code(normalized):
             return False
         if normalized.count("{") != normalized.count("}"):
             return False
-        if ".write(" in normalized and "==" in normalized:
-            if re.search(r"\.write\([^\n;]*\)\s*==", normalized):
-                return False
         if normalized.endswith(("valid", "write(", "try {", "Buffered")):
             return False
         return True
@@ -473,20 +474,6 @@ class Target(object):
             return True
 
         normalized = " ".join((code or "").split())
-        obvious_hallucinations = [
-            ".size()",
-            ".getBufSize()",
-            ".getBufferSize()",
-            ".isClosed()",
-            "defaultBufferSize",
-            "DEFAULT_BUFFER_SIZE",
-            "largeOffsetArray",
-            "sun.reflect",
-        ]
-        if any(token in normalized for token in obvious_hallucinations):
-            return False
-
-        # Skip seeds with unfinished structure or very likely syntax truncation.
         if not self._is_viable_generated_code(code):
             return False
 

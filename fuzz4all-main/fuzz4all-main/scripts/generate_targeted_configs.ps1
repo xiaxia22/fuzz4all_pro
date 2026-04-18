@@ -67,6 +67,17 @@ fuzzing:
 
 target:
   language: java
+  java_version: 21
+  enable_preview: true
+  runtime_feedback_mode: normalized
+  max_feedback_rules: 5
+  max_safe_examples: 2
+  prompt_refresh_interval: 5
+  prompt_refresh_candidates: 2
+  enable_mutation: true
+  mutation_budget_per_seed: 2
+  mutation_operator_topk: 8
+  path_classification_result: outputs/api_classification/java_api_5d_classification.json
   path_documentation: $DocRelativePath
   path_example_code:
   trigger_to_generate_input: "$trigger"
@@ -85,6 +96,13 @@ llm:
   autoprompt_temperature: 0.9
   autoprompt_greedy_temperature: 0.2
   autoprompt_max_tokens: 256
+  autoprompt_validation_batch_size: 8
+  autoprompt_validation_max_length: 512
+  runtime_autoprompt_model: deepseek-chat
+  runtime_autoprompt_temperature: 0.7
+  runtime_autoprompt_max_tokens: 256
+  runtime_refresh_validation_batch_size: 4
+  runtime_refresh_validation_max_length: 384
 "@
 }
 
