@@ -278,6 +278,9 @@ class JAVATarget(Target):
             rules.append(
                 f"For {target_api}, keep listener registration order valid and callback argument types concrete."
             )
+            rules.append(
+                f"For {target_api}, use only documented listener interfaces, property names, and fire/add/remove overloads; do not invent indexed or helper listener APIs."
+            )
         elif primary_tag == "TIME":
             rules.append(
                 f"For {target_api}, keep epoch, duration, and zone arguments within the documented API forms."
@@ -290,6 +293,9 @@ class JAVATarget(Target):
             rules.append(
                 f"For {target_api}, use documented MXBean/runtime query entry points and valid management object names."
             )
+            rules.append(
+                f"For {target_api}, prefer static factory/query methods that return standard MXBeans or MBeanServer handles; do not invent instance methods or non-JDK management wrappers."
+            )
         elif primary_tag == "MARK_SUPPORT":
             rules.append(
                 f"For {target_api}, keep mark/reset usage tied to the documented stream or reader lifecycle."
@@ -297,6 +303,10 @@ class JAVATarget(Target):
         elif primary_tag == "UTILITY":
             rules.append(
                 f"For {target_api}, prefer documented parse/format/value helpers and avoid guessed helper methods."
+            )
+        elif primary_tag == "RESOURCE":
+            rules.append(
+                f"For {target_api}, keep lifecycle, checked exceptions, and stream or reader state transitions explicit; avoid invented position or state getters."
             )
 
         deduped = []

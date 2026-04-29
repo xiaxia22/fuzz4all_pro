@@ -60,7 +60,7 @@ MUTATION_PROFILE_DEFINITIONS: Dict[str, Dict[str, Any]] = {
         "description": "Reflection APIs with accessibility and member-resolution pressure.",
     },
     "callback_registration_flow": {
-        "active_profiles": ["CALLBACK", "CONCURRENT"],
+        "active_profiles": ["CALLBACK", "UTILITY"],
         "description": "Listener and callback APIs with registration ordering pressure.",
     },
     "time_boundary_mix": {
@@ -76,7 +76,7 @@ MUTATION_PROFILE_DEFINITIONS: Dict[str, Dict[str, Any]] = {
         "description": "Utility-style APIs driven by value parsing and formatting boundaries.",
     },
     "jvm_mgmt_runtime_state": {
-        "active_profiles": ["JVM_MGMT", "TIME", "UTILITY"],
+        "active_profiles": ["JVM_MGMT", "UTILITY"],
         "description": "JVM management APIs that expose runtime and MXBean state transitions.",
     },
     "mark_reset_sequence": {
