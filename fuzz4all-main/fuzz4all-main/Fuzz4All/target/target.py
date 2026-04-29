@@ -410,8 +410,10 @@ class Target(object):
 
     def _ensure_java_import(self, code: str, import_line: str) -> str:
         import_name = import_line.replace("import ", "").replace(";", "")
-        signal = import_name.split(".")[-1] + "."
-        if signal not in code or f"import {import_name};" in code:
+        class_name = import_name.split(".")[-1]
+        if f"import {import_name};" in code:
+            return code
+        if not re.search(rf"\b{re.escape(class_name)}\b", code):
             return code
 
         lines = code.splitlines()

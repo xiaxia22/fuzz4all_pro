@@ -178,8 +178,23 @@ PROFILE_CATALOG: Dict[str, Dict[str, Any]] = {
             "file_state_transition_mutation",
             "file_permission_toggle_mutation",
         ],
-        "repair_rules": {"byte_literal_cast": True, "imports": []},
-        "filter_rules": {"reject_tokens": [], "reject_patterns": []},
+        "repair_rules": {
+            "byte_literal_cast": True,
+            "imports": [
+                "java.io.File;",
+                "java.io.IOException;",
+                "java.nio.file.Path;",
+                "java.nio.file.Paths;",
+                "java.nio.file.Files;",
+            ],
+        },
+        "filter_rules": {
+            "reject_tokens": [],
+            "reject_patterns": [
+                r"\\x[0-9A-Fa-f]{2}",
+                r"new\s+File\s*\(\s*null\s*,",
+            ],
+        },
     },
     "CONCURRENT": {
         "profile_class": "CONCURRENT",
@@ -191,7 +206,14 @@ PROFILE_CATALOG: Dict[str, Dict[str, Any]] = {
             "concurrent_signal_sequence_mutation",
         ],
         "repair_rules": {"byte_literal_cast": True, "imports": []},
-        "filter_rules": {"reject_tokens": [], "reject_patterns": []},
+        "filter_rules": {
+            "reject_tokens": [],
+            "reject_patterns": [
+                r"while\s*\(\s*true\s*\)",
+                r"for\s*\(\s*;;\s*\)",
+                r"Thread\.sleep\s*\(\s*Long\.MAX_VALUE",
+            ],
+        },
     },
     "SECURITY": {
         "profile_class": "SECURITY",
@@ -214,10 +236,25 @@ PROFILE_CATALOG: Dict[str, Dict[str, Any]] = {
             "reflect_member_name_mutation",
             "reflect_receiver_null_mutation",
         ],
-        "repair_rules": {"byte_literal_cast": True, "imports": []},
+        "repair_rules": {
+            "byte_literal_cast": True,
+            "imports": [
+                "java.lang.reflect.Method;",
+                "java.lang.reflect.Field;",
+                "java.lang.reflect.Constructor;",
+                "java.util.Map;",
+                "java.util.List;",
+                "java.util.Arrays;",
+                "java.util.HashMap;",
+            ],
+        },
         "filter_rules": {
             "reject_tokens": ["sun.reflect"],
-            "reject_patterns": [],
+            "reject_patterns": [
+                r"@(?!Override|SuppressWarnings|Deprecated|FunctionalInterface|SafeVarargs|Serial)\b[A-Z][a-zA-Z]+\b",
+                r"\bdefault\s+(?:void|int|long|boolean|String|double|float)\s+\w+\s*\(",
+                r"public\s+\w+\s+\w+\s*<[A-Z]>\s*\(",
+            ],
         },
     },
     "CALLBACK": {
@@ -229,8 +266,21 @@ PROFILE_CATALOG: Dict[str, Dict[str, Any]] = {
             "callback_order_reversal_mutation",
             "callback_null_event_mutation",
         ],
-        "repair_rules": {"byte_literal_cast": True, "imports": []},
-        "filter_rules": {"reject_tokens": [], "reject_patterns": []},
+        "repair_rules": {
+            "byte_literal_cast": True,
+            "imports": [
+                "java.beans.PropertyChangeEvent;",
+                "java.beans.PropertyChangeListener;",
+                "java.beans.PropertyChangeSupport;",
+            ],
+        },
+        "filter_rules": {
+            "reject_tokens": [],
+            "reject_patterns": [
+                r"addIndexedPropertyChangeListener",
+                r"removeIndexedPropertyChangeListener",
+            ],
+        },
     },
     "TIME": {
         "profile_class": "TIME",
@@ -279,7 +329,16 @@ PROFILE_CATALOG: Dict[str, Dict[str, Any]] = {
         ],
         "repair_rules": {
             "byte_literal_cast": True,
-            "imports": ["java.lang.management.ManagementFactory;"],
+            "imports": [
+                "java.lang.management.ManagementFactory;",
+                "java.lang.management.MemoryMXBean;",
+                "java.lang.management.ThreadMXBean;",
+                "java.lang.management.ClassLoadingMXBean;",
+                "java.lang.management.RuntimeMXBean;",
+                "java.lang.management.CompilationMXBean;",
+                "java.lang.management.MemoryUsage;",
+                "javax.management.ObjectName;",
+            ],
         },
         "filter_rules": {"reject_tokens": [], "reject_patterns": []},
     },

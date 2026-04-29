@@ -106,6 +106,10 @@ class JAVATarget(Target):
             r"symbol:\s+method\s+[A-Za-z_][A-Za-z0-9_]*", normalized
         ):
             categories.append("nonexistent_method")
+        if "cannot find symbol" in normalized and re.search(
+            r"symbol:\s+variable\s+[A-Za-z_][A-Za-z0-9_]*", normalized
+        ):
+            categories.append("undeclared_variable")
         if "has protected access" in normalized:
             categories.append("protected_member_access")
         if "void type not allowed here" in normalized:
@@ -161,6 +165,8 @@ class JAVATarget(Target):
             categories.append("missing_import")
         if re.search(r"package\s+[A-Za-z0-9_.]+\s+does not exist", normalized):
             categories.append("missing_import")
+        if "'(' expected" in normalized and "generic" in normalized.lower():
+            categories.append("invalid_generic_syntax")
 
         return categories
 
@@ -214,6 +220,10 @@ class JAVATarget(Target):
                 rules.append(
                     f"Use only documented overloads of {target_api}; keep argument count and runtime types aligned with the JDK signature."
                 )
+        if "undeclared_variable" in categories:
+            rules.append(
+                "Declare all variables before using them; do not reference listener, proxy, event, or helper objects that are not created in the same method."
+            )
         if "protected_member_access" in categories:
             rules.append(
                 f"Do not access protected or internal fields of {target_api} from external code."
@@ -265,6 +275,10 @@ class JAVATarget(Target):
         if "invalid_exception_handling" in categories:
             rules.append(
                 "Catch only exceptions that the enclosed code can actually throw."
+            )
+        if "invalid_generic_syntax" in categories:
+            rules.append(
+                "Place type parameters before the return type: write `<T> void foo(T arg)`, not `void foo<T>(T arg)`."
             )
         if "invented_buffer_constant" in categories:
             rules.append(
