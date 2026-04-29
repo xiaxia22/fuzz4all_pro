@@ -88,14 +88,18 @@ class JAVATarget(Target):
         categories = []
         normalized = message or ""
 
-        if "cannot find symbol" in normalized:
-            categories.append("missing_public_method")
+        if "cannot find symbol" in normalized and re.search(
+            r"symbol:\s+method\s+[A-Za-z_][A-Za-z0-9_]*", normalized
+        ):
+            categories.append("nonexistent_method")
         if "has protected access" in normalized:
             categories.append("protected_member_access")
         if "void type not allowed here" in normalized:
             categories.append("write_used_as_expression")
         if "no suitable method found for write" in normalized:
             categories.append("invalid_write_overload")
+        if "no suitable method found for" in normalized:
+            categories.append("invalid_overload_call")
         if "cannot be applied to given types" in normalized:
             categories.append("invalid_method_signature")
         if "no suitable constructor found" in normalized:
@@ -146,11 +150,15 @@ class JAVATarget(Target):
 
         return categories
 
-    def extract_target_api_misuse_examples(self, message: str) -> List[str]:
+    def extract_missing_method_examples(self, message: str) -> List[str]:
         symbols = []
         for match in re.findall(r"symbol:\s+method\s+([A-Za-z_][A-Za-z0-9_]*)", message):
             if match not in symbols:
                 symbols.append(match)
+        return symbols[:3]
+
+    def extract_invalid_call_examples(self, message: str) -> List[str]:
+        symbols = []
         for match in re.findall(
             r"no suitable method found for\s+([A-Za-z_][A-Za-z0-9_]*\([^\)]*\))",
             message,
@@ -165,18 +173,33 @@ class JAVATarget(Target):
         target_api = self.prompt_used.get("target_api", "the target API")
         primary_tag = (self.mutation_profile or {}).get("primary_tag", "")
         rules = []
-        misuse_symbols = self.extract_target_api_misuse_examples(message)
+        missing_method_symbols = self.extract_missing_method_examples(message)
+        invalid_call_symbols = self.extract_invalid_call_examples(message)
 
-        if "missing_public_method" in categories:
-            if misuse_symbols:
+        if "nonexistent_method" in categories:
+            if missing_method_symbols:
                 rules.append(
                     "Do not call undocumented methods such as "
-                    + ", ".join(f"{name}()" if "(" not in name else name for name in misuse_symbols)
+                    + ", ".join(
+                        f"{name}()" if "(" not in name else name
+                        for name in missing_method_symbols
+                    )
                     + f" on {target_api}."
                 )
             rules.append(
                 f"Use only documented public methods and nested types of {target_api}."
             )
+        if "invalid_overload_call" in categories:
+            if invalid_call_symbols:
+                rules.append(
+                    "Use documented overloads exactly for calls such as "
+                    + ", ".join(invalid_call_symbols)
+                    + f" on {target_api}; keep argument count and runtime types aligned with the JDK signature."
+                )
+            else:
+                rules.append(
+                    f"Use only documented overloads of {target_api}; keep argument count and runtime types aligned with the JDK signature."
+                )
         if "protected_member_access" in categories:
             rules.append(
                 f"Do not access protected or internal fields of {target_api} from external code."

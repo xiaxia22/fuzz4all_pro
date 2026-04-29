@@ -118,63 +118,120 @@ class JavaMutator:
     # RESOURCE operators
     def resource_constructor_edge(self, code: str) -> List[str]:
         mutated = []
-        sized_pattern = re.compile(
-            r"new\s+BufferedOutputStream\((.+?),\s*(-?\d+)\)"
-        )
-        for size in ["1", "8", "8192", "0", "-1"]:
-            replaced, count = sized_pattern.subn(
-                lambda m: f"new BufferedOutputStream({m.group(1)}, {size})",
-                code,
-                count=1,
+        resource_types = [
+            "BufferedOutputStream",
+            "BufferedInputStream",
+            "BufferedReader",
+        ]
+        for resource_type in resource_types:
+            sized_pattern = re.compile(
+                rf"new\s+{resource_type}\((.+?),\s*(-?\d+)\)"
             )
-            if count:
-                mutated.append(replaced)
+            for size in ["1", "8", "8192", "0", "-1"]:
+                replaced, count = sized_pattern.subn(
+                    lambda m, rt=resource_type: f"new {rt}({m.group(1)}, {size})",
+                    code,
+                    count=1,
+                )
+                if count:
+                    mutated.append(replaced)
 
-        unsized_pattern = re.compile(r"new\s+BufferedOutputStream\(([^,\n]+)\)")
-        for size in ["8", "8192"]:
-            replaced, count = unsized_pattern.subn(
-                lambda m: f"new BufferedOutputStream({m.group(1)}, {size})",
-                code,
-                count=1,
-            )
-            if count:
-                mutated.append(replaced)
+            unsized_pattern = re.compile(rf"new\s+{resource_type}\(([^,\n]+)\)")
+            for size in ["1", "8", "8192"]:
+                replaced, count = unsized_pattern.subn(
+                    lambda m, rt=resource_type: f"new {rt}({m.group(1)}, {size})",
+                    code,
+                    count=1,
+                )
+                if count:
+                    mutated.append(replaced)
         return mutated
 
     def resource_lifecycle_sequence(self, code: str) -> List[str]:
-        variable_match = re.search(
+        mutated = []
+        output_match = re.search(
             r"BufferedOutputStream\s+([A-Za-z_][A-Za-z0-9_]*)\s*=",
             code,
         )
-        if not variable_match:
-            return []
-
-        variable_name = variable_match.group(1)
-        insert_after_write = re.compile(
-            rf"({re.escape(variable_name)}\s*\.\s*write\([^\n;]*\);\s*)"
+        if output_match:
+            variable_name = output_match.group(1)
+            insert_after_write = re.compile(
+                rf"({re.escape(variable_name)}\s*\.\s*write\([^\n;]*\);\s*)"
+            )
+            for snippet in [
+                f"\\1\n        {variable_name}.flush();",
+                f"\\1\n        {variable_name}.flush();\n        {variable_name}.write(255);",
+                f"\\1\n        {variable_name}.close();\n        {variable_name}.flush();",
+            ]:
+                replaced, count = insert_after_write.subn(snippet, code, count=1)
+                if count:
+                    mutated.append(replaced)
+        input_match = re.search(
+            r"BufferedInputStream\s+([A-Za-z_][A-Za-z0-9_]*)\s*=",
+            code,
         )
-        mutated = []
-        for snippet in [
-            f"\\1\n        {variable_name}.flush();",
-            f"\\1\n        {variable_name}.flush();\n        {variable_name}.write(255);",
-            f"\\1\n        {variable_name}.close();\n        {variable_name}.flush();",
-        ]:
-            replaced, count = insert_after_write.subn(snippet, code, count=1)
-            if count:
-                mutated.append(replaced)
+        if input_match:
+            variable_name = input_match.group(1)
+            mutated.extend(
+                self._insert_after_first_match(
+                    code,
+                    rf"(\bBufferedInputStream\s+{re.escape(variable_name)}\s*=\s*[^\n;]+;\s*)",
+                    [
+                        f"{variable_name}.mark(8);",
+                        f"try {{ {variable_name}.read(); {variable_name}.reset(); }} catch (Exception ignored) {{ }}",
+                        f"try {{ {variable_name}.available(); {variable_name}.skip(1L); }} catch (Exception ignored) {{ }}",
+                    ],
+                )
+            )
+        reader_match = re.search(
+            r"BufferedReader\s+([A-Za-z_][A-Za-z0-9_]*)\s*=",
+            code,
+        )
+        if reader_match:
+            variable_name = reader_match.group(1)
+            mutated.extend(
+                self._insert_after_first_match(
+                    code,
+                    rf"(\bBufferedReader\s+{re.escape(variable_name)}\s*=\s*[^\n;]+;\s*)",
+                    [
+                        f"{variable_name}.mark(16);",
+                        f"try {{ {variable_name}.read(); {variable_name}.reset(); }} catch (Exception ignored) {{ }}",
+                        f"try {{ {variable_name}.skip(1L); }} catch (Exception ignored) {{ }}",
+                    ],
+                )
+            )
         return mutated
 
     def resource_wrapper_depth(self, code: str) -> List[str]:
-        pattern = re.compile(r"new\s+BufferedOutputStream\(([^,\n]+)\)")
         mutated = []
-        replacements = [
-            lambda m: f"new BufferedOutputStream(new BufferedOutputStream({m.group(1)}))",
-            lambda m: f"new BufferedOutputStream(new java.io.ByteArrayOutputStream())",
+        patterns = [
+            (
+                re.compile(r"new\s+BufferedOutputStream\(([^,\n]+)\)"),
+                [
+                    lambda m: f"new BufferedOutputStream(new BufferedOutputStream({m.group(1)}))",
+                    lambda m: "new BufferedOutputStream(new java.io.ByteArrayOutputStream())",
+                ],
+            ),
+            (
+                re.compile(r"new\s+BufferedInputStream\(([^,\n]+)\)"),
+                [
+                    lambda m: f"new BufferedInputStream(new BufferedInputStream({m.group(1)}))",
+                    lambda m: "new BufferedInputStream(new java.io.ByteArrayInputStream(new byte[]{1,2,3}))",
+                ],
+            ),
+            (
+                re.compile(r"new\s+BufferedReader\(([^,\n]+)\)"),
+                [
+                    lambda m: f"new BufferedReader(new BufferedReader({m.group(1)}))",
+                    lambda m: 'new BufferedReader(new java.io.StringReader("abc"))',
+                ],
+            ),
         ]
-        for replacement in replacements:
-            replaced, count = pattern.subn(replacement, code, count=1)
-            if count:
-                mutated.append(replaced)
+        for pattern, replacements in patterns:
+            for replacement in replacements:
+                replaced, count = pattern.subn(replacement, code, count=1)
+                if count:
+                    mutated.append(replaced)
         return mutated
 
     def resource_exception_shell(self, code: str) -> List[str]:
@@ -208,11 +265,25 @@ class JavaMutator:
             )
             if count:
                 mutated.append(replaced)
+        if mutated:
+            return mutated
+        for pattern in [
+            re.compile(r"(\.\s*skip\()\s*(-?\d+L?)\s*(\))"),
+            re.compile(r"(\.\s*mark\()\s*(-?\d+)\s*(\))"),
+        ]:
+            for value in ["0", "1", "8", "-1"]:
+                replaced, count = pattern.subn(
+                    lambda m: f"{m.group(1)}{value}{m.group(3)}",
+                    code,
+                    count=1,
+                )
+                if count:
+                    mutated.append(replaced)
         return mutated
 
     def buffer_write_bulk_edge(self, code: str) -> List[str]:
         pattern = re.compile(
-            r"(\.\s*write\(\s*[^,\n]+,\s*)([^,\n]+)(\s*,\s*)([^)\n]+)(\s*\))"
+            r"(\.\s*(?:write|read)\(\s*[^,\n]+,\s*)([^,\n]+)(\s*,\s*)([^)\n]+)(\s*\))"
         )
         mutated = []
         combos = [
@@ -483,9 +554,16 @@ class JavaMutator:
         return ["\n".join(reordered)]
 
     def callback_null_event_mutation(self, code: str) -> List[str]:
-        return self._rewrite_first(
+        mutated = self._rewrite_first(
             r"(\.\s*(?:handle|accept|actionPerformed|stateChanged|itemStateChanged|windowOpened|mouseClicked)\()\s*([^)]+)(\))",
             lambda: [r"\1null\3"],
+            code,
+        )
+        if mutated:
+            return mutated
+        return self._rewrite_first(
+            r"(\.\s*firePropertyChange\(\s*[^,\n]+,\s*)([^,\n]+)(\s*,\s*)([^)\n]+)(\))",
+            lambda: [r'\1null\3null\4', r'\1""\3null\4'],
             code,
         )
 
@@ -578,12 +656,22 @@ class JavaMutator:
 
     # JVM_MGMT operators
     def jvm_mgmt_query_name_mutation(self, code: str) -> List[str]:
-        return self._replace_first_string_literal(
+        mutated = self._replace_first_string_literal(
             code,
             [
                 '"java.lang:type=Memory"',
                 '"java.lang:type=Threading"',
+                '"java.lang:type=Runtime"',
                 '"bad:name="',
+            ],
+        )
+        if mutated:
+            return mutated
+        return self._insert_after_main_open(
+            code,
+            [
+                'javax.management.ObjectName memoryName = new javax.management.ObjectName("java.lang:type=Memory");',
+                'javax.management.ObjectName threadName = new javax.management.ObjectName("java.lang:type=Threading");',
             ],
         )
 
@@ -593,11 +681,21 @@ class JavaMutator:
             [
                 "java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments();",
                 "java.lang.management.ManagementFactory.getMemoryMXBean().getHeapMemoryUsage();",
+                "java.lang.management.ManagementFactory.getThreadMXBean().getThreadCount();",
             ],
         )
 
     def jvm_mgmt_sampling_boundary_mutation(self, code: str) -> List[str]:
-        return self._replace_first_numeric_literal(code, ["0L", "1L", "Long.MAX_VALUE"])
+        mutated = self._replace_first_numeric_literal(code, ["0L", "1L", "Long.MAX_VALUE"])
+        if mutated:
+            return mutated
+        return self._insert_after_main_open(
+            code,
+            [
+                "long[] ids = java.lang.management.ManagementFactory.getThreadMXBean().getAllThreadIds();",
+                "java.lang.management.ManagementFactory.getMemoryMXBean().getObjectPendingFinalizationCount();",
+            ],
+        )
 
     # MARK_SUPPORT operators
     def mark_support_limit_mutation(self, code: str) -> List[str]:

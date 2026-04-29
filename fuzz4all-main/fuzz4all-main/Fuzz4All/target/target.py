@@ -311,6 +311,16 @@ class Target(object):
             for rule in self.failure_rules:
                 f.write(rule + "\n")
 
+    def _write_refresh_status(self, round_id: int, status: str, reason: str) -> None:
+        prompt_dir = os.path.join(self.folder, "prompts")
+        os.makedirs(prompt_dir, exist_ok=True)
+        with open(
+            os.path.join(prompt_dir, f"refresh_status_round_{round_id}.txt"),
+            "w",
+            encoding="utf-8",
+        ) as f:
+            f.write(f"status={status}\nreason={reason}\n")
+
     def _init_mutation_components(self):
         config_dict = getattr(self, "config_dict", {})
         target_cfg = config_dict.get("target", {})
@@ -787,10 +797,17 @@ class Target(object):
             f.write(f"best\t{best_name}\t{best_score}\n")
 
         should_accept = False
+        decision_reason = ""
         if self.base_prompt_score is None:
             should_accept = best_score > 0
+            decision_reason = (
+                f"baseline=None, accept if best_score > 0; observed best_score={best_score}"
+            )
         else:
             should_accept = best_score >= self.base_prompt_score
+            decision_reason = (
+                f"baseline={self.base_prompt_score}, accept if best_score >= baseline; observed best_score={best_score}"
+            )
 
         if should_accept:
             self.base_prompt_score = best_score
@@ -807,6 +824,17 @@ class Target(object):
                 encoding="utf-8",
             ) as f:
                 f.write(best_prompt)
+            with open(
+                os.path.join(prompt_dir, f"refresh_decision_round_{round_id}.txt"),
+                "w",
+                encoding="utf-8",
+            ) as f:
+                f.write(
+                    "status=accepted\n"
+                    + f"winner={best_name}\n"
+                    + f"score={best_score}\n"
+                    + f"{decision_reason}\n"
+                )
             self.m_logger.logo(
                 f"Accepted refreshed prompt from round {round_id}: {best_name} (score {best_score}).",
                 level=LEVEL.INFO,
@@ -814,6 +842,17 @@ class Target(object):
             self.batch_feedback_window = []
             return best_prompt
 
+        with open(
+            os.path.join(prompt_dir, f"refresh_decision_round_{round_id}.txt"),
+            "w",
+            encoding="utf-8",
+        ) as f:
+            f.write(
+                "status=rejected\n"
+                + f"winner={best_name}\n"
+                + f"score={best_score}\n"
+                + f"{decision_reason}\n"
+            )
         self.m_logger.logo(
             f"Rejected refreshed prompt from round {round_id}: best score {best_score} did not beat baseline {self.base_prompt_score}.",
             level=LEVEL.INFO,
@@ -1163,10 +1202,33 @@ class Target(object):
                 and current_rule_signature != self.last_refresh_rule_signature
             )
             if should_refresh:
+                self._write_refresh_status(
+                    self.update_round,
+                    "attempted",
+                    "refresh interval reached with a new failure-rule signature",
+                )
                 refreshed_prompt = self.refresh_prompt_from_feedback()
                 if refreshed_prompt:
                     self.base_prompt = refreshed_prompt
                 self.last_refresh_rule_signature = current_rule_signature
+            else:
+                reasons = []
+                if self.prompt_refresh_interval <= 0:
+                    reasons.append("prompt refresh disabled")
+                if self.prompt_refresh_interval > 0 and self.update_round % self.prompt_refresh_interval != 0:
+                    reasons.append("round did not hit refresh interval")
+                if not current_rule_signature:
+                    reasons.append("no failure-rule signature available")
+                if (
+                    current_rule_signature
+                    and current_rule_signature == self.last_refresh_rule_signature
+                ):
+                    reasons.append("failure-rule signature unchanged")
+                self._write_refresh_status(
+                    self.update_round,
+                    "skipped",
+                    "; ".join(reasons) if reasons else "refresh conditions not met",
+                )
             self.runtime_prompt = self._create_feedback_prompt(
                 self.safe_examples, self.failure_rules
             )
