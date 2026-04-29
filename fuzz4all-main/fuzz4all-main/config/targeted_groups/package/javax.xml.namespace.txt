@@ -1,0 +1,2 @@
+﻿config/targeted/java.xml_javax_xml_namespace_NamespaceContext.yaml
+config/targeted/java.xml_javax_xml_namespace_QName.yaml

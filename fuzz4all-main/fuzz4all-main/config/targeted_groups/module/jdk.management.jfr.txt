@@ -1,0 +1,5 @@
+﻿config/targeted/jdk.management.jfr_jdk_management_jfr_ConfigurationInfo.yaml
+config/targeted/jdk.management.jfr_jdk_management_jfr_EventTypeInfo.yaml
+config/targeted/jdk.management.jfr_jdk_management_jfr_FlightRecorderMXBean.yaml
+config/targeted/jdk.management.jfr_jdk_management_jfr_RecordingInfo.yaml
+config/targeted/jdk.management.jfr_jdk_management_jfr_SettingDescriptorInfo.yaml

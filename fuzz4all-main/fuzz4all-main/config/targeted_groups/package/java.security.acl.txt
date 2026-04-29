@@ -1,0 +1,8 @@
+﻿config/targeted/java.base_java_security_acl_Acl.yaml
+config/targeted/java.base_java_security_acl_AclEntry.yaml
+config/targeted/java.base_java_security_acl_AclNotFoundException.yaml
+config/targeted/java.base_java_security_acl_Group.yaml
+config/targeted/java.base_java_security_acl_LastOwnerException.yaml
+config/targeted/java.base_java_security_acl_NotOwnerException.yaml
+config/targeted/java.base_java_security_acl_Owner.yaml
+config/targeted/java.base_java_security_acl_Permission.yaml

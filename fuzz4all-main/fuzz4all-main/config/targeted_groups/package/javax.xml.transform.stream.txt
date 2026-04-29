@@ -1,0 +1,2 @@
+﻿config/targeted/java.xml_javax_xml_transform_stream_StreamResult.yaml
+config/targeted/java.xml_javax_xml_transform_stream_StreamSource.yaml

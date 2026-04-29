@@ -1,0 +1,5 @@
+﻿config/targeted/jdk.xml.dom_org_w3c_dom_stylesheets_DocumentStyle.yaml
+config/targeted/jdk.xml.dom_org_w3c_dom_stylesheets_LinkStyle.yaml
+config/targeted/jdk.xml.dom_org_w3c_dom_stylesheets_MediaList.yaml
+config/targeted/jdk.xml.dom_org_w3c_dom_stylesheets_StyleSheet.yaml
+config/targeted/jdk.xml.dom_org_w3c_dom_stylesheets_StyleSheetList.yaml

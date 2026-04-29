@@ -1,0 +1,1 @@
+﻿config/targeted/java.base_java_nio_charset_spi_CharsetProvider.yaml

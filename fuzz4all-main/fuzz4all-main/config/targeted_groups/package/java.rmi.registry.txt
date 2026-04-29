@@ -1,0 +1,3 @@
+﻿config/targeted/java.rmi_java_rmi_registry_LocateRegistry.yaml
+config/targeted/java.rmi_java_rmi_registry_Registry.yaml
+config/targeted/java.rmi_java_rmi_registry_RegistryHandler.yaml

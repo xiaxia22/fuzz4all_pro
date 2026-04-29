@@ -1,0 +1,6 @@
+﻿config/targeted/java.xml_javax_xml_parsers_DocumentBuilder.yaml
+config/targeted/java.xml_javax_xml_parsers_DocumentBuilderFactory.yaml
+config/targeted/java.xml_javax_xml_parsers_FactoryConfigurationError.yaml
+config/targeted/java.xml_javax_xml_parsers_ParserConfigurationException.yaml
+config/targeted/java.xml_javax_xml_parsers_SAXParser.yaml
+config/targeted/java.xml_javax_xml_parsers_SAXParserFactory.yaml

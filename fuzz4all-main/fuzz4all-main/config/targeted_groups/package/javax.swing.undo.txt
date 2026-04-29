@@ -1,0 +1,9 @@
+﻿config/targeted/java.desktop_javax_swing_undo_AbstractUndoableEdit.yaml
+config/targeted/java.desktop_javax_swing_undo_CannotRedoException.yaml
+config/targeted/java.desktop_javax_swing_undo_CannotUndoException.yaml
+config/targeted/java.desktop_javax_swing_undo_CompoundEdit.yaml
+config/targeted/java.desktop_javax_swing_undo_StateEdit.yaml
+config/targeted/java.desktop_javax_swing_undo_StateEditable.yaml
+config/targeted/java.desktop_javax_swing_undo_UndoableEdit.yaml
+config/targeted/java.desktop_javax_swing_undo_UndoableEditSupport.yaml
+config/targeted/java.desktop_javax_swing_undo_UndoManager.yaml

@@ -1,0 +1,11 @@
+﻿config/targeted/java.desktop_javax_swing_border_AbstractBorder.yaml
+config/targeted/java.desktop_javax_swing_border_BevelBorder.yaml
+config/targeted/java.desktop_javax_swing_border_Border.yaml
+config/targeted/java.desktop_javax_swing_border_CompoundBorder.yaml
+config/targeted/java.desktop_javax_swing_border_EmptyBorder.yaml
+config/targeted/java.desktop_javax_swing_border_EtchedBorder.yaml
+config/targeted/java.desktop_javax_swing_border_LineBorder.yaml
+config/targeted/java.desktop_javax_swing_border_MatteBorder.yaml
+config/targeted/java.desktop_javax_swing_border_SoftBevelBorder.yaml
+config/targeted/java.desktop_javax_swing_border_StrokeBorder.yaml
+config/targeted/java.desktop_javax_swing_border_TitledBorder.yaml

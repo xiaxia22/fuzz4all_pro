@@ -1,0 +1,5 @@
+﻿config/targeted/java.xml_javax_xml_transform_sax_SAXResult.yaml
+config/targeted/java.xml_javax_xml_transform_sax_SAXSource.yaml
+config/targeted/java.xml_javax_xml_transform_sax_SAXTransformerFactory.yaml
+config/targeted/java.xml_javax_xml_transform_sax_TemplatesHandler.yaml
+config/targeted/java.xml_javax_xml_transform_sax_TransformerHandler.yaml

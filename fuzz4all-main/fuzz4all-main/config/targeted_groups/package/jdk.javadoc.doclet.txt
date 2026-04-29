@@ -1,0 +1,9 @@
+﻿config/targeted/jdk.javadoc_jdk_javadoc_doclet_Doclet.Option.Kind.yaml
+config/targeted/jdk.javadoc_jdk_javadoc_doclet_Doclet.Option.yaml
+config/targeted/jdk.javadoc_jdk_javadoc_doclet_Doclet.yaml
+config/targeted/jdk.javadoc_jdk_javadoc_doclet_DocletEnvironment.ModuleMode.yaml
+config/targeted/jdk.javadoc_jdk_javadoc_doclet_DocletEnvironment.yaml
+config/targeted/jdk.javadoc_jdk_javadoc_doclet_Reporter.yaml
+config/targeted/jdk.javadoc_jdk_javadoc_doclet_StandardDoclet.yaml
+config/targeted/jdk.javadoc_jdk_javadoc_doclet_Taglet.Location.yaml
+config/targeted/jdk.javadoc_jdk_javadoc_doclet_Taglet.yaml

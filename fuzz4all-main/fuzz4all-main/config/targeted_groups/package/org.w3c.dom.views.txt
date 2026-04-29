@@ -1,0 +1,2 @@
+﻿config/targeted/java.xml_org_w3c_dom_views_AbstractView.yaml
+config/targeted/java.xml_org_w3c_dom_views_DocumentView.yaml

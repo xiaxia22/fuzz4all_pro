@@ -1,0 +1,6 @@
+﻿config/targeted/java.base_java_time_zone_ZoneOffsetTransition.yaml
+config/targeted/java.base_java_time_zone_ZoneOffsetTransitionRule.TimeDefinition.yaml
+config/targeted/java.base_java_time_zone_ZoneOffsetTransitionRule.yaml
+config/targeted/java.base_java_time_zone_ZoneRules.yaml
+config/targeted/java.base_java_time_zone_ZoneRulesException.yaml
+config/targeted/java.base_java_time_zone_ZoneRulesProvider.yaml

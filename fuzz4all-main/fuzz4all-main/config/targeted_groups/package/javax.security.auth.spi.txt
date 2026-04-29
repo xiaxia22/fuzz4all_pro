@@ -1,0 +1,1 @@
+﻿config/targeted/java.base_javax_security_auth_spi_LoginModule.yaml

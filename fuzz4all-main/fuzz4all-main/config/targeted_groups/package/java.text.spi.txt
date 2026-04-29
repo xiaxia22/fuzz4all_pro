@@ -1,0 +1,6 @@
+﻿config/targeted/java.base_java_text_spi_BreakIteratorProvider.yaml
+config/targeted/java.base_java_text_spi_CollatorProvider.yaml
+config/targeted/java.base_java_text_spi_DateFormatProvider.yaml
+config/targeted/java.base_java_text_spi_DateFormatSymbolsProvider.yaml
+config/targeted/java.base_java_text_spi_DecimalFormatSymbolsProvider.yaml
+config/targeted/java.base_java_text_spi_NumberFormatProvider.yaml

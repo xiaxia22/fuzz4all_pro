@@ -1,0 +1,3 @@
+﻿config/targeted/java.desktop_java_awt_im_spi_InputMethod.yaml
+config/targeted/java.desktop_java_awt_im_spi_InputMethodContext.yaml
+config/targeted/java.desktop_java_awt_im_spi_InputMethodDescriptor.yaml

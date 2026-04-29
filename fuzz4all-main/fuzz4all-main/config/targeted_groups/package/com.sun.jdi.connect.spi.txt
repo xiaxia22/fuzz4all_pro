@@ -1,0 +1,5 @@
+﻿config/targeted/jdk.jdi_com_sun_jdi_connect_spi_ClosedConnectionException.yaml
+config/targeted/jdk.jdi_com_sun_jdi_connect_spi_Connection.yaml
+config/targeted/jdk.jdi_com_sun_jdi_connect_spi_TransportService.Capabilities.yaml
+config/targeted/jdk.jdi_com_sun_jdi_connect_spi_TransportService.ListenKey.yaml
+config/targeted/jdk.jdi_com_sun_jdi_connect_spi_TransportService.yaml

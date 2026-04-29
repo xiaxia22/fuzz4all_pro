@@ -1,0 +1,17 @@
+﻿config/targeted/java.xml_org_xml_sax_AttributeList.yaml
+config/targeted/java.xml_org_xml_sax_Attributes.yaml
+config/targeted/java.xml_org_xml_sax_ContentHandler.yaml
+config/targeted/java.xml_org_xml_sax_DocumentHandler.yaml
+config/targeted/java.xml_org_xml_sax_DTDHandler.yaml
+config/targeted/java.xml_org_xml_sax_EntityResolver.yaml
+config/targeted/java.xml_org_xml_sax_ErrorHandler.yaml
+config/targeted/java.xml_org_xml_sax_HandlerBase.yaml
+config/targeted/java.xml_org_xml_sax_InputSource.yaml
+config/targeted/java.xml_org_xml_sax_Locator.yaml
+config/targeted/java.xml_org_xml_sax_Parser.yaml
+config/targeted/java.xml_org_xml_sax_SAXException.yaml
+config/targeted/java.xml_org_xml_sax_SAXNotRecognizedException.yaml
+config/targeted/java.xml_org_xml_sax_SAXNotSupportedException.yaml
+config/targeted/java.xml_org_xml_sax_SAXParseException.yaml
+config/targeted/java.xml_org_xml_sax_XMLFilter.yaml
+config/targeted/java.xml_org_xml_sax_XMLReader.yaml

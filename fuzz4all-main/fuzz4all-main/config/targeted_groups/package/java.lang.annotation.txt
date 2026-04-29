@@ -1,0 +1,12 @@
+﻿config/targeted/java.base_java_lang_annotation_Annotation.yaml
+config/targeted/java.base_java_lang_annotation_AnnotationFormatError.yaml
+config/targeted/java.base_java_lang_annotation_AnnotationTypeMismatchException.yaml
+config/targeted/java.base_java_lang_annotation_Documented.yaml
+config/targeted/java.base_java_lang_annotation_ElementType.yaml
+config/targeted/java.base_java_lang_annotation_IncompleteAnnotationException.yaml
+config/targeted/java.base_java_lang_annotation_Inherited.yaml
+config/targeted/java.base_java_lang_annotation_Native.yaml
+config/targeted/java.base_java_lang_annotation_Repeatable.yaml
+config/targeted/java.base_java_lang_annotation_Retention.yaml
+config/targeted/java.base_java_lang_annotation_RetentionPolicy.yaml
+config/targeted/java.base_java_lang_annotation_Target.yaml

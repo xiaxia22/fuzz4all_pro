@@ -1,0 +1,9 @@
+﻿config/targeted/java.prefs_java_util_prefs_AbstractPreferences.yaml
+config/targeted/java.prefs_java_util_prefs_BackingStoreException.yaml
+config/targeted/java.prefs_java_util_prefs_InvalidPreferencesFormatException.yaml
+config/targeted/java.prefs_java_util_prefs_NodeChangeEvent.yaml
+config/targeted/java.prefs_java_util_prefs_NodeChangeListener.yaml
+config/targeted/java.prefs_java_util_prefs_PreferenceChangeEvent.yaml
+config/targeted/java.prefs_java_util_prefs_PreferenceChangeListener.yaml
+config/targeted/java.prefs_java_util_prefs_Preferences.yaml
+config/targeted/java.prefs_java_util_prefs_PreferencesFactory.yaml

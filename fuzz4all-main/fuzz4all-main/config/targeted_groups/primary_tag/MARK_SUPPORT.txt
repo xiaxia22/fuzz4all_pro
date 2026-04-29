@@ -1,0 +1,4 @@
+﻿config/targeted/java.base_java_util_concurrent_atomic_DoubleAdder.yaml
+config/targeted/java.base_java_util_concurrent_atomic_LongAdder.yaml
+config/targeted/java.base_java_util_concurrent_CyclicBarrier.yaml
+config/targeted/jdk.xml.dom_org_w3c_dom_css_CSS2Properties.yaml

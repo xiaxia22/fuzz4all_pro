@@ -1,0 +1,1 @@
+﻿config/targeted/jdk.javadoc_com_sun_tools_javadoc_Main.yaml

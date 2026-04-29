@@ -1,0 +1,8 @@
+﻿config/targeted/java.xml_org_xml_sax_ext_Attributes2.yaml
+config/targeted/java.xml_org_xml_sax_ext_Attributes2Impl.yaml
+config/targeted/java.xml_org_xml_sax_ext_DeclHandler.yaml
+config/targeted/java.xml_org_xml_sax_ext_DefaultHandler2.yaml
+config/targeted/java.xml_org_xml_sax_ext_EntityResolver2.yaml
+config/targeted/java.xml_org_xml_sax_ext_LexicalHandler.yaml
+config/targeted/java.xml_org_xml_sax_ext_Locator2.yaml
+config/targeted/java.xml_org_xml_sax_ext_Locator2Impl.yaml

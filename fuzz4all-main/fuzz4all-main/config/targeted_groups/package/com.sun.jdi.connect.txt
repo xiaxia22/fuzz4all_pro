@@ -1,0 +1,13 @@
+﻿config/targeted/jdk.jdi_com_sun_jdi_connect_AttachingConnector.yaml
+config/targeted/jdk.jdi_com_sun_jdi_connect_Connector.Argument.yaml
+config/targeted/jdk.jdi_com_sun_jdi_connect_Connector.BooleanArgument.yaml
+config/targeted/jdk.jdi_com_sun_jdi_connect_Connector.IntegerArgument.yaml
+config/targeted/jdk.jdi_com_sun_jdi_connect_Connector.SelectedArgument.yaml
+config/targeted/jdk.jdi_com_sun_jdi_connect_Connector.StringArgument.yaml
+config/targeted/jdk.jdi_com_sun_jdi_connect_Connector.yaml
+config/targeted/jdk.jdi_com_sun_jdi_connect_IllegalConnectorArgumentsException.yaml
+config/targeted/jdk.jdi_com_sun_jdi_connect_LaunchingConnector.yaml
+config/targeted/jdk.jdi_com_sun_jdi_connect_ListeningConnector.yaml
+config/targeted/jdk.jdi_com_sun_jdi_connect_Transport.yaml
+config/targeted/jdk.jdi_com_sun_jdi_connect_TransportTimeoutException.yaml
+config/targeted/jdk.jdi_com_sun_jdi_connect_VMStartException.yaml

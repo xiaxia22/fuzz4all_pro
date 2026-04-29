@@ -1,0 +1,8 @@
+﻿config/targeted/java.desktop_javax_print_event_PrintEvent.yaml
+config/targeted/java.desktop_javax_print_event_PrintJobAdapter.yaml
+config/targeted/java.desktop_javax_print_event_PrintJobAttributeEvent.yaml
+config/targeted/java.desktop_javax_print_event_PrintJobAttributeListener.yaml
+config/targeted/java.desktop_javax_print_event_PrintJobEvent.yaml
+config/targeted/java.desktop_javax_print_event_PrintJobListener.yaml
+config/targeted/java.desktop_javax_print_event_PrintServiceAttributeEvent.yaml
+config/targeted/java.desktop_javax_print_event_PrintServiceAttributeListener.yaml

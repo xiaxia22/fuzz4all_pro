@@ -1,0 +1,7 @@
+﻿config/targeted/java.xml_javax_xml_validation_Schema.yaml
+config/targeted/java.xml_javax_xml_validation_SchemaFactory.yaml
+config/targeted/java.xml_javax_xml_validation_SchemaFactoryConfigurationError.yaml
+config/targeted/java.xml_javax_xml_validation_SchemaFactoryLoader.yaml
+config/targeted/java.xml_javax_xml_validation_TypeInfoProvider.yaml
+config/targeted/java.xml_javax_xml_validation_Validator.yaml
+config/targeted/java.xml_javax_xml_validation_ValidatorHandler.yaml

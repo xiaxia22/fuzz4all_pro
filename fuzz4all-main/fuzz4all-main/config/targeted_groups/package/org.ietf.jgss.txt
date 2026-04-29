@@ -1,0 +1,8 @@
+﻿config/targeted/java.security.jgss_org_ietf_jgss_ChannelBinding.yaml
+config/targeted/java.security.jgss_org_ietf_jgss_GSSContext.yaml
+config/targeted/java.security.jgss_org_ietf_jgss_GSSCredential.yaml
+config/targeted/java.security.jgss_org_ietf_jgss_GSSException.yaml
+config/targeted/java.security.jgss_org_ietf_jgss_GSSManager.yaml
+config/targeted/java.security.jgss_org_ietf_jgss_GSSName.yaml
+config/targeted/java.security.jgss_org_ietf_jgss_MessageProp.yaml
+config/targeted/java.security.jgss_org_ietf_jgss_Oid.yaml

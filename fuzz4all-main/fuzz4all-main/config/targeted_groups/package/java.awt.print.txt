@@ -1,0 +1,10 @@
+﻿config/targeted/java.desktop_java_awt_print_Book.yaml
+config/targeted/java.desktop_java_awt_print_Pageable.yaml
+config/targeted/java.desktop_java_awt_print_PageFormat.yaml
+config/targeted/java.desktop_java_awt_print_Paper.yaml
+config/targeted/java.desktop_java_awt_print_Printable.yaml
+config/targeted/java.desktop_java_awt_print_PrinterAbortException.yaml
+config/targeted/java.desktop_java_awt_print_PrinterException.yaml
+config/targeted/java.desktop_java_awt_print_PrinterGraphics.yaml
+config/targeted/java.desktop_java_awt_print_PrinterIOException.yaml
+config/targeted/java.desktop_java_awt_print_PrinterJob.yaml

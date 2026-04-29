@@ -1,0 +1,17 @@
+﻿config/targeted/java.logging_java_util_logging_ConsoleHandler.yaml
+config/targeted/java.logging_java_util_logging_ErrorManager.yaml
+config/targeted/java.logging_java_util_logging_FileHandler.yaml
+config/targeted/java.logging_java_util_logging_Filter.yaml
+config/targeted/java.logging_java_util_logging_Formatter.yaml
+config/targeted/java.logging_java_util_logging_Handler.yaml
+config/targeted/java.logging_java_util_logging_Level.yaml
+config/targeted/java.logging_java_util_logging_Logger.yaml
+config/targeted/java.logging_java_util_logging_LoggingMXBean.yaml
+config/targeted/java.logging_java_util_logging_LoggingPermission.yaml
+config/targeted/java.logging_java_util_logging_LogManager.yaml
+config/targeted/java.logging_java_util_logging_LogRecord.yaml
+config/targeted/java.logging_java_util_logging_MemoryHandler.yaml
+config/targeted/java.logging_java_util_logging_SimpleFormatter.yaml
+config/targeted/java.logging_java_util_logging_SocketHandler.yaml
+config/targeted/java.logging_java_util_logging_StreamHandler.yaml
+config/targeted/java.logging_java_util_logging_XMLFormatter.yaml

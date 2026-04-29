@@ -1,0 +1,6 @@
+﻿config/targeted/java.xml_javax_xml_datatype_DatatypeConfigurationException.yaml
+config/targeted/java.xml_javax_xml_datatype_DatatypeConstants.Field.yaml
+config/targeted/java.xml_javax_xml_datatype_DatatypeConstants.yaml
+config/targeted/java.xml_javax_xml_datatype_DatatypeFactory.yaml
+config/targeted/java.xml_javax_xml_datatype_Duration.yaml
+config/targeted/java.xml_javax_xml_datatype_XMLGregorianCalendar.yaml

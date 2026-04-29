@@ -1,0 +1,4 @@
+﻿config/targeted/java.xml_org_w3c_dom_traversal_DocumentTraversal.yaml
+config/targeted/java.xml_org_w3c_dom_traversal_NodeFilter.yaml
+config/targeted/java.xml_org_w3c_dom_traversal_NodeIterator.yaml
+config/targeted/java.xml_org_w3c_dom_traversal_TreeWalker.yaml

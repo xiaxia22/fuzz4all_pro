@@ -1,0 +1,7 @@
+﻿config/targeted/java.base_javax_security_cert_Certificate.yaml
+config/targeted/java.base_javax_security_cert_CertificateEncodingException.yaml
+config/targeted/java.base_javax_security_cert_CertificateException.yaml
+config/targeted/java.base_javax_security_cert_CertificateExpiredException.yaml
+config/targeted/java.base_javax_security_cert_CertificateNotYetValidException.yaml
+config/targeted/java.base_javax_security_cert_CertificateParsingException.yaml
+config/targeted/java.base_javax_security_cert_X509Certificate.yaml

@@ -1,0 +1,14 @@
+﻿config/targeted/java.base_java_nio_Buffer.yaml
+config/targeted/java.base_java_nio_BufferOverflowException.yaml
+config/targeted/java.base_java_nio_BufferUnderflowException.yaml
+config/targeted/java.base_java_nio_ByteBuffer.yaml
+config/targeted/java.base_java_nio_ByteOrder.yaml
+config/targeted/java.base_java_nio_CharBuffer.yaml
+config/targeted/java.base_java_nio_DoubleBuffer.yaml
+config/targeted/java.base_java_nio_FloatBuffer.yaml
+config/targeted/java.base_java_nio_IntBuffer.yaml
+config/targeted/java.base_java_nio_InvalidMarkException.yaml
+config/targeted/java.base_java_nio_LongBuffer.yaml
+config/targeted/java.base_java_nio_MappedByteBuffer.yaml
+config/targeted/java.base_java_nio_ReadOnlyBufferException.yaml
+config/targeted/java.base_java_nio_ShortBuffer.yaml

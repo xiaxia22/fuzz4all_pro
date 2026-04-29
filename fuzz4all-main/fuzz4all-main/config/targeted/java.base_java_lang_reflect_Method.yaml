@@ -3,7 +3,7 @@
 
 fuzzing:
   output_folder: outputs/targeted/java.base_java_lang_reflect_Method
-  num: 10000
+  num: 60
   total_time: 24
   log_level: 3
   otf: true
@@ -19,16 +19,16 @@ target:
   enable_preview: true
   runtime_feedback_mode: normalized
   max_feedback_rules: 5
-  max_safe_examples: 2
-  prompt_refresh_interval: 5
-  prompt_refresh_candidates: 2
+  max_safe_examples: 3
+  prompt_refresh_interval: 2
+  prompt_refresh_candidates: 1
   enable_mutation: true
   mutation_budget_per_seed: 2
-  mutation_operator_topk: 8
+  mutation_operator_topk: 6
   path_classification_result: outputs/api_classification/java_api_5d_classification.json
   path_documentation: config/documentation/java.base_java_lang_reflect_Method.md
   path_example_code:
-  trigger_to_generate_input: "/* Please create a very short Java program that uses java.lang.reflect.Method in diverse and tricky ways. Exercise realistic API calls, edge-case argument combinations, nested types when relevant, and error-prone usage patterns that still try to compile. */"
+  trigger_to_generate_input: "/* Please create a very short Java program that uses java.lang.reflect.Method in diverse and tricky ways. Use only standard JDK reflection APIs and public imports. Focus on member lookup, accessibility changes, receiver/value mismatches, and varargs or overload edge cases, but avoid third-party helpers, illegal default-method declarations, or fabricated APIs. */"
   input_hint: "import java.lang.reflect.Method;"
   path_hand_written_prompt:
   target_string: "Method"
@@ -44,10 +44,10 @@ llm:
   autoprompt_temperature: 0.9
   autoprompt_greedy_temperature: 0.2
   autoprompt_max_tokens: 256
-  autoprompt_validation_batch_size: 8
-  autoprompt_validation_max_length: 512
+  autoprompt_validation_batch_size: 6
+  autoprompt_validation_max_length: 448
   runtime_autoprompt_model: deepseek-chat
   runtime_autoprompt_temperature: 0.7
   runtime_autoprompt_max_tokens: 256
-  runtime_refresh_validation_batch_size: 4
-  runtime_refresh_validation_max_length: 384
+  runtime_refresh_validation_batch_size: 3
+  runtime_refresh_validation_max_length: 320

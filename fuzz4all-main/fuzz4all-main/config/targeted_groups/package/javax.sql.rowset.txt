@@ -1,0 +1,12 @@
+﻿config/targeted/java.sql.rowset_javax_sql_rowset_BaseRowSet.yaml
+config/targeted/java.sql.rowset_javax_sql_rowset_CachedRowSet.yaml
+config/targeted/java.sql.rowset_javax_sql_rowset_FilteredRowSet.yaml
+config/targeted/java.sql.rowset_javax_sql_rowset_JdbcRowSet.yaml
+config/targeted/java.sql.rowset_javax_sql_rowset_Joinable.yaml
+config/targeted/java.sql.rowset_javax_sql_rowset_JoinRowSet.yaml
+config/targeted/java.sql.rowset_javax_sql_rowset_Predicate.yaml
+config/targeted/java.sql.rowset_javax_sql_rowset_RowSetFactory.yaml
+config/targeted/java.sql.rowset_javax_sql_rowset_RowSetMetaDataImpl.yaml
+config/targeted/java.sql.rowset_javax_sql_rowset_RowSetProvider.yaml
+config/targeted/java.sql.rowset_javax_sql_rowset_RowSetWarning.yaml
+config/targeted/java.sql.rowset_javax_sql_rowset_WebRowSet.yaml

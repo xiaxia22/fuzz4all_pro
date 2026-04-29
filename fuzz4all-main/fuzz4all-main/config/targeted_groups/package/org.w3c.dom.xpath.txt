@@ -1,0 +1,6 @@
+﻿config/targeted/jdk.xml.dom_org_w3c_dom_xpath_XPathEvaluator.yaml
+config/targeted/jdk.xml.dom_org_w3c_dom_xpath_XPathException.yaml
+config/targeted/jdk.xml.dom_org_w3c_dom_xpath_XPathExpression.yaml
+config/targeted/jdk.xml.dom_org_w3c_dom_xpath_XPathNamespace.yaml
+config/targeted/jdk.xml.dom_org_w3c_dom_xpath_XPathNSResolver.yaml
+config/targeted/jdk.xml.dom_org_w3c_dom_xpath_XPathResult.yaml

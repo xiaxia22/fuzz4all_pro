@@ -1,0 +1,1 @@
+﻿config/targeted/jdk.attach_com_sun_tools_attach_spi_AttachProvider.yaml

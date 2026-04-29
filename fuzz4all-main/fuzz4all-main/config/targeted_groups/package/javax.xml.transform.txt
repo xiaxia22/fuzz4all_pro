@@ -1,0 +1,12 @@
+﻿config/targeted/java.xml_javax_xml_transform_ErrorListener.yaml
+config/targeted/java.xml_javax_xml_transform_OutputKeys.yaml
+config/targeted/java.xml_javax_xml_transform_Result.yaml
+config/targeted/java.xml_javax_xml_transform_Source.yaml
+config/targeted/java.xml_javax_xml_transform_SourceLocator.yaml
+config/targeted/java.xml_javax_xml_transform_Templates.yaml
+config/targeted/java.xml_javax_xml_transform_Transformer.yaml
+config/targeted/java.xml_javax_xml_transform_TransformerConfigurationException.yaml
+config/targeted/java.xml_javax_xml_transform_TransformerException.yaml
+config/targeted/java.xml_javax_xml_transform_TransformerFactory.yaml
+config/targeted/java.xml_javax_xml_transform_TransformerFactoryConfigurationError.yaml
+config/targeted/java.xml_javax_xml_transform_URIResolver.yaml

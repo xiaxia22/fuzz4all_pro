@@ -1,0 +1,2 @@
+﻿config/targeted/java.rmi_javax_rmi_ssl_SslRMIClientSocketFactory.yaml
+config/targeted/java.rmi_javax_rmi_ssl_SslRMIServerSocketFactory.yaml

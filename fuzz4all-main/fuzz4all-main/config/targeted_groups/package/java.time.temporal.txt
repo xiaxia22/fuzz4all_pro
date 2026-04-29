@@ -1,0 +1,16 @@
+﻿config/targeted/java.base_java_time_temporal_ChronoField.yaml
+config/targeted/java.base_java_time_temporal_ChronoUnit.yaml
+config/targeted/java.base_java_time_temporal_IsoFields.yaml
+config/targeted/java.base_java_time_temporal_JulianFields.yaml
+config/targeted/java.base_java_time_temporal_Temporal.yaml
+config/targeted/java.base_java_time_temporal_TemporalAccessor.yaml
+config/targeted/java.base_java_time_temporal_TemporalAdjuster.yaml
+config/targeted/java.base_java_time_temporal_TemporalAdjusters.yaml
+config/targeted/java.base_java_time_temporal_TemporalAmount.yaml
+config/targeted/java.base_java_time_temporal_TemporalField.yaml
+config/targeted/java.base_java_time_temporal_TemporalQueries.yaml
+config/targeted/java.base_java_time_temporal_TemporalQuery.yaml
+config/targeted/java.base_java_time_temporal_TemporalUnit.yaml
+config/targeted/java.base_java_time_temporal_UnsupportedTemporalTypeException.yaml
+config/targeted/java.base_java_time_temporal_ValueRange.yaml
+config/targeted/java.base_java_time_temporal_WeekFields.yaml

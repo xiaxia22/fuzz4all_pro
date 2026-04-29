@@ -26,6 +26,18 @@ PROFILE_ORDER = [
 
 FALLBACK_PROFILE = "GENERIC"
 
+DOMAIN_PRIMARY_PREFERENCE = [
+    "SECURITY",
+    "REFLECT",
+    "FILE",
+    "CONCURRENT",
+    "NETWORK",
+    "CALLBACK",
+    "TIME",
+    "JVM_MGMT",
+    "UTILITY",
+]
+
 MUTATION_PROFILE_DEFINITIONS: Dict[str, Dict[str, Any]] = {
     "resource_buffer_batch": {
         "active_profiles": ["RESOURCE", "BUFFER", "BATCH_OP", "MARK_SUPPORT"],
@@ -302,6 +314,85 @@ def _normalize_relpath(path: str) -> str:
     return str(path or "").replace("\\", "/")
 
 
+def _normalize_identifier(value: str) -> str:
+    return _normalize_relpath(str(value or "")).lower()
+
+
+def _context_domain_hints(target_api: str, doc_path: str) -> List[str]:
+    context = _normalize_identifier(f"{target_api} {doc_path}")
+    hints = []
+    hint_rules = [
+        (
+            "SECURITY",
+            [
+                ".crypto",
+                ".security",
+                ".ssl",
+                ".auth",
+                ".cert",
+                "cipher",
+                "signature",
+                "digest",
+                "keystore",
+                "secretkey",
+                "keypair",
+                "trustmanager",
+                "keymanager",
+                "mac",
+            ],
+        ),
+        (
+            "REFLECT",
+            [
+                ".reflect",
+                "method",
+                "field",
+                "constructor",
+                "proxy",
+                "accessibleobject",
+                "invocation",
+            ],
+        ),
+        (
+            "FILE",
+            [
+                ".nio.file",
+                ".io.file",
+                "watchservice",
+                "filestore",
+                "filesystem",
+                "path",
+                "files",
+            ],
+        ),
+        (
+            "CONCURRENT",
+            [
+                ".concurrent",
+                "thread",
+                "executor",
+                "lock",
+                "future",
+                "callable",
+                "runnable",
+                "semaphore",
+            ],
+        ),
+        (
+            "NETWORK",
+            [".net", ".http", "httpclient", "socket", "serversocket", "url", "uri", "inet", "datagram"],
+        ),
+        ("CALLBACK", [".event", ".awt.event", ".beans", "listener", "callback", "handler", "event"]),
+        ("TIME", [".time", "date", "instant", "duration", "period", "zone", "clock"]),
+        ("JVM_MGMT", [".management", "mxbean", "managementfactory", "memory", "threadmxbean", "runtime"]),
+        ("UTILITY", [".util", "formatter", "optional", "arrays", "objects", "math", "string"]),
+    ]
+    for tag, keywords in hint_rules:
+        if any(keyword in context for keyword in keywords):
+            hints.append(tag)
+    return hints
+
+
 def _ordered_profiles(primary_tag: str, all_tags: List[str]) -> List[str]:
     ordered = []
     if primary_tag in PROFILE_ORDER:
@@ -312,6 +403,88 @@ def _ordered_profiles(primary_tag: str, all_tags: List[str]) -> List[str]:
     if not ordered:
         ordered.append(FALLBACK_PROFILE)
     return ordered
+
+
+def _choose_primary_tag(
+    primary_tag: str,
+    all_tags: List[str],
+    classification_scores: Dict[str, Any],
+    target_api: str,
+    doc_path: str,
+) -> str:
+    if primary_tag in DOMAIN_PRIMARY_PREFERENCE:
+        return primary_tag
+
+    scores = classification_scores or {}
+    top_score = scores.get(primary_tag, 0)
+    hints = _context_domain_hints(target_api, doc_path)
+
+    for candidate in hints:
+        if candidate not in all_tags:
+            continue
+        candidate_score = scores.get(candidate, 0)
+        if candidate_score >= max(4, top_score - 3):
+            return candidate
+
+    for candidate in DOMAIN_PRIMARY_PREFERENCE:
+        if candidate not in all_tags:
+            continue
+        candidate_score = scores.get(candidate, 0)
+        if candidate_score >= max(5, top_score - 2):
+            return candidate
+
+    return primary_tag
+
+
+def _derive_mutation_profile(
+    primary_tag: str,
+    all_tags: List[str],
+    classification_scores: Dict[str, Any],
+    target_api: str,
+    doc_path: str,
+) -> str:
+    tags = set(all_tags or [])
+    hints = set(_context_domain_hints(target_api, doc_path))
+
+    if primary_tag == "SECURITY" or "SECURITY" in hints:
+        return "security_provider_flow"
+    if primary_tag == "REFLECT" or "REFLECT" in hints:
+        return "reflection_dispatch"
+    if primary_tag == "CALLBACK":
+        return "callback_registration_flow"
+    if primary_tag == "TIME":
+        return "time_boundary_mix"
+    if primary_tag == "NETWORK":
+        return "network_endpoint_state"
+    if primary_tag == "UTILITY":
+        return "utility_value_boundary"
+    if primary_tag == "JVM_MGMT":
+        return "jvm_mgmt_runtime_state"
+    if primary_tag == "MARK_SUPPORT":
+        return "mark_reset_sequence"
+    if primary_tag == "FILE" or "FILE" in hints:
+        return "file_path_state"
+    if primary_tag == "CONCURRENT" or "CONCURRENT" in hints:
+        return "concurrent_sequence"
+    if primary_tag in {"RESOURCE", "BUFFER"} and (
+        "BUFFER" in tags or "BATCH_OP" in tags or "MARK_SUPPORT" in tags
+    ):
+        return "resource_buffer_batch"
+    if primary_tag == "BATCH_OP":
+        if "SECURITY" in tags or "SECURITY" in hints:
+            return "security_provider_flow"
+        if "RESOURCE" in tags or "BUFFER" in tags or "MARK_SUPPORT" in tags:
+            return "resource_buffer_batch"
+    if primary_tag == "GENERIC":
+        if "SECURITY" in hints:
+            return "security_provider_flow"
+        if "REFLECT" in hints:
+            return "reflection_dispatch"
+        if "FILE" in hints:
+            return "file_path_state"
+        if "CONCURRENT" in hints:
+            return "concurrent_sequence"
+    return "generic_java"
 
 
 def _resolve_active_profiles(
@@ -438,10 +611,27 @@ def load_mutation_profile(config_dict: Dict[str, Any]) -> Dict[str, Any]:
         return profile
 
     all_tags = matched.get("all_tags") or [matched.get("primary_tag", FALLBACK_PROFILE)]
-    mutation_profile = profile_override or (
-        matched.get("mutation_profile") or default_mutation_profile
+    classification_scores = matched.get("scores", {})
+    primary_tag = _choose_primary_tag(
+        matched.get("primary_tag", FALLBACK_PROFILE),
+        all_tags,
+        classification_scores,
+        target_api or matched.get("api_name", ""),
+        doc_path or _normalize_relpath(matched.get("file", "")),
     )
-    primary_tag = matched.get("primary_tag", FALLBACK_PROFILE)
+    all_tags = [primary_tag] + [tag for tag in all_tags if tag != primary_tag]
+    derived_mutation_profile = _derive_mutation_profile(
+        primary_tag,
+        all_tags,
+        classification_scores,
+        target_api or matched.get("api_name", ""),
+        doc_path or _normalize_relpath(matched.get("file", "")),
+    )
+    mutation_profile = profile_override or (
+        matched.get("mutation_profile")
+        if matched.get("mutation_profile") not in ("", None, "generic_java")
+        else derived_mutation_profile
+    )
     if profile_override and profile_override in PROFILE_ORDER:
         primary_tag = profile_override
         all_tags = [profile_override] + [
@@ -460,7 +650,7 @@ def load_mutation_profile(config_dict: Dict[str, Any]) -> Dict[str, Any]:
             or _normalize_relpath(matched.get("file", "")),
             "primary_tag": primary_tag,
             "all_tags": all_tags,
-            "classification_scores": matched.get("scores", {}),
+            "classification_scores": classification_scores,
             "mutation_profile": mutation_profile,
         }
     )

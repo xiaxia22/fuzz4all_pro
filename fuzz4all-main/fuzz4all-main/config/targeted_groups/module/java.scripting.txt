@@ -1,0 +1,12 @@
+﻿config/targeted/java.scripting_javax_script_AbstractScriptEngine.yaml
+config/targeted/java.scripting_javax_script_Bindings.yaml
+config/targeted/java.scripting_javax_script_Compilable.yaml
+config/targeted/java.scripting_javax_script_CompiledScript.yaml
+config/targeted/java.scripting_javax_script_Invocable.yaml
+config/targeted/java.scripting_javax_script_ScriptContext.yaml
+config/targeted/java.scripting_javax_script_ScriptEngine.yaml
+config/targeted/java.scripting_javax_script_ScriptEngineFactory.yaml
+config/targeted/java.scripting_javax_script_ScriptEngineManager.yaml
+config/targeted/java.scripting_javax_script_ScriptException.yaml
+config/targeted/java.scripting_javax_script_SimpleBindings.yaml
+config/targeted/java.scripting_javax_script_SimpleScriptContext.yaml

@@ -1,0 +1,1 @@
+﻿config/targeted/java.desktop_javax_swing_text_rtf_RTFEditorKit.yaml

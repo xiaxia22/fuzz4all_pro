@@ -1,0 +1,12 @@
+﻿config/targeted/jdk.dynalink_jdk_dynalink_CallSiteDescriptor.yaml
+config/targeted/jdk.dynalink_jdk_dynalink_DynamicLinker.yaml
+config/targeted/jdk.dynalink_jdk_dynalink_DynamicLinkerFactory.yaml
+config/targeted/jdk.dynalink_jdk_dynalink_NamedOperation.yaml
+config/targeted/jdk.dynalink_jdk_dynalink_Namespace.yaml
+config/targeted/jdk.dynalink_jdk_dynalink_NamespaceOperation.yaml
+config/targeted/jdk.dynalink_jdk_dynalink_NoSuchDynamicMethodException.yaml
+config/targeted/jdk.dynalink_jdk_dynalink_Operation.yaml
+config/targeted/jdk.dynalink_jdk_dynalink_RelinkableCallSite.yaml
+config/targeted/jdk.dynalink_jdk_dynalink_SecureLookupSupplier.yaml
+config/targeted/jdk.dynalink_jdk_dynalink_StandardNamespace.yaml
+config/targeted/jdk.dynalink_jdk_dynalink_StandardOperation.yaml

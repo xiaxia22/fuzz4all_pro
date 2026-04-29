@@ -1,0 +1,15 @@
+﻿config/targeted/java.xml.crypto_javax_xml_crypto_AlgorithmMethod.yaml
+config/targeted/java.xml.crypto_javax_xml_crypto_Data.yaml
+config/targeted/java.xml.crypto_javax_xml_crypto_KeySelector.Purpose.yaml
+config/targeted/java.xml.crypto_javax_xml_crypto_KeySelector.yaml
+config/targeted/java.xml.crypto_javax_xml_crypto_KeySelectorException.yaml
+config/targeted/java.xml.crypto_javax_xml_crypto_KeySelectorResult.yaml
+config/targeted/java.xml.crypto_javax_xml_crypto_MarshalException.yaml
+config/targeted/java.xml.crypto_javax_xml_crypto_NodeSetData.yaml
+config/targeted/java.xml.crypto_javax_xml_crypto_NoSuchMechanismException.yaml
+config/targeted/java.xml.crypto_javax_xml_crypto_OctetStreamData.yaml
+config/targeted/java.xml.crypto_javax_xml_crypto_URIDereferencer.yaml
+config/targeted/java.xml.crypto_javax_xml_crypto_URIReference.yaml
+config/targeted/java.xml.crypto_javax_xml_crypto_URIReferenceException.yaml
+config/targeted/java.xml.crypto_javax_xml_crypto_XMLCryptoContext.yaml
+config/targeted/java.xml.crypto_javax_xml_crypto_XMLStructure.yaml

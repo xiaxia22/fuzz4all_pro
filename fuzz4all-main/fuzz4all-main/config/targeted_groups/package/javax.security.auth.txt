@@ -1,0 +1,8 @@
+﻿config/targeted/java.base_javax_security_auth_AuthPermission.yaml
+config/targeted/java.base_javax_security_auth_Destroyable.yaml
+config/targeted/java.base_javax_security_auth_DestroyFailedException.yaml
+config/targeted/java.base_javax_security_auth_PrivateCredentialPermission.yaml
+config/targeted/java.base_javax_security_auth_Refreshable.yaml
+config/targeted/java.base_javax_security_auth_RefreshFailedException.yaml
+config/targeted/java.base_javax_security_auth_Subject.yaml
+config/targeted/java.base_javax_security_auth_SubjectDomainCombiner.yaml

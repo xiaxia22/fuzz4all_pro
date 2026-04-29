@@ -1,0 +1,4 @@
+﻿config/targeted/java.desktop_java_awt_im_InputContext.yaml
+config/targeted/java.desktop_java_awt_im_InputMethodHighlight.yaml
+config/targeted/java.desktop_java_awt_im_InputMethodRequests.yaml
+config/targeted/java.desktop_java_awt_im_InputSubset.yaml

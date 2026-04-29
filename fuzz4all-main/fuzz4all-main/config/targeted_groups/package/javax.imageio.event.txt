@@ -1,0 +1,5 @@
+﻿config/targeted/java.desktop_javax_imageio_event_IIOReadProgressListener.yaml
+config/targeted/java.desktop_javax_imageio_event_IIOReadUpdateListener.yaml
+config/targeted/java.desktop_javax_imageio_event_IIOReadWarningListener.yaml
+config/targeted/java.desktop_javax_imageio_event_IIOWriteProgressListener.yaml
+config/targeted/java.desktop_javax_imageio_event_IIOWriteWarningListener.yaml

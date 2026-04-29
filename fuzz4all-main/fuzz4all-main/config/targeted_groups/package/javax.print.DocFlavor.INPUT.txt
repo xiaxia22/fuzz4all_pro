@@ -1,0 +1,1 @@
+﻿config/targeted/java.desktop_javax_print_DocFlavor.INPUT_STREAM.yaml

@@ -1,0 +1,8 @@
+﻿config/targeted/java.xml_org_w3c_dom_events_DocumentEvent.yaml
+config/targeted/java.xml_org_w3c_dom_events_Event.yaml
+config/targeted/java.xml_org_w3c_dom_events_EventException.yaml
+config/targeted/java.xml_org_w3c_dom_events_EventListener.yaml
+config/targeted/java.xml_org_w3c_dom_events_EventTarget.yaml
+config/targeted/java.xml_org_w3c_dom_events_MouseEvent.yaml
+config/targeted/java.xml_org_w3c_dom_events_MutationEvent.yaml
+config/targeted/java.xml_org_w3c_dom_events_UIEvent.yaml

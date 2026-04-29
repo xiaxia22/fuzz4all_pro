@@ -1,0 +1,8 @@
+﻿config/targeted/java.sql.rowset_javax_sql_rowset_spi_SyncFactory.yaml
+config/targeted/java.sql.rowset_javax_sql_rowset_spi_SyncFactoryException.yaml
+config/targeted/java.sql.rowset_javax_sql_rowset_spi_SyncProvider.yaml
+config/targeted/java.sql.rowset_javax_sql_rowset_spi_SyncProviderException.yaml
+config/targeted/java.sql.rowset_javax_sql_rowset_spi_SyncResolver.yaml
+config/targeted/java.sql.rowset_javax_sql_rowset_spi_TransactionalWriter.yaml
+config/targeted/java.sql.rowset_javax_sql_rowset_spi_XmlReader.yaml
+config/targeted/java.sql.rowset_javax_sql_rowset_spi_XmlWriter.yaml

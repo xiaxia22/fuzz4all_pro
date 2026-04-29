@@ -1,0 +1,10 @@
+﻿config/targeted/jdk.jfr_jdk_jfr_consumer_RecordedClass.yaml
+config/targeted/jdk.jfr_jdk_jfr_consumer_RecordedClassLoader.yaml
+config/targeted/jdk.jfr_jdk_jfr_consumer_RecordedEvent.yaml
+config/targeted/jdk.jfr_jdk_jfr_consumer_RecordedFrame.yaml
+config/targeted/jdk.jfr_jdk_jfr_consumer_RecordedMethod.yaml
+config/targeted/jdk.jfr_jdk_jfr_consumer_RecordedObject.yaml
+config/targeted/jdk.jfr_jdk_jfr_consumer_RecordedStackTrace.yaml
+config/targeted/jdk.jfr_jdk_jfr_consumer_RecordedThread.yaml
+config/targeted/jdk.jfr_jdk_jfr_consumer_RecordedThreadGroup.yaml
+config/targeted/jdk.jfr_jdk_jfr_consumer_RecordingFile.yaml

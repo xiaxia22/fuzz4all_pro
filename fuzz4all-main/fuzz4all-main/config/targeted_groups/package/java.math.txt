@@ -1,0 +1,4 @@
+﻿config/targeted/java.base_java_math_BigDecimal.yaml
+config/targeted/java.base_java_math_BigInteger.yaml
+config/targeted/java.base_java_math_MathContext.yaml
+config/targeted/java.base_java_math_RoundingMode.yaml

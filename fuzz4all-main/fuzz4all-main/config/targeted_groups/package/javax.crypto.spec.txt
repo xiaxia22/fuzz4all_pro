@@ -1,0 +1,17 @@
+﻿config/targeted/java.base_javax_crypto_spec_ChaCha20ParameterSpec.yaml
+config/targeted/java.base_javax_crypto_spec_DESedeKeySpec.yaml
+config/targeted/java.base_javax_crypto_spec_DESKeySpec.yaml
+config/targeted/java.base_javax_crypto_spec_DHGenParameterSpec.yaml
+config/targeted/java.base_javax_crypto_spec_DHParameterSpec.yaml
+config/targeted/java.base_javax_crypto_spec_DHPrivateKeySpec.yaml
+config/targeted/java.base_javax_crypto_spec_DHPublicKeySpec.yaml
+config/targeted/java.base_javax_crypto_spec_GCMParameterSpec.yaml
+config/targeted/java.base_javax_crypto_spec_IvParameterSpec.yaml
+config/targeted/java.base_javax_crypto_spec_OAEPParameterSpec.yaml
+config/targeted/java.base_javax_crypto_spec_PBEKeySpec.yaml
+config/targeted/java.base_javax_crypto_spec_PBEParameterSpec.yaml
+config/targeted/java.base_javax_crypto_spec_PSource.PSpecified.yaml
+config/targeted/java.base_javax_crypto_spec_PSource.yaml
+config/targeted/java.base_javax_crypto_spec_RC2ParameterSpec.yaml
+config/targeted/java.base_javax_crypto_spec_RC5ParameterSpec.yaml
+config/targeted/java.base_javax_crypto_spec_SecretKeySpec.yaml

@@ -1021,9 +1021,11 @@ class Target(object):
         self._init_mutation_components()
         if self.enable_mutation and self.mutation_profile:
             self.m_logger.logo(
-                "Mutation enabled with profile "
-                f"{self.mutation_profile.get('mutation_profile')} "
-                f"and operators {self.mutation_profile.get('priority_operators', [])}.",
+                "Mutation enabled with primary tag "
+                f"{self.mutation_profile.get('primary_tag')} "
+                f"and profile {self.mutation_profile.get('mutation_profile')} "
+                f"(active_profiles={self.mutation_profile.get('active_profiles', [])}, "
+                f"operators={self.mutation_profile.get('priority_operators', [])}).",
                 level=LEVEL.INFO,
             )
         self.m_logger.logo(

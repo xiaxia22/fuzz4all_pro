@@ -1,0 +1,2 @@
+﻿config/targeted/java.base_java_nio_file_spi_FileSystemProvider.yaml
+config/targeted/java.base_java_nio_file_spi_FileTypeDetector.yaml

@@ -1,0 +1,3 @@
+﻿config/targeted/java.xml.crypto_javax_xml_crypto_dom_DOMCryptoContext.yaml
+config/targeted/java.xml.crypto_javax_xml_crypto_dom_DOMStructure.yaml
+config/targeted/java.xml.crypto_javax_xml_crypto_dom_DOMURIReference.yaml

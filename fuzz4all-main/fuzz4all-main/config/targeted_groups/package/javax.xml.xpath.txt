@@ -1,0 +1,14 @@
+﻿config/targeted/java.xml_javax_xml_xpath_XPath.yaml
+config/targeted/java.xml_javax_xml_xpath_XPathConstants.yaml
+config/targeted/java.xml_javax_xml_xpath_XPathEvaluationResult.XPathResultType.yaml
+config/targeted/java.xml_javax_xml_xpath_XPathEvaluationResult.yaml
+config/targeted/java.xml_javax_xml_xpath_XPathException.yaml
+config/targeted/java.xml_javax_xml_xpath_XPathExpression.yaml
+config/targeted/java.xml_javax_xml_xpath_XPathExpressionException.yaml
+config/targeted/java.xml_javax_xml_xpath_XPathFactory.yaml
+config/targeted/java.xml_javax_xml_xpath_XPathFactoryConfigurationException.yaml
+config/targeted/java.xml_javax_xml_xpath_XPathFunction.yaml
+config/targeted/java.xml_javax_xml_xpath_XPathFunctionException.yaml
+config/targeted/java.xml_javax_xml_xpath_XPathFunctionResolver.yaml
+config/targeted/java.xml_javax_xml_xpath_XPathNodes.yaml
+config/targeted/java.xml_javax_xml_xpath_XPathVariableResolver.yaml

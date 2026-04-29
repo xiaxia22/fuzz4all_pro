@@ -1,0 +1,7 @@
+﻿config/targeted/java.naming_javax_naming_event_EventContext.yaml
+config/targeted/java.naming_javax_naming_event_EventDirContext.yaml
+config/targeted/java.naming_javax_naming_event_NamespaceChangeListener.yaml
+config/targeted/java.naming_javax_naming_event_NamingEvent.yaml
+config/targeted/java.naming_javax_naming_event_NamingExceptionEvent.yaml
+config/targeted/java.naming_javax_naming_event_NamingListener.yaml
+config/targeted/java.naming_javax_naming_event_ObjectChangeListener.yaml

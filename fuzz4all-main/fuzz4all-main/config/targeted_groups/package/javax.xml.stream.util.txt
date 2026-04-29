@@ -1,0 +1,4 @@
+﻿config/targeted/java.xml_javax_xml_stream_util_EventReaderDelegate.yaml
+config/targeted/java.xml_javax_xml_stream_util_StreamReaderDelegate.yaml
+config/targeted/java.xml_javax_xml_stream_util_XMLEventAllocator.yaml
+config/targeted/java.xml_javax_xml_stream_util_XMLEventConsumer.yaml

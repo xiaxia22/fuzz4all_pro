@@ -1,0 +1,2 @@
+﻿config/targeted/jdk.jsobject_netscape_javascript_JSException.yaml
+config/targeted/jdk.jsobject_netscape_javascript_JSObject.yaml

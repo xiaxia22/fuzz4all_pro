@@ -1,0 +1,12 @@
+﻿config/targeted/java.naming_javax_naming_spi_DirectoryManager.yaml
+config/targeted/java.naming_javax_naming_spi_DirObjectFactory.yaml
+config/targeted/java.naming_javax_naming_spi_DirStateFactory.Result.yaml
+config/targeted/java.naming_javax_naming_spi_DirStateFactory.yaml
+config/targeted/java.naming_javax_naming_spi_InitialContextFactory.yaml
+config/targeted/java.naming_javax_naming_spi_InitialContextFactoryBuilder.yaml
+config/targeted/java.naming_javax_naming_spi_NamingManager.yaml
+config/targeted/java.naming_javax_naming_spi_ObjectFactory.yaml
+config/targeted/java.naming_javax_naming_spi_ObjectFactoryBuilder.yaml
+config/targeted/java.naming_javax_naming_spi_Resolver.yaml
+config/targeted/java.naming_javax_naming_spi_ResolveResult.yaml
+config/targeted/java.naming_javax_naming_spi_StateFactory.yaml

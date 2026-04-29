@@ -1,0 +1,4 @@
+﻿config/targeted/java.desktop_javax_imageio_plugins_jpeg_JPEGHuffmanTable.yaml
+config/targeted/java.desktop_javax_imageio_plugins_jpeg_JPEGImageReadParam.yaml
+config/targeted/java.desktop_javax_imageio_plugins_jpeg_JPEGImageWriteParam.yaml
+config/targeted/java.desktop_javax_imageio_plugins_jpeg_JPEGQTable.yaml

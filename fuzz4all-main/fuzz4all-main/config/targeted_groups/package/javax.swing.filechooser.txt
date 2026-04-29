@@ -1,0 +1,4 @@
+﻿config/targeted/java.desktop_javax_swing_filechooser_FileFilter.yaml
+config/targeted/java.desktop_javax_swing_filechooser_FileNameExtensionFilter.yaml
+config/targeted/java.desktop_javax_swing_filechooser_FileSystemView.yaml
+config/targeted/java.desktop_javax_swing_filechooser_FileView.yaml

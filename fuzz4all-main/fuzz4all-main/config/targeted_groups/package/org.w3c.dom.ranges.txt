@@ -1,0 +1,3 @@
+﻿config/targeted/java.xml_org_w3c_dom_ranges_DocumentRange.yaml
+config/targeted/java.xml_org_w3c_dom_ranges_Range.yaml
+config/targeted/java.xml_org_w3c_dom_ranges_RangeException.yaml

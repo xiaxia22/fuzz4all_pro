@@ -1,0 +1,3 @@
+﻿config/targeted/java.desktop_java_awt_color_CMMException.yaml
+config/targeted/java.desktop_java_awt_color_ColorSpace.yaml
+config/targeted/java.desktop_java_awt_color_ProfileDataException.yaml

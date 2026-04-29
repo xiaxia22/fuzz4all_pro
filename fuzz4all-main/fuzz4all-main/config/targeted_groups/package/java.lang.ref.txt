@@ -1,0 +1,7 @@
+﻿config/targeted/java.base_java_lang_ref_Cleaner.Cleanable.yaml
+config/targeted/java.base_java_lang_ref_Cleaner.yaml
+config/targeted/java.base_java_lang_ref_PhantomReference.yaml
+config/targeted/java.base_java_lang_ref_Reference.yaml
+config/targeted/java.base_java_lang_ref_ReferenceQueue.yaml
+config/targeted/java.base_java_lang_ref_SoftReference.yaml
+config/targeted/java.base_java_lang_ref_WeakReference.yaml

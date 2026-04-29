@@ -1,0 +1,10 @@
+﻿config/targeted/java.base_java_util_spi_AbstractResourceBundleProvider.yaml
+config/targeted/java.base_java_util_spi_CalendarDataProvider.yaml
+config/targeted/java.base_java_util_spi_CalendarNameProvider.yaml
+config/targeted/java.base_java_util_spi_CurrencyNameProvider.yaml
+config/targeted/java.base_java_util_spi_LocaleNameProvider.yaml
+config/targeted/java.base_java_util_spi_LocaleServiceProvider.yaml
+config/targeted/java.base_java_util_spi_ResourceBundleControlProvider.yaml
+config/targeted/java.base_java_util_spi_ResourceBundleProvider.yaml
+config/targeted/java.base_java_util_spi_TimeZoneNameProvider.yaml
+config/targeted/java.base_java_util_spi_ToolProvider.yaml

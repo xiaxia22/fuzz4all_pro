@@ -1,0 +1,6 @@
+﻿config/targeted/jdk.security.jgss_com_sun_security_jgss_AuthorizationDataEntry.yaml
+config/targeted/jdk.security.jgss_com_sun_security_jgss_ExtendedGSSContext.yaml
+config/targeted/jdk.security.jgss_com_sun_security_jgss_ExtendedGSSCredential.yaml
+config/targeted/jdk.security.jgss_com_sun_security_jgss_GSSUtil.yaml
+config/targeted/jdk.security.jgss_com_sun_security_jgss_InquireSecContextPermission.yaml
+config/targeted/jdk.security.jgss_com_sun_security_jgss_InquireType.yaml

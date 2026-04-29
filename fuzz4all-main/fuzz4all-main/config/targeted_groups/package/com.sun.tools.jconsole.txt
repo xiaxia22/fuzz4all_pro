@@ -1,0 +1,3 @@
+﻿config/targeted/jdk.jconsole_com_sun_tools_jconsole_JConsoleContext.ConnectionState.yaml
+config/targeted/jdk.jconsole_com_sun_tools_jconsole_JConsoleContext.yaml
+config/targeted/jdk.jconsole_com_sun_tools_jconsole_JConsolePlugin.yaml

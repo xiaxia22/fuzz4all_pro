@@ -1,0 +1,5 @@
+﻿config/targeted/jdk.jartool_com_sun_jarsigner_ContentSigner.yaml
+config/targeted/jdk.jartool_com_sun_jarsigner_ContentSignerParameters.yaml
+config/targeted/jdk.jartool_jdk_security_jarsigner_JarSigner.Builder.yaml
+config/targeted/jdk.jartool_jdk_security_jarsigner_JarSigner.yaml
+config/targeted/jdk.jartool_jdk_security_jarsigner_JarSignerException.yaml

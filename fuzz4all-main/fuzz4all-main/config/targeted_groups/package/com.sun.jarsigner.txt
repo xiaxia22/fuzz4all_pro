@@ -1,0 +1,2 @@
+﻿config/targeted/jdk.jartool_com_sun_jarsigner_ContentSigner.yaml
+config/targeted/jdk.jartool_com_sun_jarsigner_ContentSignerParameters.yaml

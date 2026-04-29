@@ -1,0 +1,7 @@
+﻿config/targeted/jdk.net_jdk_net_ExtendedSocketOptions.yaml
+config/targeted/jdk.net_jdk_net_NetworkPermission.yaml
+config/targeted/jdk.net_jdk_net_SocketFlow.Status.yaml
+config/targeted/jdk.net_jdk_net_SocketFlow.yaml
+config/targeted/jdk.net_jdk_net_Sockets.yaml
+config/targeted/jdk.net_jdk_nio_Channels.SelectableChannelCloser.yaml
+config/targeted/jdk.net_jdk_nio_Channels.yaml

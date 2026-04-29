@@ -1,0 +1,3 @@
+﻿config/targeted/java.transaction.xa_javax_transaction_xa_XAException.yaml
+config/targeted/java.transaction.xa_javax_transaction_xa_XAResource.yaml
+config/targeted/java.transaction.xa_javax_transaction_xa_Xid.yaml

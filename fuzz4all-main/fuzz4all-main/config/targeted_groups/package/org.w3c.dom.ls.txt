@@ -1,0 +1,11 @@
+﻿config/targeted/java.xml_org_w3c_dom_ls_DOMImplementationLS.yaml
+config/targeted/java.xml_org_w3c_dom_ls_LSException.yaml
+config/targeted/java.xml_org_w3c_dom_ls_LSInput.yaml
+config/targeted/java.xml_org_w3c_dom_ls_LSLoadEvent.yaml
+config/targeted/java.xml_org_w3c_dom_ls_LSOutput.yaml
+config/targeted/java.xml_org_w3c_dom_ls_LSParser.yaml
+config/targeted/java.xml_org_w3c_dom_ls_LSParserFilter.yaml
+config/targeted/java.xml_org_w3c_dom_ls_LSProgressEvent.yaml
+config/targeted/java.xml_org_w3c_dom_ls_LSResourceResolver.yaml
+config/targeted/java.xml_org_w3c_dom_ls_LSSerializer.yaml
+config/targeted/java.xml_org_w3c_dom_ls_LSSerializerFilter.yaml

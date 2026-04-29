@@ -1,0 +1,4 @@
+﻿config/targeted/java.desktop_java_awt_color_ICC_ColorSpace.yaml
+config/targeted/java.desktop_java_awt_color_ICC_Profile.yaml
+config/targeted/java.desktop_java_awt_color_ICC_ProfileGray.yaml
+config/targeted/java.desktop_java_awt_color_ICC_ProfileRGB.yaml

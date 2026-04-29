@@ -1,0 +1,10 @@
+﻿config/targeted/java.security.sasl_javax_security_sasl_AuthenticationException.yaml
+config/targeted/java.security.sasl_javax_security_sasl_AuthorizeCallback.yaml
+config/targeted/java.security.sasl_javax_security_sasl_RealmCallback.yaml
+config/targeted/java.security.sasl_javax_security_sasl_RealmChoiceCallback.yaml
+config/targeted/java.security.sasl_javax_security_sasl_Sasl.yaml
+config/targeted/java.security.sasl_javax_security_sasl_SaslClient.yaml
+config/targeted/java.security.sasl_javax_security_sasl_SaslClientFactory.yaml
+config/targeted/java.security.sasl_javax_security_sasl_SaslException.yaml
+config/targeted/java.security.sasl_javax_security_sasl_SaslServer.yaml
+config/targeted/java.security.sasl_javax_security_sasl_SaslServerFactory.yaml

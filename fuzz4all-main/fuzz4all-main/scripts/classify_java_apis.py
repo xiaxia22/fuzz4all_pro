@@ -3,6 +3,7 @@ import json
 import re
 from collections import Counter, defaultdict
 from pathlib import Path
+from typing import Dict, List
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -11,13 +12,13 @@ OUT_DIR = ROOT / "outputs" / "api_classification"
 
 
 TAG_PRIORITY = [
-    "FILE",
-    "TIME",
-    "CONCURRENT",
     "SECURITY",
+    "REFLECT",
+    "FILE",
+    "CONCURRENT",
     "NETWORK",
     "CALLBACK",
-    "REFLECT",
+    "TIME",
     "JVM_MGMT",
     "RESOURCE",
     "BUFFER",
@@ -29,11 +30,31 @@ TAG_PRIORITY = [
 
 DIMENSION_WEIGHTS = {
     "package": 4,
-    "type": 3,
+    "type": 4,
     "interface": 2,
     "field": 2,
     "method": 2,
     "boundary": 1,
+}
+
+DOMAIN_TAGS = {
+    "SECURITY",
+    "REFLECT",
+    "FILE",
+    "CONCURRENT",
+    "NETWORK",
+    "CALLBACK",
+    "TIME",
+    "JVM_MGMT",
+    "UTILITY",
+}
+
+STRUCTURAL_TAGS = {
+    "RESOURCE",
+    "BUFFER",
+    "MARK_SUPPORT",
+    "BATCH_OP",
+    "GENERIC",
 }
 
 TAG_RULES = {
@@ -41,7 +62,7 @@ TAG_RULES = {
         "package": [".io", ".net", "stream", "reader", "writer"],
         "type": ["stream", "reader", "writer", "channel", "session"],
         "interface": ["closeable", "autocloseable", "flushable"],
-        "field": ["buf", "count", "out", "in"],
+        "field": ["buf", "count", "out", "in", "inputstream", "outputstream"],
         "method": ["close(", "flush(", "open(", "read(", "write("],
         "boundary": ["ioexception", "illegalstateexception"],
     },
@@ -55,7 +76,7 @@ TAG_RULES = {
     },
     "MARK_SUPPORT": {
         "package": [".io"],
-        "type": ["bufferedinputstream", "reader"],
+        "type": ["bufferedinputstream", "reader", "inputstream"],
         "interface": [],
         "field": ["marklimit", "markpos"],
         "method": ["mark(", "reset("],
@@ -66,7 +87,7 @@ TAG_RULES = {
         "type": ["stream", "reader", "writer", "buffer"],
         "interface": [],
         "field": ["byte[]", "char[]"],
-        "method": ["byte[]", "char[]", "int off", "int len", "offset", "length"],
+        "method": ["write(byte[]", "read(byte[]", "char[]", "int off", "int len", "offset", "length"],
         "boundary": ["off+len", "0, -1, integer.max_value", "0/-1/max"],
     },
     "CALLBACK": {
@@ -74,7 +95,7 @@ TAG_RULES = {
         "type": ["listener", "callback", "handler", "event"],
         "interface": ["eventlistener"],
         "field": [],
-        "method": ["listener", "callback", "handler"],
+        "method": ["listener", "callback", "handler", "addlistener", "removelistener", "register", "unregister"],
         "boundary": [],
     },
     "CONCURRENT": {
@@ -82,15 +103,15 @@ TAG_RULES = {
         "type": ["thread", "lock", "executor", "semaphore", "future", "callable", "runnable"],
         "interface": ["runnable", "callable", "future"],
         "field": ["volatile", "atomic"],
-        "method": ["synchronized", "lock(", "unlock(", "submit(", "execute("],
-        "boundary": ["concurrentmodificationexception"],
+        "method": ["synchronized", "lock(", "unlock(", "submit(", "execute(", "start(", "join(", "interrupt(", "sleep("],
+        "boundary": ["concurrentmodificationexception", "illegalthreadstateexception"],
     },
     "TIME": {
         "package": [".time"],
         "type": ["date", "time", "instant", "clock", "duration", "zone"],
         "interface": [],
         "field": [],
-        "method": ["millis", "epoch", "instant", "clock"],
+        "method": ["millis", "epoch", "instant", "clock", "duration", "period", "zoneid"],
         "boundary": ["long.max_value", "gmt+14"],
     },
     "FILE": {
@@ -98,23 +119,23 @@ TAG_RULES = {
         "type": ["file", "path", "files", "filesystem", "watchservice", "filestore"],
         "interface": [],
         "field": [],
-        "method": ["path", "file", "files", "watch", "resolve("],
+        "method": ["path", "file", "files", "watch", "resolve(", "delete(", "exists(", "mkdir", "create", "tocanonical"],
         "boundary": ["../../", "\\0", "*", "?", "securityexception"],
     },
     "SECURITY": {
         "package": [".security", ".crypto", ".ssl", ".auth", ".cert"],
-        "type": ["cipher", "digest", "key", "trustmanager", "keymanager", "permission", "ssl", "tls", "certificate"],
+        "type": ["cipher", "digest", "signature", "mac", "keystore", "key", "trustmanager", "keymanager", "permission", "ssl", "tls", "certificate"],
         "interface": [],
         "field": ["provider"],
-        "method": ["encrypt", "decrypt", "sign", "verify", "sslpermission", "permission"],
-        "boundary": ["provider", "md5", "securityexception"],
+        "method": ["encrypt", "decrypt", "sign", "verify", "init(", "dofinal(", "getinstance(", "sslpermission", "permission"],
+        "boundary": ["provider", "md5", "sha-1", "securityexception", "nosuchalgorithmexception", "invalidkeyexception"],
     },
     "REFLECT": {
         "package": [".reflect"],
         "type": ["class", "method", "field", "constructor", "loader", "proxy"],
         "interface": [],
         "field": [],
-        "method": ["invoke(", "getdeclared", "setaccessible", "newinstance("],
+        "method": ["invoke(", "getdeclared", "setaccessible", "newinstance(", "getmethod(", "getfield(", "getconstructor("],
         "boundary": ["illegalaccessexception", "private"],
     },
     "UTILITY": {
@@ -148,6 +169,14 @@ PROFILE_RULES = {
     "resource_buffer_batch": ["RESOURCE", "BUFFER", "BATCH_OP"],
     "file_path_state": ["FILE"],
     "concurrent_sequence": ["CONCURRENT"],
+    "security_provider_flow": ["SECURITY"],
+    "reflection_dispatch": ["REFLECT"],
+    "callback_registration_flow": ["CALLBACK"],
+    "time_boundary_mix": ["TIME"],
+    "network_endpoint_state": ["NETWORK"],
+    "utility_value_boundary": ["UTILITY"],
+    "jvm_mgmt_runtime_state": ["JVM_MGMT"],
+    "mark_reset_sequence": ["MARK_SUPPORT"],
     "generic_java": ["GENERIC"],
 }
 
@@ -164,12 +193,54 @@ PROFILE_OPERATORS = {
         "lifecycle_sequence",
     ],
     "concurrent_sequence": [
-        "lifecycle_sequence",
-        "write_single_edge",
+        "concurrent_yield_injection",
+        "concurrent_thread_wrapper_mutation",
+        "concurrent_signal_sequence_mutation",
+    ],
+    "security_provider_flow": [
+        "security_algorithm_boundary_mutation",
+        "security_provider_mutation",
+        "security_material_boundary_mutation",
+    ],
+    "reflection_dispatch": [
+        "reflect_accessibility_flip_mutation",
+        "reflect_member_name_mutation",
+        "reflect_receiver_null_mutation",
+    ],
+    "callback_registration_flow": [
+        "callback_duplicate_registration_mutation",
+        "callback_order_reversal_mutation",
+        "callback_null_event_mutation",
+    ],
+    "time_boundary_mix": [
+        "time_epoch_boundary_mutation",
+        "time_duration_sign_mutation",
+        "time_zone_boundary_mutation",
+    ],
+    "network_endpoint_state": [
+        "network_endpoint_boundary_mutation",
+        "network_timeout_boundary_mutation",
+        "network_sequence_mutation",
+    ],
+    "utility_value_boundary": [
+        "utility_parse_boundary_mutation",
+        "utility_format_boundary_mutation",
+        "utility_collection_seed_mutation",
+    ],
+    "jvm_mgmt_runtime_state": [
+        "jvm_mgmt_query_name_mutation",
+        "jvm_mgmt_runtime_toggle_mutation",
+        "jvm_mgmt_sampling_boundary_mutation",
+    ],
+    "mark_reset_sequence": [
+        "mark_support_limit_mutation",
+        "mark_support_reset_mutation",
+        "mark_support_reuse_mutation",
     ],
     "generic_java": [
-        "constructor_size_edge",
-        "write_single_edge",
+        "generic_null_boundary",
+        "generic_numeric_boundary",
+        "generic_sequence_reorder",
     ],
 }
 
@@ -187,6 +258,46 @@ PROFILE_RISK_POINTS = {
     "concurrent_sequence": [
         "interleaving_order",
         "shared_state",
+    ],
+    "security_provider_flow": [
+        "provider_selection",
+        "algorithm_boundary",
+        "key_material_boundary",
+    ],
+    "reflection_dispatch": [
+        "member_resolution",
+        "accessibility_flip",
+        "receiver_contract",
+    ],
+    "callback_registration_flow": [
+        "registration_order",
+        "duplicate_registration",
+        "callback_argument_contract",
+    ],
+    "time_boundary_mix": [
+        "epoch_extreme",
+        "duration_sign",
+        "timezone_boundary",
+    ],
+    "network_endpoint_state": [
+        "endpoint_boundary",
+        "timeout_boundary",
+        "connect_bind_order",
+    ],
+    "utility_value_boundary": [
+        "parse_boundary",
+        "format_boundary",
+        "value_aliasing",
+    ],
+    "jvm_mgmt_runtime_state": [
+        "mxbean_name",
+        "runtime_snapshot",
+        "management_query",
+    ],
+    "mark_reset_sequence": [
+        "mark_limit",
+        "reset_without_mark",
+        "mark_position_reuse",
     ],
     "generic_java": [
         "general_boundary",
@@ -212,9 +323,124 @@ def extract_headings(section_text: str) -> list[str]:
     return re.findall(r"^####\s+(.+)$", section_text, flags=re.MULTILINE)
 
 
+def _append_bias(
+    scores: Dict[str, int],
+    evidence: Dict[str, Dict[str, List[str]]],
+    tag: str,
+    weight: int,
+    reason: str,
+):
+    scores[tag] += weight
+    evidence[tag]["package"].append(reason)
+
+
+def apply_domain_bias(
+    scores: Dict[str, int],
+    evidence: Dict[str, Dict[str, List[str]]],
+    source: str,
+    path: Path,
+    api_name: str,
+):
+    context = normalize(f"{source} {path.stem} {api_name}")
+    api_lower = api_name.lower()
+
+    if any(token in context for token in [".crypto", "javax crypto", ".security", ".ssl", ".auth", ".cert"]):
+        _append_bias(scores, evidence, "SECURITY", 8, "domain_bias_security_package")
+    if any(token in api_lower for token in ["cipher", "signature", "digest", "keystore", "key", "mac", "ssl", "trustmanager", "keymanager"]):
+        _append_bias(scores, evidence, "SECURITY", 6, "domain_bias_security_type")
+
+    if any(token in context for token in [".reflect", "lang reflect"]):
+        _append_bias(scores, evidence, "REFLECT", 8, "domain_bias_reflect_package")
+    if any(token in api_lower for token in ["method", "field", "constructor", "proxy", "accessibleobject", "invocation"]):
+        _append_bias(scores, evidence, "REFLECT", 6, "domain_bias_reflect_type")
+
+    if any(token in context for token in ["java.io.file", "java.nio.file", ".nio.file", ".io.file"]):
+        _append_bias(scores, evidence, "FILE", 8, "domain_bias_file_package")
+    if any(token in api_lower for token in ["file", "path", "watchservice", "filestore", "filesystem"]):
+        _append_bias(scores, evidence, "FILE", 5, "domain_bias_file_type")
+
+    if any(token in context for token in [".concurrent", "lang.thread"]):
+        _append_bias(scores, evidence, "CONCURRENT", 8, "domain_bias_concurrent_package")
+    if any(token in api_lower for token in ["thread", "executor", "lock", "future", "callable", "runnable", "semaphore"]):
+        _append_bias(scores, evidence, "CONCURRENT", 6, "domain_bias_concurrent_type")
+
+    if any(token in context for token in [".management", "jmx", "mxbean"]):
+        _append_bias(scores, evidence, "JVM_MGMT", 8, "domain_bias_jvm_mgmt_package")
+    if any(token in api_lower for token in ["mxbean", "managementfactory", "runtime", "memory", "threadmxbean"]):
+        _append_bias(scores, evidence, "JVM_MGMT", 6, "domain_bias_jvm_mgmt_type")
+
+    if any(token in context for token in [".time", "java time"]):
+        _append_bias(scores, evidence, "TIME", 8, "domain_bias_time_package")
+    if any(token in api_lower for token in ["time", "date", "instant", "duration", "period", "zone", "clock"]):
+        _append_bias(scores, evidence, "TIME", 5, "domain_bias_time_type")
+
+    if any(token in context for token in [".net", ".http", "httpclient"]):
+        _append_bias(scores, evidence, "NETWORK", 8, "domain_bias_network_package")
+    if any(token in api_lower for token in ["socket", "url", "uri", "http", "inet", "datagram"]):
+        _append_bias(scores, evidence, "NETWORK", 5, "domain_bias_network_type")
+
+    if any(token in context for token in [".event", ".awt.event", ".beans"]):
+        _append_bias(scores, evidence, "CALLBACK", 8, "domain_bias_callback_package")
+    if any(token in api_lower for token in ["listener", "callback", "handler", "event"]):
+        _append_bias(scores, evidence, "CALLBACK", 5, "domain_bias_callback_type")
+
+    if any(token in context for token in [".util"]) and ".concurrent" not in context and ".time" not in context:
+        _append_bias(scores, evidence, "UTILITY", 4, "domain_bias_utility_package")
+
+
+def choose_primary_tag(
+    scores: Dict[str, int],
+    evidence: Dict[str, Dict[str, List[str]]],
+    ranked_tags: List[str],
+) -> str:
+    primary_tag = ranked_tags[0]
+    top_score = scores[primary_tag]
+
+    if primary_tag in DOMAIN_TAGS:
+        return primary_tag
+
+    for tag in ranked_tags:
+        if tag not in DOMAIN_TAGS:
+            continue
+        domain_score = scores[tag]
+        strong_domain_signal = bool(
+            evidence[tag].get("package")
+            or evidence[tag].get("type")
+            or evidence[tag].get("interface")
+        )
+        if not strong_domain_signal:
+            continue
+        if domain_score >= max(4, top_score - 3):
+            return tag
+
+    return primary_tag
+
+
 def derive_mutation_profile(primary_tag: str, all_tags: list[str]) -> str:
     tags = set(all_tags)
+    if primary_tag == "SECURITY":
+        return "security_provider_flow"
+    if primary_tag == "REFLECT":
+        return "reflection_dispatch"
+    if primary_tag == "CALLBACK":
+        return "callback_registration_flow"
+    if primary_tag == "TIME":
+        return "time_boundary_mix"
+    if primary_tag == "NETWORK":
+        return "network_endpoint_state"
+    if primary_tag == "UTILITY":
+        return "utility_value_boundary"
+    if primary_tag == "JVM_MGMT":
+        return "jvm_mgmt_runtime_state"
+    if primary_tag == "MARK_SUPPORT":
+        return "mark_reset_sequence"
     if primary_tag == "RESOURCE" and ("BUFFER" in tags or "BATCH_OP" in tags):
+        return "resource_buffer_batch"
+    if primary_tag == "BUFFER" and ("RESOURCE" in tags or "BATCH_OP" in tags):
+        return "resource_buffer_batch"
+    if primary_tag == "BATCH_OP" and "SECURITY" in tags:
+        return "security_provider_flow"
+    if primary_tag == "BATCH_OP" and ("RESOURCE" in tags or "BUFFER" in tags):
         return "resource_buffer_batch"
     if primary_tag == "FILE":
         return "file_path_state"
@@ -273,6 +499,8 @@ def classify_doc(path: Path) -> dict:
                     scores[tag] += DIMENSION_WEIGHTS[dimension]
                     evidence[tag][dimension].append(keyword)
 
+    apply_domain_bias(scores, evidence, source, path, api_name)
+
     if not scores:
         scores["GENERIC"] = 1
         evidence["GENERIC"]["boundary"].append("fallback")
@@ -284,8 +512,16 @@ def classify_doc(path: Path) -> dict:
         scores["GENERIC"] += len(generic_hits)
         evidence["GENERIC"]["boundary"].extend(generic_hits)
 
-    all_tags = sorted(scores.keys(), key=lambda tag: (-scores[tag], TAG_PRIORITY.index(tag) if tag in TAG_PRIORITY else 999, tag))
-    primary_tag = all_tags[0]
+    all_tags = sorted(
+        scores.keys(),
+        key=lambda tag: (
+            -scores[tag],
+            TAG_PRIORITY.index(tag) if tag in TAG_PRIORITY else 999,
+            tag,
+        ),
+    )
+    primary_tag = choose_primary_tag(scores, evidence, all_tags)
+    all_tags = [primary_tag] + [tag for tag in all_tags if tag != primary_tag]
     mutation_profile = derive_mutation_profile(primary_tag, all_tags)
 
     return {

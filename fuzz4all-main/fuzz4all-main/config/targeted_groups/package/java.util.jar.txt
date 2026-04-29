@@ -1,0 +1,11 @@
+﻿config/targeted/java.base_java_util_jar_Attributes.Name.yaml
+config/targeted/java.base_java_util_jar_Attributes.yaml
+config/targeted/java.base_java_util_jar_JarEntry.yaml
+config/targeted/java.base_java_util_jar_JarException.yaml
+config/targeted/java.base_java_util_jar_JarFile.yaml
+config/targeted/java.base_java_util_jar_JarInputStream.yaml
+config/targeted/java.base_java_util_jar_JarOutputStream.yaml
+config/targeted/java.base_java_util_jar_Manifest.yaml
+config/targeted/java.base_java_util_jar_Pack200.Packer.yaml
+config/targeted/java.base_java_util_jar_Pack200.Unpacker.yaml
+config/targeted/java.base_java_util_jar_Pack200.yaml

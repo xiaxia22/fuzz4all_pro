@@ -1,0 +1,2 @@
+﻿config/targeted/java.xml_javax_xml_transform_stax_StAXResult.yaml
+config/targeted/java.xml_javax_xml_transform_stax_StAXSource.yaml

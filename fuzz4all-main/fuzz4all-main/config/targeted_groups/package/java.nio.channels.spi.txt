@@ -1,0 +1,6 @@
+﻿config/targeted/java.base_java_nio_channels_spi_AbstractInterruptibleChannel.yaml
+config/targeted/java.base_java_nio_channels_spi_AbstractSelectableChannel.yaml
+config/targeted/java.base_java_nio_channels_spi_AbstractSelectionKey.yaml
+config/targeted/java.base_java_nio_channels_spi_AbstractSelector.yaml
+config/targeted/java.base_java_nio_channels_spi_AsynchronousChannelProvider.yaml
+config/targeted/java.base_java_nio_channels_spi_SelectorProvider.yaml

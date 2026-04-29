@@ -1,0 +1,10 @@
+﻿config/targeted/java.xml_org_xml_sax_helpers_AttributeListImpl.yaml
+config/targeted/java.xml_org_xml_sax_helpers_AttributesImpl.yaml
+config/targeted/java.xml_org_xml_sax_helpers_DefaultHandler.yaml
+config/targeted/java.xml_org_xml_sax_helpers_LocatorImpl.yaml
+config/targeted/java.xml_org_xml_sax_helpers_NamespaceSupport.yaml
+config/targeted/java.xml_org_xml_sax_helpers_ParserAdapter.yaml
+config/targeted/java.xml_org_xml_sax_helpers_ParserFactory.yaml
+config/targeted/java.xml_org_xml_sax_helpers_XMLFilterImpl.yaml
+config/targeted/java.xml_org_xml_sax_helpers_XMLReaderAdapter.yaml
+config/targeted/java.xml_org_xml_sax_helpers_XMLReaderFactory.yaml

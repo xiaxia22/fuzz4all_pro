@@ -1,0 +1,3 @@
+﻿config/targeted/java.rmi_java_rmi_dgc_DGC.yaml
+config/targeted/java.rmi_java_rmi_dgc_Lease.yaml
+config/targeted/java.rmi_java_rmi_dgc_VMID.yaml

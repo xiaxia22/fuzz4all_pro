@@ -1,0 +1,13 @@
+﻿config/targeted/java.base_java_util_stream_BaseStream.yaml
+config/targeted/java.base_java_util_stream_Collector.Characteristics.yaml
+config/targeted/java.base_java_util_stream_Collector.yaml
+config/targeted/java.base_java_util_stream_Collectors.yaml
+config/targeted/java.base_java_util_stream_DoubleStream.Builder.yaml
+config/targeted/java.base_java_util_stream_DoubleStream.yaml
+config/targeted/java.base_java_util_stream_IntStream.Builder.yaml
+config/targeted/java.base_java_util_stream_IntStream.yaml
+config/targeted/java.base_java_util_stream_LongStream.Builder.yaml
+config/targeted/java.base_java_util_stream_LongStream.yaml
+config/targeted/java.base_java_util_stream_Stream.Builder.yaml
+config/targeted/java.base_java_util_stream_Stream.yaml
+config/targeted/java.base_java_util_stream_StreamSupport.yaml

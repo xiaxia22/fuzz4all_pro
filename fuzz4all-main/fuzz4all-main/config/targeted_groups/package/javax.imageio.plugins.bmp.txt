@@ -1,0 +1,1 @@
+﻿config/targeted/java.desktop_javax_imageio_plugins_bmp_BMPImageWriteParam.yaml

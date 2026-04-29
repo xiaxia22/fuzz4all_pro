@@ -1,0 +1,3 @@
+﻿config/targeted/jdk.dynalink_jdk_dynalink_beans_BeansLinker.yaml
+config/targeted/jdk.dynalink_jdk_dynalink_beans_MissingMemberHandlerFactory.yaml
+config/targeted/jdk.dynalink_jdk_dynalink_beans_StaticClass.yaml

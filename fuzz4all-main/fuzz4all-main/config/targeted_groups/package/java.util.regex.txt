@@ -1,0 +1,4 @@
+﻿config/targeted/java.base_java_util_regex_Matcher.yaml
+config/targeted/java.base_java_util_regex_MatchResult.yaml
+config/targeted/java.base_java_util_regex_Pattern.yaml
+config/targeted/java.base_java_util_regex_PatternSyntaxException.yaml

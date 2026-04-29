@@ -1,0 +1,1 @@
+﻿config/targeted/jdk.httpserver_com_sun_net_httpserver_spi_HttpServerProvider.yaml

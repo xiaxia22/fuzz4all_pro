@@ -1,0 +1,3 @@
+﻿config/targeted/java.xml_javax_xml_transform_dom_DOMLocator.yaml
+config/targeted/java.xml_javax_xml_transform_dom_DOMResult.yaml
+config/targeted/java.xml_javax_xml_transform_dom_DOMSource.yaml

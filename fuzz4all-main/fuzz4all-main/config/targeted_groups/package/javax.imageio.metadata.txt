@@ -1,0 +1,6 @@
+﻿config/targeted/java.desktop_javax_imageio_metadata_IIOInvalidTreeException.yaml
+config/targeted/java.desktop_javax_imageio_metadata_IIOMetadata.yaml
+config/targeted/java.desktop_javax_imageio_metadata_IIOMetadataController.yaml
+config/targeted/java.desktop_javax_imageio_metadata_IIOMetadataFormat.yaml
+config/targeted/java.desktop_javax_imageio_metadata_IIOMetadataFormatImpl.yaml
+config/targeted/java.desktop_javax_imageio_metadata_IIOMetadataNode.yaml

@@ -1,0 +1,12 @@
+﻿config/targeted/java.base_java_nio_charset_CharacterCodingException.yaml
+config/targeted/java.base_java_nio_charset_Charset.yaml
+config/targeted/java.base_java_nio_charset_CharsetDecoder.yaml
+config/targeted/java.base_java_nio_charset_CharsetEncoder.yaml
+config/targeted/java.base_java_nio_charset_CoderMalfunctionError.yaml
+config/targeted/java.base_java_nio_charset_CoderResult.yaml
+config/targeted/java.base_java_nio_charset_CodingErrorAction.yaml
+config/targeted/java.base_java_nio_charset_IllegalCharsetNameException.yaml
+config/targeted/java.base_java_nio_charset_MalformedInputException.yaml
+config/targeted/java.base_java_nio_charset_StandardCharsets.yaml
+config/targeted/java.base_java_nio_charset_UnmappableCharacterException.yaml
+config/targeted/java.base_java_nio_charset_UnsupportedCharsetException.yaml

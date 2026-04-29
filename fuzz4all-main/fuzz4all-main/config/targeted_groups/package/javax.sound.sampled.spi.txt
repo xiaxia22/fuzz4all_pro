@@ -1,0 +1,4 @@
+﻿config/targeted/java.desktop_javax_sound_sampled_spi_AudioFileReader.yaml
+config/targeted/java.desktop_javax_sound_sampled_spi_AudioFileWriter.yaml
+config/targeted/java.desktop_javax_sound_sampled_spi_FormatConversionProvider.yaml
+config/targeted/java.desktop_javax_sound_sampled_spi_MixerProvider.yaml

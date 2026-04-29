@@ -1,0 +1,8 @@
+﻿config/targeted/java.xml.crypto_javax_xml_crypto_dsig_keyinfo_KeyInfo.yaml
+config/targeted/java.xml.crypto_javax_xml_crypto_dsig_keyinfo_KeyInfoFactory.yaml
+config/targeted/java.xml.crypto_javax_xml_crypto_dsig_keyinfo_KeyName.yaml
+config/targeted/java.xml.crypto_javax_xml_crypto_dsig_keyinfo_KeyValue.yaml
+config/targeted/java.xml.crypto_javax_xml_crypto_dsig_keyinfo_PGPData.yaml
+config/targeted/java.xml.crypto_javax_xml_crypto_dsig_keyinfo_RetrievalMethod.yaml
+config/targeted/java.xml.crypto_javax_xml_crypto_dsig_keyinfo_X509Data.yaml
+config/targeted/java.xml.crypto_javax_xml_crypto_dsig_keyinfo_X509IssuerSerial.yaml

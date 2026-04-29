@@ -1,0 +1,7 @@
+﻿config/targeted/java.xml_javax_xml_catalog_Catalog.yaml
+config/targeted/java.xml_javax_xml_catalog_CatalogException.yaml
+config/targeted/java.xml_javax_xml_catalog_CatalogFeatures.Builder.yaml
+config/targeted/java.xml_javax_xml_catalog_CatalogFeatures.Feature.yaml
+config/targeted/java.xml_javax_xml_catalog_CatalogFeatures.yaml
+config/targeted/java.xml_javax_xml_catalog_CatalogManager.yaml
+config/targeted/java.xml_javax_xml_catalog_CatalogResolver.yaml

@@ -1,0 +1,15 @@
+﻿config/targeted/java.xml_javax_xml_stream_EventFilter.yaml
+config/targeted/java.xml_javax_xml_stream_FactoryConfigurationError.yaml
+config/targeted/java.xml_javax_xml_stream_Location.yaml
+config/targeted/java.xml_javax_xml_stream_StreamFilter.yaml
+config/targeted/java.xml_javax_xml_stream_XMLEventFactory.yaml
+config/targeted/java.xml_javax_xml_stream_XMLEventReader.yaml
+config/targeted/java.xml_javax_xml_stream_XMLEventWriter.yaml
+config/targeted/java.xml_javax_xml_stream_XMLInputFactory.yaml
+config/targeted/java.xml_javax_xml_stream_XMLOutputFactory.yaml
+config/targeted/java.xml_javax_xml_stream_XMLReporter.yaml
+config/targeted/java.xml_javax_xml_stream_XMLResolver.yaml
+config/targeted/java.xml_javax_xml_stream_XMLStreamConstants.yaml
+config/targeted/java.xml_javax_xml_stream_XMLStreamException.yaml
+config/targeted/java.xml_javax_xml_stream_XMLStreamReader.yaml
+config/targeted/java.xml_javax_xml_stream_XMLStreamWriter.yaml

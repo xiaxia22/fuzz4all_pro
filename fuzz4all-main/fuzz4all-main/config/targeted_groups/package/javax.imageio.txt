@@ -1,0 +1,11 @@
+﻿config/targeted/java.desktop_javax_imageio_IIOException.yaml
+config/targeted/java.desktop_javax_imageio_IIOImage.yaml
+config/targeted/java.desktop_javax_imageio_IIOParam.yaml
+config/targeted/java.desktop_javax_imageio_IIOParamController.yaml
+config/targeted/java.desktop_javax_imageio_ImageIO.yaml
+config/targeted/java.desktop_javax_imageio_ImageReader.yaml
+config/targeted/java.desktop_javax_imageio_ImageReadParam.yaml
+config/targeted/java.desktop_javax_imageio_ImageTranscoder.yaml
+config/targeted/java.desktop_javax_imageio_ImageTypeSpecifier.yaml
+config/targeted/java.desktop_javax_imageio_ImageWriteParam.yaml
+config/targeted/java.desktop_javax_imageio_ImageWriter.yaml

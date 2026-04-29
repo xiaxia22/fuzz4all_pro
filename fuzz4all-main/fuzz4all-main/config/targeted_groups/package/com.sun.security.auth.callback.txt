@@ -1,0 +1,1 @@
+﻿config/targeted/jdk.security.auth_com_sun_security_auth_callback_TextCallbackHandler.yaml

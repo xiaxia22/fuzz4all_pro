@@ -1,0 +1,3 @@
+﻿config/targeted/java.compiler_javax_lang_model_AnnotatedConstruct.yaml
+config/targeted/java.compiler_javax_lang_model_SourceVersion.yaml
+config/targeted/java.compiler_javax_lang_model_UnknownEntityException.yaml

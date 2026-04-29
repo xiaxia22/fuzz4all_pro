@@ -1,0 +1,14 @@
+﻿config/targeted/java.xml_javax_xml_stream_events_Attribute.yaml
+config/targeted/java.xml_javax_xml_stream_events_Characters.yaml
+config/targeted/java.xml_javax_xml_stream_events_Comment.yaml
+config/targeted/java.xml_javax_xml_stream_events_DTD.yaml
+config/targeted/java.xml_javax_xml_stream_events_EndDocument.yaml
+config/targeted/java.xml_javax_xml_stream_events_EndElement.yaml
+config/targeted/java.xml_javax_xml_stream_events_EntityDeclaration.yaml
+config/targeted/java.xml_javax_xml_stream_events_EntityReference.yaml
+config/targeted/java.xml_javax_xml_stream_events_Namespace.yaml
+config/targeted/java.xml_javax_xml_stream_events_NotationDeclaration.yaml
+config/targeted/java.xml_javax_xml_stream_events_ProcessingInstruction.yaml
+config/targeted/java.xml_javax_xml_stream_events_StartDocument.yaml
+config/targeted/java.xml_javax_xml_stream_events_StartElement.yaml
+config/targeted/java.xml_javax_xml_stream_events_XMLEvent.yaml

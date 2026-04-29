@@ -1,0 +1,2 @@
+﻿config/targeted/java.xml.crypto_javax_xml_crypto_dsig_dom_DOMSignContext.yaml
+config/targeted/java.xml.crypto_javax_xml_crypto_dsig_dom_DOMValidateContext.yaml
