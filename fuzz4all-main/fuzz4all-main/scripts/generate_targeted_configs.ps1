@@ -74,10 +74,11 @@ function Get-CategoryDefaults {
         PromptRefreshInterval              = 2
         PromptRefreshCandidates            = 1
         MutationOperatorTopK               = 6
-        AutoPromptValidationBatchSize      = 6
-        AutoPromptValidationMaxLength      = 448
-        RuntimeRefreshValidationBatchSize  = 3
-        RuntimeRefreshValidationMaxLength  = 320
+        AutoPromptCandidates               = 1
+        AutoPromptValidationBatchSize      = 2
+        AutoPromptValidationMaxLength      = 192
+        RuntimeRefreshValidationBatchSize  = 2
+        RuntimeRefreshValidationMaxLength  = 192
         Trigger                            = "/* Please create a very short Java program that uses $qualifiedName in diverse and tricky ways. Use only standard JDK public APIs. Focus on documented method overloads, edge-case argument combinations, realistic lifecycle or state transitions when relevant, and code that still tries to compile, but avoid fabricated helper classes or undocumented methods. */"
     }
 
@@ -182,7 +183,7 @@ llm:
   model_name: Qwen/Qwen2.5-Coder-7B-Instruct
   max_length: 1024
   autoprompt_model: deepseek-chat
-  autoprompt_candidates: 3
+  autoprompt_candidates: $($defaults.AutoPromptCandidates)
   autoprompt_temperature: 0.9
   autoprompt_greedy_temperature: 0.2
   autoprompt_max_tokens: 256
