@@ -84,6 +84,20 @@ class JAVATarget(Target):
         )
         return code
 
+    def _is_viable_generated_code(self, code: str) -> bool:
+        if not super()._is_viable_generated_code(code):
+            return False
+        normalized = " ".join((code or "").split())
+        if self._profile_rejects_generated_code(normalized):
+            return False
+        # Reject clearly truncated Java code: check for incomplete trailing tokens.
+        # Use word-boundary regex for "valid" to avoid false-matching "invalid".
+        if re.search(r"\bvalid$", normalized):
+            return False
+        if normalized.endswith(("write(", "try {", "Buffered")):
+            return False
+        return True
+
     def extract_javac_error_categories(self, message: str) -> List[str]:
         categories = []
         normalized = message or ""
@@ -390,7 +404,7 @@ class JAVATarget(Target):
                 timeout=5,
                 text=True,
             )
-        except subprocess.TimeoutExpired as te:
+        except subprocess.TimeoutExpired:
             if os.name == "posix":
                 pname = f"'temp{self.CURRENT_TIME}'"
                 subprocess.run(
@@ -404,11 +418,31 @@ class JAVATarget(Target):
                         + " | grep -v grep | awk '{print $2}' | xargs -r kill -9"
                     ],
                     shell=True,
-                )  # kill all tests thank you
+                )
             return FResult.TIMED_OUT, "java"
+
         if exit_code.returncode == 1:
             return FResult.FAILURE, exit_code.stderr
-        elif exit_code.returncode == 0:
-            return FResult.SAFE, "its safe"
-        else:
+        if exit_code.returncode != 0:
             return FResult.ERROR, exit_code.stderr
+
+        # Compilation succeeded. Optionally execute to catch runtime exceptions.
+        if getattr(self, "runtime_feedback_mode", "compile_only") != "compile_only":
+            class_dir = str(Path(write_back_name).parent)
+            class_name = Path(write_back_name).stem
+            run_cmd = f"java -cp {class_dir} {class_name}"
+            try:
+                run_result = subprocess.run(
+                    run_cmd,
+                    shell=True,
+                    capture_output=True,
+                    encoding="utf-8",
+                    timeout=5,
+                    text=True,
+                )
+                if run_result.returncode != 0:
+                    return FResult.ERROR, run_result.stderr
+            except subprocess.TimeoutExpired:
+                return FResult.TIMED_OUT, "java runtime"
+
+        return FResult.SAFE, "its safe"

@@ -1,10 +1,29 @@
 import re
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
+
+
+# Matches any Java IO/NIO stream or reader/writer variable declaration.
+# Covers standard library types ending in InputStream, OutputStream, Reader, Writer.
+_RESOURCE_VAR_RE = re.compile(
+    r"\b([A-Za-z][A-Za-z0-9]*(?:InputStream|OutputStream|Reader|Writer))"
+    r"\s+([A-Za-z_][A-Za-z0-9_]*)\s*="
+)
 
 
 class JavaMutator:
     def __init__(self, profile: Dict[str, Any]) -> None:
         self.profile = profile
+
+    def _find_resource_vars(self, code: str) -> List[Tuple[str, str]]:
+        """Return [(class_name, var_name), ...] for all resource-like variable declarations."""
+        seen: set = set()
+        results = []
+        for m in _RESOURCE_VAR_RE.finditer(code):
+            key = (m.group(1), m.group(2))
+            if key not in seen:
+                seen.add(key)
+                results.append(key)
+        return results
 
     def generate_mutations(
         self,
@@ -117,29 +136,30 @@ class JavaMutator:
 
     # RESOURCE operators
     def resource_constructor_edge(self, code: str) -> List[str]:
+        """Mutate buffer-size arguments in any resource (InputStream/OutputStream/Reader/Writer) constructor."""
         mutated = []
-        resource_types = [
-            "BufferedOutputStream",
-            "BufferedInputStream",
-            "BufferedReader",
-        ]
-        for resource_type in resource_types:
+        processed_types: set = set()
+        for class_name, _ in self._find_resource_vars(code):
+            if class_name in processed_types:
+                continue
+            processed_types.add(class_name)
+            # Mutate existing size argument: new Foo(arg, size) → new Foo(arg, N)
             sized_pattern = re.compile(
-                rf"new\s+{resource_type}\((.+?),\s*(-?\d+)\)"
+                rf"new\s+{re.escape(class_name)}\((.+?),\s*(-?\d+)\)"
             )
             for size in ["1", "8", "8192", "0", "-1"]:
                 replaced, count = sized_pattern.subn(
-                    lambda m, rt=resource_type: f"new {rt}({m.group(1)}, {size})",
+                    lambda m, rt=class_name, s=size: f"new {rt}({m.group(1)}, {s})",
                     code,
                     count=1,
                 )
                 if count:
                     mutated.append(replaced)
-
-            unsized_pattern = re.compile(rf"new\s+{resource_type}\(([^,\n]+)\)")
+            # Inject size argument into single-arg constructor: new Foo(arg) → new Foo(arg, N)
+            unsized_pattern = re.compile(rf"new\s+{re.escape(class_name)}\(([^,\n)]+)\)")
             for size in ["1", "8", "8192"]:
                 replaced, count = unsized_pattern.subn(
-                    lambda m, rt=resource_type: f"new {rt}({m.group(1)}, {size})",
+                    lambda m, rt=class_name, s=size: f"new {rt}({m.group(1)}, {s})",
                     code,
                     count=1,
                 )
@@ -148,86 +168,72 @@ class JavaMutator:
         return mutated
 
     def resource_lifecycle_sequence(self, code: str) -> List[str]:
+        """Insert lifecycle calls (flush/close/mark/reset/skip) after resource creation for any stream type."""
         mutated = []
-        output_match = re.search(
-            r"BufferedOutputStream\s+([A-Za-z_][A-Za-z0-9_]*)\s*=",
-            code,
-        )
-        if output_match:
-            variable_name = output_match.group(1)
-            insert_after_write = re.compile(
-                rf"({re.escape(variable_name)}\s*\.\s*write\([^\n;]*\);\s*)"
-            )
-            for snippet in [
-                f"\\1\n        {variable_name}.flush();",
-                f"\\1\n        {variable_name}.flush();\n        {variable_name}.write(255);",
-                f"\\1\n        {variable_name}.close();\n        {variable_name}.flush();",
-            ]:
-                replaced, count = insert_after_write.subn(snippet, code, count=1)
-                if count:
-                    mutated.append(replaced)
-        input_match = re.search(
-            r"BufferedInputStream\s+([A-Za-z_][A-Za-z0-9_]*)\s*=",
-            code,
-        )
-        if input_match:
-            variable_name = input_match.group(1)
-            mutated.extend(
-                self._insert_after_first_match(
-                    code,
-                    rf"(\bBufferedInputStream\s+{re.escape(variable_name)}\s*=\s*[^\n;]+;\s*)",
-                    [
-                        f"{variable_name}.mark(8);",
-                        f"try {{ {variable_name}.read(); {variable_name}.reset(); }} catch (Exception ignored) {{ }}",
-                        f"try {{ {variable_name}.available(); {variable_name}.skip(1L); }} catch (Exception ignored) {{ }}",
-                    ],
+        for class_name, var_name in self._find_resource_vars(code):
+            is_output = "OutputStream" in class_name or "Writer" in class_name
+            is_input = "InputStream" in class_name or "Reader" in class_name
+
+            if is_output:
+                insert_after_write = re.compile(
+                    rf"({re.escape(var_name)}\s*\.\s*write\([^\n;]*\);\s*)"
                 )
-            )
-        reader_match = re.search(
-            r"BufferedReader\s+([A-Za-z_][A-Za-z0-9_]*)\s*=",
-            code,
-        )
-        if reader_match:
-            variable_name = reader_match.group(1)
-            mutated.extend(
-                self._insert_after_first_match(
-                    code,
-                    rf"(\bBufferedReader\s+{re.escape(variable_name)}\s*=\s*[^\n;]+;\s*)",
-                    [
-                        f"{variable_name}.mark(16);",
-                        f"try {{ {variable_name}.read(); {variable_name}.reset(); }} catch (Exception ignored) {{ }}",
-                        f"try {{ {variable_name}.skip(1L); }} catch (Exception ignored) {{ }}",
-                    ],
+                for snippet in [
+                    f"\\1\n        {var_name}.flush();",
+                    f"\\1\n        {var_name}.flush();\n        {var_name}.write(255);",
+                    f"\\1\n        {var_name}.close();\n        {var_name}.flush();",
+                ]:
+                    replaced, count = insert_after_write.subn(snippet, code, count=1)
+                    if count:
+                        mutated.append(replaced)
+
+            if is_input:
+                if "InputStream" in class_name:
+                    snippets = [
+                        f"{var_name}.mark(8);",
+                        f"try {{ {var_name}.read(); {var_name}.reset(); }} catch (Exception ignored) {{ }}",
+                        f"try {{ {var_name}.available(); {var_name}.skip(1L); }} catch (Exception ignored) {{ }}",
+                    ]
+                else:  # Reader
+                    snippets = [
+                        f"{var_name}.mark(16);",
+                        f"try {{ {var_name}.read(); {var_name}.reset(); }} catch (Exception ignored) {{ }}",
+                        f"try {{ {var_name}.skip(1L); }} catch (Exception ignored) {{ }}",
+                    ]
+                mutated.extend(
+                    self._insert_after_first_match(
+                        code,
+                        rf"(\b{re.escape(class_name)}\s+{re.escape(var_name)}\s*=\s*[^\n;]+;\s*)",
+                        snippets,
+                    )
                 )
-            )
         return mutated
 
     def resource_wrapper_depth(self, code: str) -> List[str]:
+        """Wrap a resource constructor inside another compatible wrapper to stress nesting."""
         mutated = []
-        patterns = [
-            (
-                re.compile(r"new\s+BufferedOutputStream\(([^,\n]+)\)"),
-                [
-                    lambda m: f"new BufferedOutputStream(new BufferedOutputStream({m.group(1)}))",
-                    lambda m: "new BufferedOutputStream(new java.io.ByteArrayOutputStream())",
-                ],
-            ),
-            (
-                re.compile(r"new\s+BufferedInputStream\(([^,\n]+)\)"),
-                [
-                    lambda m: f"new BufferedInputStream(new BufferedInputStream({m.group(1)}))",
-                    lambda m: "new BufferedInputStream(new java.io.ByteArrayInputStream(new byte[]{1,2,3}))",
-                ],
-            ),
-            (
-                re.compile(r"new\s+BufferedReader\(([^,\n]+)\)"),
-                [
-                    lambda m: f"new BufferedReader(new BufferedReader({m.group(1)}))",
-                    lambda m: 'new BufferedReader(new java.io.StringReader("abc"))',
-                ],
-            ),
-        ]
-        for pattern, replacements in patterns:
+        processed_types: set = set()
+        for class_name, _ in self._find_resource_vars(code):
+            if class_name in processed_types:
+                continue
+            processed_types.add(class_name)
+            pattern = re.compile(rf"new\s+{re.escape(class_name)}\(([^,\n]+)\)")
+            is_output = "OutputStream" in class_name or "Writer" in class_name
+            is_input = "InputStream" in class_name or "Reader" in class_name
+
+            if is_output:
+                replacements = [
+                    lambda m, rt=class_name: f"new {rt}(new {rt}({m.group(1)}))",
+                    lambda m: "new java.io.BufferedOutputStream(new java.io.ByteArrayOutputStream())",
+                ]
+            elif is_input:
+                replacements = [
+                    lambda m, rt=class_name: f"new {rt}(new {rt}({m.group(1)}))",
+                    lambda m: "new java.io.BufferedInputStream(new java.io.ByteArrayInputStream(new byte[]{1,2,3}))",
+                ]
+            else:
+                continue
+
             for replacement in replacements:
                 replaced, count = pattern.subn(replacement, code, count=1)
                 if count:

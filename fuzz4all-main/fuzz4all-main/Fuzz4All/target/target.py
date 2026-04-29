@@ -105,17 +105,6 @@ class Target(object):
         self.mutation_stats = {}
         self.last_mutation_summary = []
         self.manifest_path = os.path.join(self.folder, "mutation_manifest.jsonl")
-        # prompt strategies
-        self.se_prompt = self.wrap_in_comment(
-            "Please create a semantically equivalent program to the previous "
-            "generation"
-        )
-        self.m_prompt = self.wrap_in_comment(
-            "Please create a mutated program that modifies the previous generation"
-        )
-        self.c_prompt = self.wrap_in_comment(
-            "Please combine the two previous programs into a single program"
-        )
         self.p_strategy = kwargs["prompt_strategy"]
         # eos based
         self.special_eos = None
@@ -459,15 +448,8 @@ class Target(object):
         return False
 
     def _is_viable_generated_code(self, code: str) -> bool:
-        if self.language != "java":
-            return True
-
         normalized = " ".join((code or "").split())
-        if self._profile_rejects_generated_code(normalized):
-            return False
         if normalized.count("{") != normalized.count("}"):
-            return False
-        if normalized.endswith(("valid", "write(", "try {", "Buffered")):
             return False
         return True
 
@@ -1015,9 +997,6 @@ class Target(object):
         eos = [
             self.prompt_used["separator"],
             "<eom>",  # for codegen2
-            self.se_prompt,
-            self.m_prompt,
-            self.c_prompt,
         ]
         if hasattr(self, "config_dict"):
             llm = self.config_dict["llm"]
@@ -1079,7 +1058,7 @@ class Target(object):
             self.prompt,
             batch_size=self.batch_size,
             temperature=self.temperature,
-            max_length=1024,
+            max_length=self.max_length,
         )
 
     def generate(self, **kwargs) -> Union[List[str], bool]:
@@ -1144,23 +1123,6 @@ class Target(object):
 
     def clean_code(self, code: str) -> str:
         raise NotImplementedError
-
-    def update_strategy(self, new_code: str) -> str:
-        while 1:
-            strategy = random.randint(0, self.p_strategy)
-            # generate new code using separator
-            if strategy == 0:
-                return f"\n{new_code}\n{self.prompt_used['separator']}\n"
-            # mutate existing code
-            elif strategy == 1:
-                return f"\n{new_code}\n{self.m_prompt}\n"
-            # semantically equivalent code generation
-            elif strategy == 2:
-                return f"\n{new_code}\n{self.se_prompt}\n"
-            # combine previous two code generations
-            else:
-                if self.prev_example is not None:
-                    return f"\n{self.prev_example}\n{self.prompt_used['separator']}\n{self.prompt_used['begin']}\n{new_code}\n{self.c_prompt}\n"
 
     # update
     def update(self, **kwargs):

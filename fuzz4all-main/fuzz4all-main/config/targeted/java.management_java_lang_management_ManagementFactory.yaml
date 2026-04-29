@@ -12,6 +12,7 @@ fuzzing:
   use_hand_written_prompt: false
   no_input_prompt: false
   prompt_strategy: 2
+  target_name: javac
 
 target:
   language: java
@@ -40,14 +41,14 @@ llm:
   model_name: Qwen/Qwen2.5-Coder-7B-Instruct
   max_length: 1024
   autoprompt_model: deepseek-chat
-  autoprompt_candidates: 3
+  autoprompt_candidates: 1
   autoprompt_temperature: 0.9
   autoprompt_greedy_temperature: 0.2
   autoprompt_max_tokens: 256
-  autoprompt_validation_batch_size: 6
-  autoprompt_validation_max_length: 448
+  autoprompt_validation_batch_size: 2
+  autoprompt_validation_max_length: 192
   runtime_autoprompt_model: deepseek-chat
   runtime_autoprompt_temperature: 0.7
   runtime_autoprompt_max_tokens: 256
-  runtime_refresh_validation_batch_size: 3
-  runtime_refresh_validation_max_length: 320
+  runtime_refresh_validation_batch_size: 2
+  runtime_refresh_validation_max_length: 192

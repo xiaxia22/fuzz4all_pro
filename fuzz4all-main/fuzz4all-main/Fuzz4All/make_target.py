@@ -34,8 +34,17 @@ def make_target_with_config(config_dict: Dict[str, Any]) -> Target:
     fuzzing = config_dict["fuzzing"]
     target = config_dict["target"]
     model_name = llm.get("model_name", "Qwen/Qwen2.5-Coder-7B-Instruct")
+    _language = target.get("language", "")
+    _default_target_names = {
+        "java": "javac",
+        "cpp": "g++",
+        "c": "gcc",
+        "go": "go",
+        "smt2": "cvc5",
+        "qiskit": "python",
+    }
     target_compat_dict = {
-        "language": target["language"],
+        "language": _language,
         "folder": fuzzing["output_folder"],
         "bs": llm.get("batch_size", 1),
         "temperature": llm.get("temperature", 1.0),
@@ -48,7 +57,7 @@ def make_target_with_config(config_dict: Dict[str, Any]) -> Target:
         "level": fuzzing.get("log_level", 0),
         "template": "fuzzing_with_config_file",
         "config_dict": config_dict,
-        "target_name": fuzzing.get("target_name", "target"),
+        "target_name": fuzzing.get("target_name", _default_target_names.get(_language, "target")),
     }
 
     print("=== Target Config ===")

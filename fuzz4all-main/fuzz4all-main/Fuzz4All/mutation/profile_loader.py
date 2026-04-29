@@ -345,12 +345,12 @@ def _context_domain_hints(target_api: str, doc_path: str) -> List[str]:
             "REFLECT",
             [
                 ".reflect",
-                "method",
-                "field",
-                "constructor",
-                "proxy",
+                ".lang.reflect",
                 "accessibleobject",
-                "invocation",
+                "invocationhandler",
+                "proxy",
+                # Intentionally excludes generic words like "method", "field", "constructor"
+                # to avoid false positives on non-reflection APIs.
             ],
         ),
         (
@@ -627,16 +627,33 @@ def load_mutation_profile(config_dict: Dict[str, Any]) -> Dict[str, Any]:
         target_api or matched.get("api_name", ""),
         doc_path or _normalize_relpath(matched.get("file", "")),
     )
-    mutation_profile = profile_override or (
-        matched.get("mutation_profile")
-        if matched.get("mutation_profile") not in ("", None, "generic_java")
-        else derived_mutation_profile
-    )
-    if profile_override and profile_override in PROFILE_ORDER:
-        primary_tag = profile_override
-        all_tags = [profile_override] + [
-            tag for tag in all_tags if tag != profile_override
-        ]
+    if profile_override:
+        if profile_override in MUTATION_PROFILE_DEFINITIONS:
+            # Override is a profile name (e.g. "resource_buffer_batch"): use directly,
+            # primary_tag stays as derived from classification.
+            mutation_profile = profile_override
+        elif profile_override in PROFILE_ORDER:
+            # Override is a classification tag (e.g. "RESOURCE"): update primary_tag
+            # and re-derive a matching mutation profile.
+            primary_tag = profile_override
+            all_tags = [profile_override] + [
+                tag for tag in all_tags if tag != profile_override
+            ]
+            mutation_profile = _derive_mutation_profile(
+                primary_tag,
+                all_tags,
+                classification_scores,
+                target_api or matched.get("api_name", ""),
+                doc_path or _normalize_relpath(matched.get("file", "")),
+            )
+        else:
+            mutation_profile = derived_mutation_profile
+    else:
+        mutation_profile = (
+            matched.get("mutation_profile")
+            if matched.get("mutation_profile") not in ("", None, "generic_java")
+            else derived_mutation_profile
+        )
     active_profiles = _resolve_active_profiles(
         mutation_profile,
         primary_tag,
