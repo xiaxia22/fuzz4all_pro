@@ -340,6 +340,8 @@ PROFILE_CATALOG: Dict[str, Dict[str, Any]] = {
                 "java.lang.management.RuntimeMXBean;",
                 "java.lang.management.CompilationMXBean;",
                 "java.lang.management.MemoryUsage;",
+                "javax.management.MBeanServer;",
+                "javax.management.MBeanServerConnection;",
                 "javax.management.ObjectName;",
             ],
         },
@@ -352,6 +354,13 @@ PROFILE_CATALOG: Dict[str, Dict[str, Any]] = {
                 # Pluralized MXBean type names (e.g. XxxMXBeans) violate JMX naming convention
                 # and are hallucinations regardless of which JVM management API is targeted
                 r"[A-Z][a-zA-Z]+MXBeans\b",
+                # Bare MXBean is often hallucinated as a concrete public type in generated code.
+                r"(?<![A-Za-z0-9_])MXBean(?![A-Za-z0-9_])",
+                # Common invented ManagementFactory entrypoint that does not exist in JDK APIs.
+                r"\bnewPlatformMBeanServer\b",
+                # Generic plural/statistics-style getters frequently hallucinated on MXBean instances.
+                r"\bget[A-Z][a-zA-Z]*Compilations\b",
+                r"\bget[A-Z][a-zA-Z]*ThreadsCount\b",
             ],
         },
     },

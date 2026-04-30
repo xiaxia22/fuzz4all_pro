@@ -29,7 +29,7 @@ target:
   path_classification_result: outputs/api_classification/java_api_5d_classification.json
   path_documentation: config/documentation/java.management_java_lang_management_ManagementFactory.md
   path_example_code:
-  trigger_to_generate_input: "/* Please create a very short Java program that uses java.lang.management.ManagementFactory in diverse and tricky ways. Use only standard JDK management and MXBean APIs. Focus on documented platform MXBean queries, runtime or memory sampling boundaries, valid management object names when required, and public factory methods, but avoid fabricated bean methods, non-JDK wrappers, or guessed management helpers. */"
+  trigger_to_generate_input: "/* Please create a very short Java program that uses java.lang.management.ManagementFactory in diverse and tricky ways. Use only standard JDK management and MXBean APIs. Focus on documented static factory/query entry points such as getMemoryMXBean, getThreadMXBean, getRuntimeMXBean, getClassLoadingMXBean, getCompilationMXBean, getPlatformMBeanServer, and valid ObjectName usage when required. Keep to public JDK management interfaces, handle checked exceptions around ObjectName or MXBean proxy creation, and avoid fabricated bean methods, generic MXBean placeholder types, non-JDK wrappers, or guessed management helpers. */"
   input_hint: "import java.lang.management.ManagementFactory;"
   path_hand_written_prompt:
   target_string: "ManagementFactory"

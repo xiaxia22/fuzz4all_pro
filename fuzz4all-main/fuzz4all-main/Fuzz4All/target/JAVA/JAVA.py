@@ -359,6 +359,12 @@ class JAVATarget(Target):
             rules.append(
                 f"For {target_api}, prefer static factory/query methods that return standard MXBeans or MBeanServer handles; do not invent instance methods or non-JDK management wrappers."
             )
+            rules.append(
+                f"For {target_api}, handle checked exceptions for ObjectName construction and MXBean proxy creation explicitly with try/catch or throws."
+            )
+            rules.append(
+                f"For {target_api}, call documented query methods on concrete MXBean interfaces returned by ManagementFactory helpers; do not invent generic bean super-types or guessed statistics getters."
+            )
             if "nonexistent_type" in categories:
                 rules.append(
                     f"For {target_api}, use only standard javax.management and java.lang.management types; do not invent management proxy, wrapper, or bean container class names."
