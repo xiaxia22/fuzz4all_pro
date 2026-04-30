@@ -167,6 +167,10 @@ class JAVATarget(Target):
             categories.append("missing_import")
         if "'(' expected" in normalized and "generic" in normalized.lower():
             categories.append("invalid_generic_syntax")
+        if "cannot find symbol" in normalized and re.search(
+            r"symbol:\s+class\s+[A-Za-z_][A-Za-z0-9_]*", normalized
+        ):
+            categories.append("nonexistent_type")
 
         return categories
 
@@ -308,6 +312,10 @@ class JAVATarget(Target):
             rules.append(
                 f"Keep variable, receiver, and return types consistent with the documented contracts of {target_api}."
             )
+        if "nonexistent_type" in categories:
+            rules.append(
+                "Reference only documented public JDK types; do not invent or guess class names."
+            )
 
         if primary_tag == "SECURITY":
             rules.append(
@@ -332,6 +340,10 @@ class JAVATarget(Target):
             rules.append(
                 f"For {target_api}, use only documented listener interfaces, property names, and fire/add/remove overloads; do not invent indexed or helper listener APIs."
             )
+            if "nonexistent_type" in categories:
+                rules.append(
+                    f"For {target_api}, use only documented listener, event, and handler types from the target library; do not invent proxy, helper, or indexed listener variant types."
+                )
         elif primary_tag == "TIME":
             rules.append(
                 f"For {target_api}, keep epoch, duration, and zone arguments within the documented API forms."
@@ -347,6 +359,10 @@ class JAVATarget(Target):
             rules.append(
                 f"For {target_api}, prefer static factory/query methods that return standard MXBeans or MBeanServer handles; do not invent instance methods or non-JDK management wrappers."
             )
+            if "nonexistent_type" in categories:
+                rules.append(
+                    f"For {target_api}, use only standard javax.management and java.lang.management types; do not invent management proxy, wrapper, or bean container class names."
+                )
         elif primary_tag == "MARK_SUPPORT":
             rules.append(
                 f"For {target_api}, keep mark/reset usage tied to the documented stream or reader lifecycle."

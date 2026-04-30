@@ -277,8 +277,11 @@ PROFILE_CATALOG: Dict[str, Dict[str, Any]] = {
         "filter_rules": {
             "reject_tokens": [],
             "reject_patterns": [
-                r"addIndexedPropertyChangeListener",
-                r"removeIndexedPropertyChangeListener",
+                # Generic: indexed listener variants are almost always hallucinations
+                # across callback/listener APIs (covers addIndexedXxxListener pattern)
+                r"addIndexed[A-Z][a-zA-Z]*Listener",
+                r"removeIndexed[A-Z][a-zA-Z]*Listener",
+                r"fireIndexed[A-Z][a-zA-Z]+",
             ],
         },
     },
@@ -340,7 +343,17 @@ PROFILE_CATALOG: Dict[str, Dict[str, Any]] = {
                 "javax.management.ObjectName;",
             ],
         },
-        "filter_rules": {"reject_tokens": [], "reject_patterns": []},
+        "filter_rules": {
+            "reject_tokens": [
+                # MBeanProxy is not a standard public JMX type used in direct JVM management API calls
+                "MBeanProxy",
+            ],
+            "reject_patterns": [
+                # Pluralized MXBean type names (e.g. XxxMXBeans) violate JMX naming convention
+                # and are hallucinations regardless of which JVM management API is targeted
+                r"[A-Z][a-zA-Z]+MXBeans\b",
+            ],
+        },
     },
     "MARK_SUPPORT": {
         "profile_class": "MARK_SUPPORT",

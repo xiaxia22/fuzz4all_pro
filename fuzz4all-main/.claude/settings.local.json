@@ -2,7 +2,12 @@
   "permissions": {
     "allow": [
       "Bash(git add *)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "PowerShell(pip install *)",
+      "PowerShell(python -m pip install python-docx 2>&1 | Select-Object -Last 3)",
+      "Bash(antiword -w 200 \"D:/same-fuzz/fuzz4all-main/fuzz4all-main/4.30 1：21目前进展与后续改进方案.doc\")",
+      "Bash(iconv -f gbk -t utf-8)",
+      "PowerShell(python -m py_compile \"D:/same-fuzz/fuzz4all-main/fuzz4all-main/Fuzz4All/mutation/profile_loader.py\" ; python -m py_compile \"D:/same-fuzz/fuzz4all-main/fuzz4all-main/Fuzz4All/target/target.py\" ; python -m py_compile \"D:/same-fuzz/fuzz4all-main/fuzz4all-main/Fuzz4All/target/JAVA/JAVA.py\" ; Write-Host \"All OK\")"
     ]
   }
 }

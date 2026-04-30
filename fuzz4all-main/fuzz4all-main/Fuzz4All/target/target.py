@@ -436,7 +436,19 @@ class Target(object):
     def _repair_java_code(self, code: str) -> str:
         repaired = code
         repaired = self._profile_repair_java_code(repaired)
+        repaired = self._dedup_java_imports(repaired)
         return repaired
+
+    def _dedup_java_imports(self, code: str) -> str:
+        seen: set = set()
+        deduped: list = []
+        for line in code.split("\n"):
+            if line.strip().startswith("import "):
+                if line.strip() in seen:
+                    continue
+                seen.add(line.strip())
+            deduped.append(line)
+        return "\n".join(deduped)
 
     def _profile_rejects_generated_code(self, normalized: str) -> bool:
         filter_rules = (self.mutation_profile or {}).get("filter_rules", {})

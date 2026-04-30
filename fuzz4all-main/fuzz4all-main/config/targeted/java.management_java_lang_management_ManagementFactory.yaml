@@ -19,7 +19,7 @@ target:
   java_version: 21
   enable_preview: true
   runtime_feedback_mode: normalized
-  max_feedback_rules: 5
+  max_feedback_rules: 7
   max_safe_examples: 3
   prompt_refresh_interval: 2
   prompt_refresh_candidates: 1
@@ -35,7 +35,7 @@ target:
   target_string: "ManagementFactory"
 
 llm:
-  temperature: 1
+  temperature: 0.8
   batch_size: 30
   device: cuda
   model_name: Qwen/Qwen2.5-Coder-7B-Instruct
