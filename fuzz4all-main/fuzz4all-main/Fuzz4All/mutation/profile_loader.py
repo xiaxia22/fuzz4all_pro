@@ -224,8 +224,22 @@ PROFILE_CATALOG: Dict[str, Dict[str, Any]] = {
             "security_provider_mutation",
             "security_material_boundary_mutation",
         ],
-        "repair_rules": {"byte_literal_cast": True, "imports": []},
-        "filter_rules": {"reject_tokens": [], "reject_patterns": []},
+        "repair_rules": {
+            "byte_literal_cast": True,
+            "imports": [
+                "java.security.InvalidKeyException;",
+                "java.security.InvalidAlgorithmParameterException;",
+            ],
+        },
+        "filter_rules": {
+            "reject_tokens": [
+                # Hallucinated Cipher constant names; real names are ENCRYPT_MODE / DECRYPT_MODE
+                "ENCRYPTION_MODE",
+                "DECryption_MODE",
+                "ENcryption_MODE",
+            ],
+            "reject_patterns": [],
+        },
     },
     "REFLECT": {
         "profile_class": "REFLECT",
@@ -242,6 +256,7 @@ PROFILE_CATALOG: Dict[str, Dict[str, Any]] = {
                 "java.lang.reflect.Method;",
                 "java.lang.reflect.Field;",
                 "java.lang.reflect.Constructor;",
+                "java.lang.reflect.InvocationTargetException;",
                 "java.util.Map;",
                 "java.util.List;",
                 "java.util.Arrays;",
@@ -294,7 +309,12 @@ PROFILE_CATALOG: Dict[str, Dict[str, Any]] = {
             "time_duration_sign_mutation",
             "time_zone_boundary_mutation",
         ],
-        "repair_rules": {"byte_literal_cast": True, "imports": []},
+        "repair_rules": {
+            "byte_literal_cast": True,
+            "imports": [
+                "java.time.format.DateTimeParseException;",
+            ],
+        },
         "filter_rules": {"reject_tokens": [], "reject_patterns": []},
     },
     "NETWORK": {
@@ -374,7 +394,15 @@ PROFILE_CATALOG: Dict[str, Dict[str, Any]] = {
             "mark_support_reuse_mutation",
         ],
         "repair_rules": {"byte_literal_cast": True, "imports": []},
-        "filter_rules": {"reject_tokens": [], "reject_patterns": []},
+        "filter_rules": {
+            "reject_tokens": [
+                # Mark-support APIs are exclusively input-stream types;
+                # write() and flush() do not exist on any of them
+                ".write(",
+                ".flush(",
+            ],
+            "reject_patterns": [],
+        },
     },
     "GENERIC": {
         "profile_class": "GENERIC",

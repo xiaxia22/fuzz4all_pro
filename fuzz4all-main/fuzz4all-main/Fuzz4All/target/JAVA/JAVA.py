@@ -171,6 +171,10 @@ class JAVATarget(Target):
             r"symbol:\s+class\s+[A-Za-z_][A-Za-z0-9_]*", normalized
         ):
             categories.append("nonexistent_type")
+        if "non-static" in normalized and "cannot be referenced from a static context" in normalized:
+            categories.append("non_static_context")
+        if "incompatible types" in normalized and "void cannot be converted" in normalized:
+            categories.append("void_assignment")
 
         return categories
 
@@ -316,6 +320,16 @@ class JAVATarget(Target):
             rules.append(
                 "Reference only documented public JDK types; do not invent or guess class names."
             )
+        if "non_static_context" in categories:
+            rules.append(
+                "Declare all objects as local variables within main() and call methods directly "
+                "on those instances; do not define instance fields accessed from static methods."
+            )
+        if "void_assignment" in categories:
+            rules.append(
+                "Do not assign the result of void-returning methods to variables; "
+                "write configuration and mutation calls as separate statements."
+            )
 
         if primary_tag == "SECURITY":
             rules.append(
@@ -329,6 +343,16 @@ class JAVATarget(Target):
             rules.append(
                 f"For {target_api}, keep thread/interleaving helpers syntactically isolated so concurrency scaffolding still compiles."
             )
+            if "non_static_context" in categories:
+                rules.append(
+                    f"For {target_api}, create thread instances as local variables in main(); "
+                    f"do not call instance methods like wait() or notify() as unqualified class-level calls."
+                )
+            if "void_assignment" in categories:
+                rules.append(
+                    f"For {target_api}, do not chain void-returning thread configuration calls "
+                    f"(e.g. setPriority, setDaemon) in a single expression with construction."
+                )
         elif primary_tag == "REFLECT":
             rules.append(
                 f"For {target_api}, keep reflected member names, receiver objects, and accessibility changes consistent with the reflection API."
@@ -343,6 +367,11 @@ class JAVATarget(Target):
             if "nonexistent_type" in categories:
                 rules.append(
                     f"For {target_api}, use only documented listener, event, and handler types from the target library; do not invent proxy, helper, or indexed listener variant types."
+                )
+            if "non_static_context" in categories:
+                rules.append(
+                    f"For {target_api}, declare the listener source object as a local variable "
+                    f"in main() and always qualify all registration and event-fire calls with that variable."
                 )
         elif primary_tag == "TIME":
             rules.append(
