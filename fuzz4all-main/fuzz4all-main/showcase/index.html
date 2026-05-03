@@ -1,0 +1,1911 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>基于Fuzz4All的JVM大语言模型测试 — 陕西科技大学</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-java.min.js" defer></script>
+  <style>
+    :root {
+      --primary: #91a6d7;
+      --primary-d: #dfe2eb;
+      --primary-l: #DBEAFE;
+      --primary-xl: #EFF6FF;
+      --bg: #F1F5F9;
+      --surface: #FFFFFF;
+      --surface2: #F8FAFC;
+      --border: #E2E8F0;
+      --border2: #CBD5E1;
+      --text: #1E293B;
+      --muted: #64748B;
+      --light: #94A3B8;
+      --green: #7cd39c;
+      --green-l: #DCFCE7;
+      --red: #e14b4b;
+      --red-l: #FEE2E2;
+      --orange: #e8a75d;
+      --orange-l: #FEF3C7;
+      --teal: #0891B2;
+      --teal-l: #E0F2FE;
+      --purple: #7C3AED;
+      --purple-l: #EDE9FE;
+      --sidebar: 240px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    html,
+    body {
+      height: 100%;
+      font-family: -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 16px;
+      line-height: 1.6
+    }
+
+    /* ── LAYOUT ─────────────────────────────── */
+    .layout {
+      display: flex;
+      height: 100vh;
+      overflow: hidden
+    }
+
+    /* ── SIDEBAR ─────────────────────────────── */
+    .sidebar {
+      width: var(--sidebar);
+      flex-shrink: 0;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden
+    }
+
+    .sb-header {
+      padding: 16px;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .sb-logo {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 1.3
+    }
+
+    .sb-sub {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px
+    }
+
+    .sb-folder-info {
+      font-size: 11px;
+      color: var(--green);
+      padding: 8px 16px;
+      background: var(--green-l);
+      border-bottom: 1px solid var(--border);
+      display: none;
+      word-break: break-all
+    }
+
+    .sb-nav {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 0
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 16px;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 13px;
+      transition: all .15s;
+      border-left: 2px solid transparent;
+      user-select: none;
+      text-decoration: none
+    }
+
+    .nav-item:hover {
+      background: var(--primary-xl);
+      color: var(--primary)
+    }
+
+    .nav-item.active {
+      background: var(--primary-xl);
+      color: var(--primary);
+      border-left-color: var(--primary);
+      font-weight: 500
+    }
+
+    .nav-item .ico {
+      width: 16px;
+      text-align: center;
+      flex-shrink: 0;
+      font-style: normal
+    }
+
+    .nav-section {
+      padding: 16px 16px 6px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--light);
+      text-transform: uppercase;
+      letter-spacing: .6px
+    }
+
+    .nav-group-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 16px;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 13px;
+      transition: all .15s
+    }
+
+    .nav-group-toggle:hover {
+      color: var(--text)
+    }
+
+    .nav-group-toggle .arrow {
+      margin-left: auto;
+      transition: transform .2s;
+      font-size: 10px
+    }
+
+    .nav-group-toggle.open .arrow {
+      transform: rotate(90deg)
+    }
+
+    .nav-sub {
+      padding-left: 0;
+      display: none
+    }
+
+    .nav-sub.open {
+      display: block
+    }
+
+    .nav-sub .nav-item {
+      padding-left: 32px;
+      font-size: 12.5px
+    }
+
+    .nav-sub .nav-item .tag-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0
+    }
+
+    .sb-actions {
+      padding: 10px 12px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 6px
+    }
+
+    .sb-btn {
+      width: 100%;
+      padding: 7px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all .15s
+    }
+
+    .sb-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: var(--primary-xl)
+    }
+
+    .sb-btn.primary {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary)
+    }
+
+    .sb-btn.primary:hover {
+      background: var(--primary-d);
+      border-color: var(--primary-d)
+    }
+
+    /* ── MAIN ─────────────────────────────── */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      min-width: 0
+    }
+
+    /* ── PAGE ─────────────────────────────── */
+    .page {
+      display: none;
+      min-height: 100%
+    }
+
+    .page.active {
+      display: block
+    }
+
+    .page-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 32px 28px
+    }
+
+    .page-header {
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .page-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text)
+    }
+
+    .page-subtitle {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 4px
+    }
+
+    /* ── CARD ─────────────────────────────── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px
+    }
+
+    .card-sm {
+      padding: 14px 16px
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--text)
+    }
+
+    .g2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px
+    }
+
+    .g3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px
+    }
+
+    .g4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px
+    }
+
+    @media(max-width:700px) {
+
+      .g2,
+      .g3,
+      .g4 {
+        grid-template-columns: 1fr
+      }
+    }
+
+    /* ── STAT ─────────────────────────────── */
+    .stat-num {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--primary)
+    }
+
+    .stat-lbl {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px
+    }
+
+    /* ── BADGE ─────────────────────────────── */
+    .badge {
+      display: inline-block;
+      padding: 1px 8px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600
+    }
+
+    .b-sec {
+      background: var(--red-l);
+      color: var(--red)
+    }
+
+    .b-net {
+      background: var(--primary-l);
+      color: var(--primary)
+    }
+
+    .b-file {
+      background: var(--green-l);
+      color: var(--green)
+    }
+
+    .b-conc {
+      background: var(--orange-l);
+      color: var(--orange)
+    }
+
+    .b-refl {
+      background: var(--purple-l);
+      color: var(--purple)
+    }
+
+    .b-cb {
+      background: #F3E8FF;
+      color: #6D28D9
+    }
+
+    .b-time {
+      background: var(--teal-l);
+      color: var(--teal)
+    }
+
+    .b-jvm {
+      background: var(--green-l);
+      color: var(--green)
+    }
+
+    .b-res {
+      background: #FEF3C7;
+      color: #92400E
+    }
+
+    .b-safe {
+      background: var(--green-l);
+      color: var(--green)
+    }
+
+    .b-fail {
+      background: var(--red-l);
+      color: var(--red)
+    }
+
+    .b-err {
+      background: var(--orange-l);
+      color: var(--orange)
+    }
+
+    .b-to {
+      background: #FEF9C3;
+      color: #854D0E
+    }
+
+    .b-unknown {
+      background: var(--border);
+      color: var(--muted)
+    }
+
+    /* ── WORKFLOW ─────────────────────────── */
+    .wf {
+      display: flex;
+      align-items: flex-start;
+      gap: 0;
+      overflow-x: auto;
+      padding: 4px 0
+    }
+
+    .wf-step {
+      flex: 1;
+      min-width: 120px;
+      text-align: center;
+      position: relative;
+      padding: 0 4px
+    }
+
+    .wf-step:not(:last-child)::after {
+      content: '→';
+      position: absolute;
+      top: 18px;
+      right: -8px;
+      color: var(--primary);
+      font-size: 16px;
+      font-weight: 300
+    }
+
+    .wf-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 8px;
+      font-size: 18px;
+      background: var(--primary-xl);
+      border: 1.5px solid var(--primary-l)
+    }
+
+    .wf-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 3px
+    }
+
+    .wf-desc {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.45;
+      padding: 0 2px
+    }
+
+    /* ── TABS ─────────────────────────────── */
+    .tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px
+    }
+
+    .tab-btn {
+      padding: 8px 16px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--muted);
+      border-bottom: 2px solid transparent;
+      transition: all .15s;
+      margin-bottom: -1px
+    }
+
+    .tab-btn:hover {
+      color: var(--text)
+    }
+
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+      font-weight: 500
+    }
+
+    .tab-panel {
+      display: none
+    }
+
+    .tab-panel.active {
+      display: block
+    }
+
+    /* ── TABLE ─────────────────────────────── */
+    .tbl {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px
+    }
+
+    .tbl th {
+      text-align: left;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--surface2)
+    }
+
+    .tbl td {
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .tbl tr:last-child td {
+      border-bottom: none
+    }
+
+    .tbl tr:hover td {
+      background: var(--primary-xl)
+    }
+
+    .pbar {
+      display: inline-block;
+      vertical-align: middle;
+      width: 60px;
+      height: 5px;
+      background: var(--border);
+      border-radius: 3px;
+      margin-right: 6px;
+      overflow: hidden
+    }
+
+    .pfill {
+      height: 100%;
+      border-radius: 3px
+    }
+
+    /* ── CODE ─────────────────────────────── */
+    pre[class*=language-] {
+      border-radius: 8px;
+      font-size: 12px;
+      margin: 0;
+      max-height: 380px;
+      overflow: auto;
+      border: 1px solid var(--border)
+    }
+
+    .code-block {
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border)
+    }
+
+    .code-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 12px;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--muted)
+    }
+
+    /* ── RULE LIST ─────────────────────────── */
+    .rule-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px
+    }
+
+    .rule-list li {
+      padding: 8px 12px 8px 14px;
+      background: var(--primary-xl);
+      border: 1px solid var(--primary-l);
+      border-left: 3px solid var(--primary);
+      border-radius: 6px;
+      font-size: 12.5px;
+      color: var(--text)
+    }
+
+    /* ── CHART ─────────────────────────────── */
+    .chart-wrap {
+      position: relative;
+      height: 280px
+    }
+
+    .chart-sm {
+      position: relative;
+      height: 220px
+    }
+
+    /* ── ALERT / INFO BOX ─────────────────── */
+    .info-box {
+      padding: 10px 14px;
+      border-radius: 7px;
+      font-size: 12.5px;
+      margin-bottom: 14px
+    }
+
+    .info-blue {
+      background: var(--primary-xl);
+      border: 1px solid var(--primary-l);
+      color: var(--primary-d)
+    }
+
+    .info-green {
+      background: var(--green-l);
+      border: 1px solid #BBF7D0;
+      color: #15803D
+    }
+
+    .info-orange {
+      background: var(--orange-l);
+      border: 1px solid #FDE68A;
+      color: #92400E
+    }
+
+    /* ── FILE BROWSER ─────────────────────── */
+    .fb-wrap {
+      display: flex;
+      gap: 0;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      background: var(--surface);
+      min-height: 500px
+    }
+
+    .fb-tree {
+      width: 220px;
+      flex-shrink: 0;
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      background: var(--surface2);
+      padding: 8px 0
+    }
+
+    .fb-view {
+      flex: 1;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      min-width: 0
+    }
+
+    .fb-view-header {
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--muted);
+      background: var(--surface2);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0
+    }
+
+    .fb-view-content {
+      flex: 1;
+      overflow: auto;
+      padding: 0
+    }
+
+    /* tree items */
+    .tree-folder {
+      padding: 5px 10px 5px 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12.5px;
+      color: var(--muted);
+      font-weight: 600;
+      user-select: none;
+      transition: background .1s
+    }
+
+    .tree-folder:hover {
+      background: var(--primary-xl)
+    }
+
+    .tree-folder.open {
+      color: var(--primary)
+    }
+
+    .tree-children {
+      display: none;
+      padding-left: 0
+    }
+
+    .tree-children.open {
+      display: block
+    }
+
+    .tree-file {
+      padding: 4px 10px 4px 26px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text);
+      transition: background .1s;
+      font-family: monospace
+    }
+
+    .tree-file:hover {
+      background: var(--primary-xl)
+    }
+
+    .tree-file.active {
+      background: var(--primary-l);
+      color: var(--primary);
+      font-weight: 500
+    }
+
+    .result-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0
+    }
+
+    .rd-SAFE {
+      background: var(--green)
+    }
+
+    .rd-FAILURE {
+      background: var(--red)
+    }
+
+    .rd-ERROR {
+      background: var(--orange)
+    }
+
+    .rd-TIMED_OUT {
+      background: #F59E0B
+    }
+
+    .rd-UNKNOWN {
+      background: var(--light)
+    }
+
+    /* empty state */
+    .empty-state {
+      text-align: center;
+      padding: 48px 24px;
+      color: var(--muted)
+    }
+
+    .empty-icon {
+      font-size: 40px;
+      margin-bottom: 12px
+    }
+
+    .empty-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text)
+    }
+
+    .empty-desc {
+      font-size: 12.5px
+    }
+
+    /* scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border2);
+      border-radius: 3px
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--light)
+    }
+
+    /* hero on intro page */
+    .hero-band {
+      background: linear-gradient(135deg, var(--primary) 0%, #1D4ED8 100%);
+      border-radius: 12px;
+      padding: 28px;
+      color: #fff;
+      margin-bottom: 20px
+    }
+
+    .hero-band h1 {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 6px
+    }
+
+    .hero-band p {
+      font-size: 13px;
+      opacity: .9;
+      line-height: 1.7;
+      max-width: 700px
+    }
+
+    .hero-meta {
+      margin-top: 14px;
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      font-size: 12px;
+      opacity: .85
+    }
+
+    /* classification table colors */
+    .tag-pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      margin: 1px
+    }
+  </style>
+</head>
+
+<body>
+  <div class="layout">
+
+    <!-- ═══════════════════ SIDEBAR ═══════════════════ -->
+    <aside class="sidebar">
+      <div class="sb-header">
+        <div class="sb-logo">基于Fuzz4All的<br>JVM大模型测试</div>
+        <div class="sb-sub">陕西科技大学 · 夏文静 · 2026</div>
+      </div>
+      <div class="sb-folder-info" id="sbFolderInfo"></div>
+      <nav class="sb-nav">
+        <div class="nav-item active" onclick="showPage('intro',this)">
+          <i class="ico"></i>系统介绍
+        </div>
+        <div class="nav-item" onclick="showPage('evidence',this)">
+          <i class="ico"></i>流程证据
+        </div>
+        <div class="nav-item" onclick="showPage('results',this)">
+          <i class="ico"></i>测试结果
+        </div>
+        <div class="nav-section">成果浏览</div>
+        <div class="nav-item" onclick="showPage('classification',this)">
+          <i class="ico">🗂️</i>离线分类对应表
+        </div>
+        <div class="nav-group-toggle" id="catsToggle" onclick="toggleCats()">
+          <i class="ico">📁</i><span>10类测试成果</span><span class="arrow">▶</span>
+        </div>
+        <div class="nav-sub" id="catsSub">
+          <!-- populated by JS -->
+        </div>
+      </nav>
+      <div class="sb-actions">
+        <button class="sb-btn primary" onclick="openFolder()">📂 选择输出文件夹</button>
+        <label class="sb-btn" style="cursor:pointer">
+          📤 上传文件夹
+          <input type="file" id="fbInput" webkitdirectory multiple style="display:none"
+            onchange="loadFromInput(this.files)" />
+        </label>
+      </div>
+    </aside>
+
+    <!-- ═══════════════════ MAIN ═══════════════════ -->
+    <main class="main" id="mainArea">
+
+      <!-- ────────── PAGE: INTRO ────────── -->
+      <div class="page active" id="page-intro">
+        <div class="page-inner">
+          <div class="hero-band">
+            <h1>基于Fuzz4All的JVM大模型测试</h1>
+            <p>
+              基于文档驱动与分类策略的API自动化测试框架。
+              该框架首先通过离线分析构建API分类体系，并在运行时动态加载适配的变异策略。
+              在核心生成阶段，系统利用大语言模型解析文档生成初始种子代码，并结合定向变异策略扩展测试用例。
+              此外，系统建立了一个自适应的反馈闭环机制：通过对编译与运行结果的智能归因分析，将失败约束与成功范例动态融入提示词工程，
+              驱动模型进行多轮迭代优化，从而实现测试用例生成的持续进化与质量提升。
+            </p>
+            <div class="hero-meta">
+              <span> 陕西科技大学</span>
+              <span> 夏文静</span>
+              <span> 2026</span>
+              <span> Fuzz4All · Qwen2.5-Coder-7B · Java 21</span>
+            </div>
+          </div>
+
+          <div class="g4" style="margin-bottom:20px">
+            <div class="card card-sm" style="text-align:center">
+              <div class="stat-num">10</div>
+              <div class="stat-lbl">测试 API 类别</div>
+            </div>
+            <div class="card card-sm" style="text-align:center">
+              <div class="stat-num">568</div>
+              <div class="stat-lbl">总生成测试用例</div>
+            </div>
+            <div class="card card-sm" style="text-align:center">
+              <div class="stat-num" style="color:var(--green)">164</div>
+              <div class="stat-lbl">编译通过 (SAFE)</div>
+            </div>
+            <div class="card card-sm" style="text-align:center">
+              <div class="stat-num">38+</div>
+              <div class="stat-lbl">领域变异算子</div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-bottom:16px">
+            <div class="card-title">系统工作流程</div>
+            <div style="font-size:11px;color:var(--muted);margin-bottom:12px;padding:4px 10px;
+      background:var(--surface2);border-radius:5px;border-left:3px solid var(--light);display:inline-block">
+              阶段一：离线构建分类知识库
+            </div>
+            <div class="wf" style="margin-bottom:20px">
+              <div class="wf-step">
+                <div class="wf-icon">📖</div>
+                <div class="wf-title">读取API文档</div>
+                <div class="wf-desc">逐API提取标准库文档内容</div>
+              </div>
+              <div class="wf-step">
+                <div class="wf-icon">🏷️</div>
+                <div class="wf-title">规则匹配分类</div>
+                <div class="wf-desc">关键词+评分为每个API打领域标签</div>
+              </div>
+              <div class="wf-step">
+                <div class="wf-icon">🗂️</div>
+                <div class="wf-title">生成分类表</div>
+                <div class="wf-desc">输出JSON，记录类别与变异策略</div>
+              </div>
+            </div>
+            <div style="font-size:11px;color:var(--primary);margin-bottom:12px;padding:4px 10px;
+      background:var(--primary-xl);border-radius:5px;border-left:3px solid var(--primary);display:inline-block">
+              阶段二：在线自适应闭环生成
+            </div>
+            <div class="wf">
+              <div class="wf-step">
+                <div class="wf-icon" style="background:var(--primary-xl)">🔍</div>
+                <div class="wf-title">查询分类 加载策略</div>
+                <div class="wf-desc">查分类表，加载领域变异策略</div>
+              </div>
+              <div class="wf-step">
+                <div class="wf-icon" style="background:var(--primary-xl)">✍️</div>
+                <div class="wf-title">Auto-Prompting</div>
+                <div class="wf-desc">大模型读文档，生成并评分候选提示词</div>
+              </div>
+              <div class="wf-step">
+                <div class="wf-icon" style="background:var(--primary-xl)">🤖</div>
+                <div class="wf-title">生成 Seed</div>
+                <div class="wf-desc">代码模型基于提示词批量生成测试程序</div>
+              </div>
+              <div class="wf-step">
+                <div class="wf-icon" style="background:var(--primary-xl)">🔀</div>
+                <div class="wf-title">定向变异</div>
+                <div class="wf-desc">按领域策略对seed变异生成mutation</div>
+              </div>
+              <div class="wf-step">
+                <div class="wf-icon" style="background:var(--primary-xl)">⚙️</div>
+                <div class="wf-title">编译与验证</div>
+                <div class="wf-desc">javac编译+运行，分SAFE/FAIL/ERROR</div>
+              </div>
+              <div class="wf-step">
+                <div class="wf-icon" style="background:var(--primary-xl)">🔄</div>
+                <div class="wf-title">反馈写回闭环</div>
+                <div class="wf-desc">规则归类+成功样例写回提示词，迭代优化</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="g3">
+            <div class="card card-sm">
+              <div class="card-title">代码生成模型</div>
+              <div style="font-weight:600;color:var(--primary)">Qwen2.5-Coder-7B</div>
+              <div style="color:var(--muted);font-size:12px;margin-top:3px">Ollama本地 · 温度1.0 · 批量30</div>
+            </div>
+            <div class="card card-sm">
+              <div class="card-title">Auto-Prompting</div>
+              <div style="font-weight:600;color:var(--primary)">DeepSeek / Ollama</div>
+              <div style="color:var(--muted);font-size:12px;margin-top:3px">候选生成·贪心+采样·评分筛选</div>
+            </div>
+            <div class="card card-sm">
+              <div class="card-title">验证环境</div>
+              <div style="font-weight:600;color:var(--primary)">Java 21 + --enable-preview</div>
+              <div style="color:var(--muted);font-size:12px;margin-top:3px">javac编译 · java运行 · 5秒超时</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ────────── PAGE: EVIDENCE ────────── -->
+      <div class="page" id="page-evidence">
+        <div class="page-inner">
+          <div class="page-header">
+            <div class="page-title">流程证据</div>
+            <div class="page-subtitle">系统运行留下的完整痕迹：提示词生成 → 错误归类 → 规则学习 → 代码对比</div>
+          </div>
+
+          <div class="tabs">
+            <button class="tab-btn active" onclick="evTab(this,'ev-code')">代码对比</button>
+            <button class="tab-btn" onclick="evTab(this,'ev-rules')">规则学习</button>
+            <button class="tab-btn" onclick="evTab(this,'ev-prompt')">提示词演化</button>
+            <button class="tab-btn" onclick="evTab(this,'ev-mut')">变异示例</button>
+          </div>
+
+          <div class="tab-panel active" id="ev-code">
+            <div class="g2">
+              <div>
+                <div class="code-block">
+                  <div class="code-header">
+                    <span><span class="badge b-safe">SAFE</span> java.net.URI — 编译通过样本</span>
+                  </div>
+                  <pre><code class="language-java">import java.net.URI;
+
+public class UriManipulations {
+  public static void main(String[] args) {
+    test("http://user:pass@host:8080/p?t=1#s");
+    testRelative("http://example.com", "path/to/res");
+    testEdge("///localhost//path///");
+  }
+  static void test(String s) {
+    try {
+      URI u = new URI(s);
+      System.out.println(u.normalize());
+      System.out.println(u.getScheme() + "://" + u.getHost());
+    } catch (Exception e) { e.printStackTrace(); }
+  }
+  static void testRelative(String base, String rel) {
+    try {
+      URI resolved = new URI(base).resolve(new URI(rel));
+      System.out.println(resolved);
+    } catch (Exception e) { e.printStackTrace(); }
+  }
+  static void testEdge(String s) {
+    try { System.out.println(new URI(s).toASCIIString()); }
+    catch (Exception e) { e.printStackTrace(); }
+  }
+}</code></pre>
+                </div>
+                <div class="info-box info-green" style="margin-top:10px">
+                  ✅ 所有 URI 操作正确包裹在 try-catch 中，符合API使用规范
+                </div>
+              </div>
+              <div>
+                <div class="code-block">
+                  <div class="code-header">
+                    <span><span class="badge b-fail">FAILURE</span> javax.crypto.Cipher — 典型失败（已修复）</span>
+                  </div>
+                  <pre><code class="language-java">import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
+
+public class CipherTest {
+  public static void main(String[] args) {
+
+    // ❌ 所有Cipher方法抛受检异常，但代码无 try-catch
+    Cipher c = Cipher.getInstance("AES/ECB/PKCS5Padding");
+    // ^ error: unreported exception NoSuchPaddingException
+
+    SecretKeySpec ks = new SecretKeySpec(new byte[16], "AES");
+    c.init(Cipher.ENCRYPT_MODE, ks);
+    // ^ error: unreported exception InvalidKeyException
+
+    byte[] out = c.doFinal("Hello".getBytes());
+    // ^ error: unreported exception IllegalBlockSizeException
+  }
+}</code></pre>
+                </div>
+                <div class="info-box info-orange" style="margin-top:10px">
+                  ⚠️ 根本原因：旧版系统仅检测 IOException，无法识别 Cipher 的受检异常，
+                  反馈规则无法生成。整改后通用受检异常检测修复此问题。
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-panel" id="ev-rules">
+            <div class="g2" style="margin-bottom:16px">
+              <div class="card">
+                <div class="card-title">URI 类别 — 自动学习规则</div>
+                <ul class="rule-list">
+                  <li>Avoid ambiguous imports; keep imports minimal and consistent.</li>
+                  <li>Declare all variables before using them; do not reference helper objects not created in the same
+                    method.</li>
+                  <li>Use only documented public methods of URI.</li>
+                  <li>Keep return types consistent with documented API contracts.</li>
+                  <li>For URI, keep endpoint objects aligned with the documented lifecycle.</li>
+                </ul>
+              </div>
+              <div class="card">
+                <div class="card-title">ManagementFactory — 自动学习规则</div>
+                <ul class="rule-list">
+                  <li>Call documented query methods on concrete MXBean interfaces; do not invent generic bean
+                    super-types.</li>
+                  <li>Prefer static factory methods that return standard MXBeans or MBeanServer handles.</li>
+                  <li>Handle checked exceptions for ObjectName construction with try/catch.</li>
+                  <li>Use only standard javax.management types; do not invent proxy class names.</li>
+                </ul>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">规则生成管道</div>
+              <div
+                style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;font-size:12.5px">
+                <div
+                  style="padding:10px;background:var(--primary-xl);border-radius:7px;border-left:3px solid var(--primary)">
+                  <div style="font-weight:600;color:var(--primary);margin-bottom:3px">① 捕获错误</div>
+                  <div style="color:var(--muted)">javac输出 → extract_javac_error_categories() → 识别25+种错误类别</div>
+                </div>
+                <div
+                  style="padding:10px;background:var(--primary-xl);border-radius:7px;border-left:3px solid var(--primary)">
+                  <div style="font-weight:600;color:var(--primary);margin-bottom:3px">② 生成规则</div>
+                  <div style="color:var(--muted)">map_error_categories_to_rules() → 结合API名称和领域标签生成自然语言规则</div>
+                </div>
+                <div
+                  style="padding:10px;background:var(--primary-xl);border-radius:7px;border-left:3px solid var(--primary)">
+                  <div style="font-weight:600;color:var(--primary);margin-bottom:3px">③ 频次排序</div>
+                  <div style="color:var(--muted)">_merge_failure_rules() → 按频次排序保留 Top-5 规则</div>
+                </div>
+                <div
+                  style="padding:10px;background:var(--primary-xl);border-radius:7px;border-left:3px solid var(--primary)">
+                  <div style="font-weight:600;color:var(--primary);margin-bottom:3px">④ 注入提示词</div>
+                  <div style="color:var(--muted)">"Avoid these known compiler mistakes" 注入下一轮提示词</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-panel" id="ev-prompt">
+            <div class="g2">
+              <div class="card">
+                <div class="card-title">初始提示词（Auto-Prompting 生成）</div>
+                <pre style="background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:12px;
+          font-size:12px;color:var(--text);white-space:pre-wrap;max-height:280px;overflow:auto;font-family:monospace">/* Please create a very short Java program
+   that uses java.net.URI in diverse and
+   tricky ways.
+
+   Focus on:
+   - Parsing URIs with edge-case schemes
+   - Normalizing relative/absolute URIs
+   - Testing boundary conditions
+   - Proper exception handling
+
+   Use only standard JDK classes. */
+
+import java.net.URI;</pre>
+              </div>
+              <div class="card">
+                <div class="card-title">运行时刷新后提示词（含反馈规则）</div>
+                <pre style="background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:12px;
+          font-size:12px;color:var(--text);white-space:pre-wrap;max-height:280px;overflow:auto;font-family:monospace">/* [Base Prompt] Please create a short Java
+   program using java.net.URI. */
+
+/* Avoid these known compiler mistakes:
+   - Do not call undocumented methods on URI
+   - Avoid ambiguous imports
+   - Declare all variables before use
+   - Use only documented public methods
+   - Keep return types consistent */
+
+/* Recent valid examples to imitate:
+   Example 1:
+   ```java
+   try {
+     URI u = new URI("http://example.com");
+     System.out.println(u.normalize());
+   } catch (Exception e) { e.printStackTrace(); }
+   ``` */
+
+import java.net.URI;</pre>
+              </div>
+            </div>
+            <div class="info-box info-green" style="margin-top:12px">
+              URI 类别提示词评分：初始 <strong>8 分</strong> → 两轮刷新后 <strong>12 分</strong>，编译通过率达 <strong>72.7%</strong>（10 类最高）
+            </div>
+          </div>
+
+          <div class="tab-panel" id="ev-mut">
+            <div class="g2">
+              <div class="card">
+                <div class="card-title">原始 Seed（LLM 生成）</div>
+                <pre><code class="language-java">import java.time.Duration;
+
+public class DurationTest {
+  public static void main(String[] args) {
+    Duration d1 = Duration.ofMinutes(10);
+    Duration d2 = Duration.ofSeconds(30);
+    Duration total = d1.plus(d2);
+    System.out.println(total.toSeconds()); // 630
+    System.out.println(total.isNegative()); // false
+    System.out.println(total.abs());
+  }
+}</code></pre>
+              </div>
+              <div class="card">
+                <div class="card-title">变异后（time_duration_sign_mutation 算子）</div>
+                <pre><code class="language-java">import java.time.Duration;
+
+public class DurationTest {
+  public static void main(String[] args) {
+    // ← 注入负值边界（time_duration_sign_mutation）
+    Duration d1 = Duration.ofMinutes(-1L);
+    // ← 极端边界（time_epoch_boundary_mutation）
+    Duration d2 = Duration.ofSeconds(Long.MIN_VALUE);
+    Duration total = d1.plus(d2);
+    System.out.println(total.toSeconds());
+    System.out.println(total.isNegative());
+    // ← 额外epoch边界测试
+    Duration epoch = Duration.ofSeconds(0L);
+    System.out.println(epoch.isZero());
+  }
+}</code></pre>
+                <div style="color:var(--muted);font-size:12px;margin-top:8px">
+                  算子 <code>time_duration_sign_mutation</code> 注入了负值时长和 <code>Long.MIN_VALUE</code> 极端边界，测试 Duration
+                  对边界输入的处理
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ────────── PAGE: RESULTS ────────── -->
+      <div class="page" id="page-results">
+        <div class="page-inner">
+          <div class="page-header">
+            <div class="page-title">测试结果</div>
+            <div class="page-subtitle">10 类 Java API · 568 个测试用例 · URI 72.7% / ManagementFactory 65.0%</div>
+          </div>
+          <div style="display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:14px" class="chart-row">
+            <div class="card">
+              <div class="card-title">各API类别编译通过率</div>
+              <div class="chart-wrap"><canvas id="barChart"></canvas></div>
+            </div>
+            <div class="card">
+              <div class="card-title">结果总体分布</div>
+              <div class="chart-sm"><canvas id="pieChart"></canvas></div>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;font-size:12px">
+                <span><span
+                    style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin-right:4px"></span>SAFE
+                  164</span>
+                <span><span
+                    style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--red);margin-right:4px"></span>FAILURE
+                  356</span>
+                <span><span
+                    style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--orange);margin-right:4px"></span>ERROR
+                  45</span>
+                <span><span
+                    style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#F59E0B;margin-right:4px"></span>TIMEOUT
+                  5</span>
+              </div>
+            </div>
+          </div>
+          <div class="card" style="overflow-x:auto">
+            <table class="tbl">
+              <thead>
+                <tr>
+                  <th>API 类别</th>
+                  <th>领域</th>
+                  <th>总数</th>
+                  <th style="color:var(--green)">SAFE</th>
+                  <th style="color:var(--red)">FAIL</th>
+                  <th style="color:var(--orange)">ERROR</th>
+                  <th style="color:#F59E0B">TO</th>
+                  <th>通过率</th>
+                </tr>
+              </thead>
+              <tbody id="rtbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ────────── PAGE: CLASSIFICATION ────────── -->
+      <div class="page" id="page-classification">
+        <div class="page-inner">
+          <div class="page-header">
+            <div class="page-title">离线分类对应表</div>
+            <div class="page-subtitle">系统离线阶段通过规则匹配为每个 API 分配领域标签和变异策略配置</div>
+          </div>
+          <div class="info-box info-blue" style="margin-bottom:16px">
+            💡 离线分类结果存储于 <code>outputs/api_classification/java_api_5d_classification.json</code>，
+            系统运行时根据此表自动加载对应的变异算子组合。
+          </div>
+          <div class="g3" style="margin-bottom:16px">
+            <div class="card card-sm" style="text-align:center">
+              <div style="font-size:22px;font-weight:700;color:var(--primary)">13</div>
+              <div style="font-size:12px;color:var(--muted)">领域分类标签</div>
+            </div>
+            <div class="card card-sm" style="text-align:center">
+              <div style="font-size:22px;font-weight:700;color:var(--primary)">12</div>
+              <div style="font-size:12px;color:var(--muted)">变异策略配置</div>
+            </div>
+            <div class="card card-sm" style="text-align:center">
+              <div style="font-size:22px;font-weight:700;color:var(--primary)">38+</div>
+              <div style="font-size:12px;color:var(--muted)">变异算子</div>
+            </div>
+          </div>
+          <div class="card" style="overflow-x:auto;margin-bottom:16px">
+            <div class="card-title">10类API分类结果</div>
+            <table class="tbl">
+              <thead>
+                <tr>
+                  <th>API 全名</th>
+                  <th>模块</th>
+                  <th>主标签</th>
+                  <th>全部标签</th>
+                  <th>变异策略</th>
+                  <th>说明</th>
+                </tr>
+              </thead>
+              <tbody id="clsbody"></tbody>
+            </table>
+          </div>
+          <div class="card">
+            <div class="card-title">13种领域标签说明</div>
+            <div
+              style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;font-size:12.5px">
+              <div style="padding:8px 12px;border-radius:6px;border:1px solid var(--border);background:var(--surface2)">
+                <span class="badge b-sec" style="margin-bottom:4px;display:inline-block">SECURITY</span>
+                <div style="color:var(--muted)">加密、签名、密钥等安全相关API（如Cipher、KeyStore）</div>
+              </div>
+              <div style="padding:8px 12px;border-radius:6px;border:1px solid var(--border);background:var(--surface2)">
+                <span class="badge b-refl" style="margin-bottom:4px;display:inline-block">REFLECT</span>
+                <div style="color:var(--muted)">反射API（Method、Field、Constructor等）</div>
+              </div>
+              <div style="padding:8px 12px;border-radius:6px;border:1px solid var(--border);background:var(--surface2)">
+                <span class="badge b-file" style="margin-bottom:4px;display:inline-block">FILE</span>
+                <div style="color:var(--muted)">文件和路径操作（File、Path、Files等）</div>
+              </div>
+              <div style="padding:8px 12px;border-radius:6px;border:1px solid var(--border);background:var(--surface2)">
+                <span class="badge b-conc" style="margin-bottom:4px;display:inline-block">CONCURRENT</span>
+                <div style="color:var(--muted)">线程和并发API（Thread、Lock、Future等）</div>
+              </div>
+              <div style="padding:8px 12px;border-radius:6px;border:1px solid var(--border);background:var(--surface2)">
+                <span class="badge b-net" style="margin-bottom:4px;display:inline-block">NETWORK</span>
+                <div style="color:var(--muted)">网络API（Socket、URL、URI等）</div>
+              </div>
+              <div style="padding:8px 12px;border-radius:6px;border:1px solid var(--border);background:var(--surface2)">
+                <span class="badge b-cb" style="margin-bottom:4px;display:inline-block">CALLBACK</span>
+                <div style="color:var(--muted)">监听器和回调API（PropertyChangeSupport等）</div>
+              </div>
+              <div style="padding:8px 12px;border-radius:6px;border:1px solid var(--border);background:var(--surface2)">
+                <span class="badge b-time" style="margin-bottom:4px;display:inline-block">TIME</span>
+                <div style="color:var(--muted)">时间和日期API（Duration、Instant等）</div>
+              </div>
+              <div style="padding:8px 12px;border-radius:6px;border:1px solid var(--border);background:var(--surface2)">
+                <span class="badge b-jvm" style="margin-bottom:4px;display:inline-block">JVM_MGMT</span>
+                <div style="color:var(--muted)">JVM运行时管理API（ManagementFactory等）</div>
+              </div>
+              <div style="padding:8px 12px;border-radius:6px;border:1px solid var(--border);background:var(--surface2)">
+                <span class="badge b-res" style="margin-bottom:4px;display:inline-block">RESOURCE</span>
+                <div style="color:var(--muted)">资源流API（InputStream、OutputStream等）</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ────────── CATEGORY PAGES (template) ────────── -->
+      <div class="page" id="page-cat-template" style="display:none">
+        <!-- dynamically generated -->
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    // ═══════════════════════════════════════════════════════
+    // STATIC DATA
+    // ═══════════════════════════════════════════════════════
+    const CATS = [
+      {
+        id: 'bufis', folderKey: 'BufferedInputStream', display: 'BufferedInputStream', short: 'BufIS',
+        badge: 'b-res', tagTxt: 'RESOURCE', module: 'java.base',
+        fullName: 'java.io.BufferedInputStream', profile: 'resource_buffer_batch', desc: '缓冲输入流',
+        allTags: ['RESOURCE', 'BUFFER', 'MARK_SUPPORT'],
+        total: 60, safe: 7, fail: 44, err: 7, to: 2
+      },
+      {
+        id: 'file', folderKey: 'java_io_File', display: 'File', short: 'File',
+        badge: 'b-file', tagTxt: 'FILE', module: 'java.base',
+        fullName: 'java.io.File', profile: 'file_path_state', desc: '文件系统操作',
+        allTags: ['FILE', 'RESOURCE'],
+        total: 50, safe: 27, fail: 23, err: 0, to: 0
+      },
+      {
+        id: 'thread', folderKey: 'java_lang_Thread', display: 'Thread', short: 'Thread',
+        badge: 'b-conc', tagTxt: 'CONCURRENT', module: 'java.base',
+        fullName: 'java.lang.Thread', profile: 'concurrent_sequence', desc: '线程管理',
+        allTags: ['CONCURRENT', 'CALLBACK'],
+        total: 54, safe: 8, fail: 39, err: 0, to: 3
+      },
+      {
+        id: 'method', folderKey: 'java_lang_reflect_Method', display: 'Method (Reflect)', short: 'Method',
+        badge: 'b-refl', tagTxt: 'REFLECT', module: 'java.base',
+        fullName: 'java.lang.reflect.Method', profile: 'reflection_dispatch', desc: '方法反射调用',
+        allTags: ['REFLECT', 'UTILITY'],
+        total: 60, safe: 6, fail: 45, err: 9, to: 0
+      },
+      {
+        id: 'socket', folderKey: 'java_net_Socket', display: 'Socket', short: 'Socket',
+        badge: 'b-net', tagTxt: 'NETWORK', module: 'java.base',
+        fullName: 'java.net.Socket', profile: 'network_endpoint_state', desc: '网络Socket',
+        allTags: ['NETWORK', 'RESOURCE'],
+        total: 52, safe: 17, fail: 34, err: 9, to: 0
+      },
+      {
+        id: 'uri', folderKey: 'java_net_URI', display: 'URI', short: 'URI',
+        badge: 'b-net', tagTxt: 'NETWORK', module: 'java.base',
+        fullName: 'java.net.URI', profile: 'network_endpoint_state', desc: 'URI解析操作',
+        allTags: ['NETWORK', 'UTILITY'],
+        total: 60, safe: 40, fail: 15, err: 5, to: 0
+      },
+      {
+        id: 'dur', folderKey: 'java_time_Duration', display: 'Duration', short: 'Duration',
+        badge: 'b-time', tagTxt: 'TIME', module: 'java.base',
+        fullName: 'java.time.Duration', profile: 'time_boundary_mix', desc: '时间段计算',
+        allTags: ['TIME', 'UTILITY'],
+        total: 60, safe: 9, fail: 42, err: 9, to: 0
+      },
+      {
+        id: 'cipher', folderKey: 'javax_crypto_Cipher', display: 'Cipher', short: 'Cipher',
+        badge: 'b-sec', tagTxt: 'SECURITY', module: 'java.base',
+        fullName: 'javax.crypto.Cipher', profile: 'security_provider_flow', desc: '加密解密',
+        allTags: ['SECURITY', 'UTILITY'],
+        total: 52, safe: 3, fail: 41, err: 6, to: 0
+      },
+      {
+        id: 'pcs', folderKey: 'java_beans_PropertyChangeSupport', display: 'PropertyChangeSupport', short: 'PCS',
+        badge: 'b-cb', tagTxt: 'CALLBACK', module: 'java.desktop',
+        fullName: 'java.beans.PropertyChangeSupport', profile: 'callback_registration_flow', desc: '属性变更监听',
+        allTags: ['CALLBACK', 'UTILITY'],
+        total: 60, safe: 8, fail: 52, err: 0, to: 0
+      },
+      {
+        id: 'jmgt', folderKey: 'ManagementFactory', display: 'ManagementFactory', short: 'JMgt',
+        badge: 'b-jvm', tagTxt: 'JVM_MGMT', module: 'java.management',
+        fullName: 'java.lang.management.ManagementFactory', profile: 'jvm_mgmt_runtime_state', desc: 'JVM运行时管理',
+        allTags: ['JVM_MGMT', 'UTILITY'],
+        total: 60, safe: 39, fail: 21, err: 0, to: 0
+      },
+    ];
+
+    // ═══════════════════════════════════════════════════════
+    // BUILD SIDEBAR + PAGES
+    // ═══════════════════════════════════════════════════════
+    (function () {
+      // Sidebar sub-items
+      const subNav = document.getElementById('catsSub');
+      CATS.forEach(c => {
+        const a = document.createElement('div');
+        a.className = 'nav-item';
+        a.dataset.pageId = 'cat-' + c.id;
+        a.innerHTML = `<span class="tag-dot ${c.badge}" style="width:7px;height:7px;border-radius:50%;flex-shrink:0;
+      background:${tagColor(c.tagTxt)};display:inline-block"></span>${c.display}`;
+        a.onclick = function () { showPage('cat-' + c.id, this); };
+        subNav.appendChild(a);
+      });
+
+      // Classification table
+      const clsbody = document.getElementById('clsbody');
+      CATS.forEach(c => {
+        const tagPills = c.allTags.map(t => `<span class="tag-pill" style="background:${tagBg(t)};color:${tagColor(t)}">${t}</span>`).join('');
+        clsbody.innerHTML += `<tr>
+      <td style="font-family:monospace;font-size:12px">${c.fullName}</td>
+      <td style="font-size:12px">${c.module}</td>
+      <td><span class="badge ${c.badge}">${c.tagTxt}</span></td>
+      <td>${tagPills}</td>
+      <td style="font-family:monospace;font-size:11.5px;color:var(--muted)">${c.profile}</td>
+      <td style="color:var(--muted);font-size:12px">${c.desc}</td>
+    </tr>`;
+      });
+
+      // Results table
+      const sorted = [...CATS].sort((a, b) => (b.safe / b.total) - (a.safe / a.total));
+      const rtbody = document.getElementById('rtbody');
+      sorted.forEach(c => {
+        const r = (c.safe / c.total * 100).toFixed(1);
+        const col = r >= 50 ? 'var(--green)' : r >= 30 ? 'var(--orange)' : 'var(--red)';
+        rtbody.innerHTML += `<tr>
+      <td style="font-weight:500">${c.display}</td>
+      <td><span class="badge ${c.badge}">${c.tagTxt}</span></td>
+      <td style="color:var(--muted)">${c.total}</td>
+      <td style="color:var(--green);font-weight:600">${c.safe}</td>
+      <td style="color:var(--red)">${c.fail}</td>
+      <td style="color:var(--orange)">${c.err}</td>
+      <td style="color:#F59E0B">${c.to}</td>
+      <td><div class="pbar"><div class="pfill" style="width:${r}%;background:${col}"></div></div>
+      <span style="color:${col};font-weight:600">${r}%</span></td>
+    </tr>`;
+      });
+
+      // Create category pages
+      CATS.forEach(c => buildCatPage(c));
+    })();
+
+    function tagColor(t) {
+      const m = {
+        SECURITY: 'var(--red)', REFLECT: 'var(--purple)', FILE: 'var(--green)', CONCURRENT: 'var(--orange)',
+        NETWORK: 'var(--primary)', CALLBACK: '#6D28D9', TIME: 'var(--teal)', JVM_MGMT: 'var(--green)',
+        RESOURCE: '#92400E', BUFFER: '#92400E', MARK_SUPPORT: '#0891B2', UTILITY: 'var(--muted)', GENERIC: 'var(--muted)'
+      };
+      return m[t] || 'var(--muted)';
+    }
+    function tagBg(t) {
+      const m = {
+        SECURITY: 'var(--red-l)', REFLECT: 'var(--purple-l)', FILE: 'var(--green-l)', CONCURRENT: 'var(--orange-l)',
+        NETWORK: 'var(--primary-l)', CALLBACK: '#EDE9FE', TIME: 'var(--teal-l)', JVM_MGMT: 'var(--green-l)',
+        RESOURCE: '#FEF3C7', BUFFER: '#FEF3C7', MARK_SUPPORT: 'var(--teal-l)', UTILITY: 'var(--border)', GENERIC: 'var(--border)'
+      };
+      return m[t] || 'var(--border)';
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // CHARTS
+    // ═══════════════════════════════════════════════════════
+    const sorted4chart = [...CATS].sort((a, b) => (b.safe / b.total) - (a.safe / a.total));
+    const barCtx = document.getElementById('barChart').getContext('2d');
+    new Chart(barCtx, {
+      type: 'bar',
+      data: {
+        labels: sorted4chart.map(d => d.short),
+        datasets: [
+          { label: 'SAFE', data: sorted4chart.map(d => +(d.safe / d.total * 100).toFixed(1)), backgroundColor: '#16A34A', borderRadius: 3 },
+          { label: 'ERROR', data: sorted4chart.map(d => +(d.err / d.total * 100).toFixed(1)), backgroundColor: '#D97706', borderRadius: 3 },
+          { label: 'TIMEOUT', data: sorted4chart.map(d => +(d.to / d.total * 100).toFixed(1)), backgroundColor: '#F59E0B', borderRadius: 3 },
+          { label: 'FAILURE', data: sorted4chart.map(d => +(d.fail / d.total * 100).toFixed(1)), backgroundColor: '#DC2626', borderRadius: 3 },
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { labels: { color: '#64748B', font: { size: 11 } } },
+          tooltip: { callbacks: { label: c => ` ${c.dataset.label}: ${c.parsed.y}%` } }
+        },
+        scales: {
+          x: { stacked: true, ticks: { color: '#64748B', font: { size: 11 } }, grid: { color: 'rgba(226,232,240,.6)' } },
+          y: { stacked: true, max: 100, ticks: { color: '#64748B', font: { size: 11 }, callback: v => v + '%' }, grid: { color: 'rgba(226,232,240,.6)' } }
+        }
+      }
+    });
+    const pieCtx = document.getElementById('pieChart').getContext('2d');
+    new Chart(pieCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['SAFE', 'FAILURE', 'ERROR', 'TIMEOUT'],
+        datasets: [{ data: [164, 356, 45, 5], backgroundColor: ['#16A34A', '#DC2626', '#D97706', '#F59E0B'], borderWidth: 2, borderColor: '#fff', hoverOffset: 4 }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false, cutout: '62%',
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ` ${c.label}: ${c.parsed} (${(c.parsed / 568 * 100).toFixed(1)}%)` } } }
+      }
+    });
+
+    // ═══════════════════════════════════════════════════════
+    // NAVIGATION
+    // ═══════════════════════════════════════════════════════
+    function showPage(id, el) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      const page = document.getElementById('page-' + id);
+      if (page) { page.classList.add('active'); }
+      if (el) { el.classList.add('active'); }
+      // open cats sub if cat page
+      if (id.startsWith('cat-')) {
+        document.getElementById('catsToggle').classList.add('open');
+        document.getElementById('catsSub').classList.add('open');
+      }
+      document.getElementById('mainArea').scrollTo(0, 0);
+      setTimeout(() => { if (window.Prism) Prism.highlightAll(); }, 50);
+    }
+
+    function toggleCats() {
+      const toggle = document.getElementById('catsToggle');
+      const sub = document.getElementById('catsSub');
+      toggle.classList.toggle('open');
+      sub.classList.toggle('open');
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // EVIDENCE TABS
+    // ═══════════════════════════════════════════════════════
+    function evTab(btn, id) {
+      document.querySelectorAll('#page-evidence .tab-btn').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('#page-evidence .tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(id).classList.add('active');
+      setTimeout(() => { if (window.Prism) Prism.highlightAll(); }, 50);
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // FOLDER LOADING
+    // ═══════════════════════════════════════════════════════
+    let catDataMap = {};   // folderName -> { fuzzFiles, prompts, logFiles, manifest, counts }
+
+    async function openFolder() {
+      if (!window.showDirectoryPicker) {
+        alert('请使用"上传文件夹"按钮，或切换到 Chrome/Edge 浏览器。'); return;
+      }
+      try {
+        const h = await window.showDirectoryPicker({ mode: 'read' });
+        await loadFromFSA(h);
+      } catch (e) { if (e.name !== 'AbortError') console.error(e); }
+    }
+
+    async function loadFromFSA(rootHandle) {
+      catDataMap = {};
+      const folderName = rootHandle.name;
+      for await (const [name, handle] of rootHandle.entries()) {
+        if (handle.kind === 'directory' && !name.startsWith('.'))
+          catDataMap[name] = await readCatFSA(handle);
+      }
+      onFolderLoaded(folderName);
+    }
+
+    async function readCatFSA(dirHandle) {
+      const d = { fuzzFiles: [], prompts: {}, logFiles: {}, manifest: [], counts: {} };
+      for await (const [n, h] of dirHandle.entries()) {
+        if (n.endsWith('.fuzz')) d.fuzzFiles.push({ name: n, h });
+        else if (n === 'mutation_manifest.jsonl') {
+          try { d.manifest = parseManifest(await (await h.getFile()).text()); } catch (e) { }
+        } else if (['log.txt', 'log_generation.txt', 'log_validation.txt'].includes(n)) {
+          d.logFiles[n] = h;
+        } else if (n === 'prompts' && h.kind === 'directory') {
+          for await (const [pn, ph] of h.entries())
+            if (ph.kind === 'file') d.prompts[pn] = ph;
+        }
+      }
+      d.fuzzFiles.sort((a, b) => numSort(a.name, b.name));
+      d.counts = countManifest(d.manifest);
+      return d;
+    }
+
+    function loadFromInput(files) {
+      catDataMap = {};
+      const map = {};
+      for (const f of files) map[f.webkitRelativePath] = f;
+      let folderName = '';
+      const catMap = {};
+      for (const path of Object.keys(map)) {
+        const parts = path.split('/');
+        if (!folderName && parts.length > 0) folderName = parts[0];
+        if (parts.length < 3) continue;
+        const catName = parts[1];
+        if (!catMap[catName]) catMap[catName] = { fuzzFiles: [], prompts: {}, logFiles: {}, manifest: [], counts: {} };
+        const sub = parts.slice(2).join('/');
+        const fileName = parts[parts.length - 1];
+        if (parts.length === 3 && fileName.endsWith('.fuzz')) {
+          catMap[catName].fuzzFiles.push({ name: fileName, h: map[path] });
+        } else if (parts.length === 3 && ['log.txt', 'log_generation.txt', 'log_validation.txt'].includes(fileName)) {
+          catMap[catName].logFiles[fileName] = map[path];
+        } else if (parts.length === 3 && fileName === 'mutation_manifest.jsonl') {
+          map[path].text().then(txt => { catMap[catName].manifest = parseManifest(txt); catMap[catName].counts = countManifest(catMap[catName].manifest); }).catch(() => { });
+        } else if (parts.length === 4 && parts[2] === 'prompts') {
+          catMap[catName].prompts[fileName] = map[path];
+        }
+      }
+      for (const [k, v] of Object.entries(catMap)) {
+        v.fuzzFiles.sort((a, b) => numSort(a.name, b.name));
+        v.counts = countManifest(v.manifest);
+        catDataMap[k] = v;
+      }
+      onFolderLoaded(folderName || '已上传');
+    }
+
+    function onFolderLoaded(name) {
+      document.getElementById('sbFolderInfo').style.display = 'block';
+      document.getElementById('sbFolderInfo').textContent = '📂 ' + name;
+      // Refresh all cat pages with loaded data
+      CATS.forEach(c => { const d = findCatData(c); if (d) updateCatPage(c, d); });
+    }
+
+    function findCatData(catDef) {
+      for (const [k, v] of Object.entries(catDataMap)) {
+        if (k.toLowerCase().includes(catDef.folderKey.toLowerCase()) ||
+          catDef.folderKey.toLowerCase().includes(k.toLowerCase().replace(/\./g, '_').replace(/ /g, '_'))) {
+          return v;
+        }
+        // fuzzy: check if folder contains key parts
+        const kl = k.toLowerCase();
+        const fk = catDef.folderKey.toLowerCase();
+        if (kl.includes(fk.split('_')[0]) || fk.split('_').every(seg => kl.includes(seg))) return v;
+      }
+      // fallback: exact partial match
+      for (const [k, v] of Object.entries(catDataMap)) {
+        const kl = k.toLowerCase().replace(/[._]/g, '');
+        const fk = catDef.folderKey.toLowerCase().replace(/[._]/g, '');
+        if (kl.includes(fk) || fk.includes(kl)) return v;
+      }
+      return null;
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // CATEGORY PAGES
+    // ═══════════════════════════════════════════════════════
+    function buildCatPage(c) {
+      const pageId = 'page-cat-' + c.id;
+      const existing = document.getElementById(pageId);
+      if (existing) existing.remove();
+      const div = document.createElement('div');
+      div.className = 'page';
+      div.id = pageId;
+      const r = (c.safe / c.total * 100).toFixed(1);
+      const col = r >= 50 ? 'var(--green)' : r >= 30 ? 'var(--orange)' : 'var(--red)';
+      div.innerHTML = `
+  <div class="page-inner">
+    <div class="page-header">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <div class="page-title">${c.display}</div>
+        <span class="badge ${c.badge}">${c.tagTxt}</span>
+      </div>
+      <div class="page-subtitle" style="font-family:monospace">${c.fullName}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-bottom:16px" id="cat-stats-${c.id}">
+      <div class="card card-sm" style="text-align:center"><div style="font-size:20px;font-weight:700;color:var(--primary)">${c.total}</div><div style="font-size:11px;color:var(--muted)">总文件</div></div>
+      <div class="card card-sm" style="text-align:center"><div style="font-size:20px;font-weight:700;color:var(--green)">${c.safe}</div><div style="font-size:11px;color:var(--muted)">SAFE</div></div>
+      <div class="card card-sm" style="text-align:center"><div style="font-size:20px;font-weight:700;color:var(--red)">${c.fail}</div><div style="font-size:11px;color:var(--muted)">FAILURE</div></div>
+      <div class="card card-sm" style="text-align:center"><div style="font-size:20px;font-weight:700;color:var(--orange)">${c.err}</div><div style="font-size:11px;color:var(--muted)">ERROR</div></div>
+      <div class="card card-sm" style="text-align:center"><div style="font-size:20px;font-weight:700;color:${col}">${r}%</div><div style="font-size:11px;color:var(--muted)">通过率</div></div>
+    </div>
+    <div id="cat-browser-${c.id}">
+      <div class="empty-state">
+        <div class="empty-icon">📂</div>
+        <div class="empty-title">尚未加载文件夹</div>
+        <div class="empty-desc">请点击左侧"选择输出文件夹"按钮，<br>加载 outputs 目录后即可浏览文件</div>
+        <button class="sb-btn primary" style="margin:16px auto 0;width:auto;display:inline-flex" onclick="openFolder()">📂 立即选择文件夹</button>
+      </div>
+    </div>
+  </div>`;
+      document.getElementById('mainArea').appendChild(div);
+    }
+
+    function updateCatPage(c, data) {
+      const browser = document.getElementById('cat-browser-' + c.id);
+      if (!browser) return;
+      // Update stats if manifest has data
+      if (Object.values(data.counts).some(v => v > 0)) {
+        const safe = data.counts.SAFE || 0, fail = data.counts.FAILURE || 0, err = data.counts.ERROR || 0, to = data.counts.TIMED_OUT || 0;
+        const total = safe + fail + err + to || data.fuzzFiles.length;
+        const r = total > 0 ? (safe / total * 100).toFixed(1) : '0.0';
+        const col = r >= 50 ? 'var(--green)' : r >= 30 ? 'var(--orange)' : 'var(--red)';
+        const statsEl = document.getElementById('cat-stats-' + c.id);
+        if (statsEl) statsEl.innerHTML = `
+      <div class="card card-sm" style="text-align:center"><div style="font-size:20px;font-weight:700;color:var(--primary)">${total}</div><div style="font-size:11px;color:var(--muted)">总文件</div></div>
+      <div class="card card-sm" style="text-align:center"><div style="font-size:20px;font-weight:700;color:var(--green)">${safe}</div><div style="font-size:11px;color:var(--muted)">SAFE</div></div>
+      <div class="card card-sm" style="text-align:center"><div style="font-size:20px;font-weight:700;color:var(--red)">${fail}</div><div style="font-size:11px;color:var(--muted)">FAILURE</div></div>
+      <div class="card card-sm" style="text-align:center"><div style="font-size:20px;font-weight:700;color:var(--orange)">${err}</div><div style="font-size:11px;color:var(--muted)">ERROR</div></div>
+      <div class="card card-sm" style="text-align:center"><div style="font-size:20px;font-weight:700;color:${col}">${r}%</div><div style="font-size:11px;color:var(--muted)">通过率</div></div>`;
+      }
+      // Build file browser
+      browser.innerHTML = `<div class="fb-wrap" id="fb-${c.id}">
+    <div class="fb-tree" id="fbt-${c.id}"></div>
+    <div class="fb-view">
+      <div class="fb-view-header" id="fbh-${c.id}">
+        <span style="font-size:16px">📄</span>
+        <span id="fbname-${c.id}" style="color:var(--muted)">点击左侧文件查看内容</span>
+      </div>
+      <div class="fb-view-content" id="fbcontent-${c.id}">
+        <div style="padding:32px;text-align:center;color:var(--muted);font-size:13px">选择左侧文件</div>
+      </div>
+    </div>
+  </div>`;
+      buildFileTree(c.id, data);
+    }
+
+    function buildFileTree(catId, data) {
+      const tree = document.getElementById('fbt-' + catId);
+      if (!tree) return;
+
+      // prompts folder
+      const promptKeys = Object.keys(data.prompts).sort();
+      if (promptKeys.length > 0) {
+        const fold = mkFolder('📁 prompts', 'open');
+        const children = document.createElement('div');
+        children.className = 'tree-children open';
+        promptKeys.forEach(pn => {
+          const item = mkFileItem('📄 ' + pn, null, () => loadFile(catId, data.prompts[pn], pn, item));
+          children.appendChild(item);
+        });
+        fold.appendChild(children);
+        tree.appendChild(fold);
+      }
+
+      // .fuzz files
+      if (data.fuzzFiles.length > 0) {
+        const fold = mkFolder('📁 .fuzz 文件 (' + data.fuzzFiles.length + ')', 'open');
+        const children = document.createElement('div');
+        children.className = 'tree-children open';
+        data.fuzzFiles.forEach((ff, i) => {
+          const res = data.manifest[i]?.compile_result || 'UNKNOWN';
+          const dot = document.createElement('div');
+          dot.className = 'result-dot rd-' + res;
+          const item = mkFileItem(ff.name, dot, () => loadFile(catId, ff.h || ff.file, ff.name, item));
+          children.appendChild(item);
+        });
+        fold.appendChild(children);
+        tree.appendChild(fold);
+      }
+
+      // log files
+      const logKeys = Object.keys(data.logFiles).sort();
+      if (logKeys.length > 0) {
+        const fold = mkFolder('📁 日志文件', '');
+        const children = document.createElement('div');
+        children.className = 'tree-children';
+        logKeys.forEach(ln => {
+          const item = mkFileItem('📋 ' + ln, null, () => loadFile(catId, data.logFiles[ln], ln, item));
+          children.appendChild(item);
+        });
+        fold.appendChild(children);
+        tree.appendChild(fold);
+      }
+    }
+
+    function mkFolder(label, openClass) {
+      const wrap = document.createElement('div');
+      const hdr = document.createElement('div');
+      hdr.className = 'tree-folder' + (openClass ? ' ' + openClass : '');
+      hdr.innerHTML = `<span style="font-size:13px">${label}</span>`;
+      hdr.onclick = function () {
+        const ch = wrap.querySelector('.tree-children');
+        if (ch) { ch.classList.toggle('open'); hdr.classList.toggle('open'); }
+      };
+      wrap.appendChild(hdr);
+      return wrap;
+    }
+    function mkFileItem(label, prefixEl, onclick) {
+      const item = document.createElement('div');
+      item.className = 'tree-file';
+      item.onclick = function () { onclick(); };
+      if (prefixEl) item.appendChild(prefixEl);
+      const span = document.createElement('span');
+      span.textContent = label;
+      span.style.overflow = 'hidden';
+      span.style.textOverflow = 'ellipsis';
+      span.style.whiteSpace = 'nowrap';
+      item.appendChild(span);
+      return item;
+    }
+
+    async function loadFile(catId, handleOrFile, name, itemEl) {
+      document.querySelectorAll('#fbt-' + catId + ' .tree-file').forEach(i => i.classList.remove('active'));
+      itemEl.classList.add('active');
+      document.getElementById('fbname-' + catId).textContent = name;
+      const content = document.getElementById('fbcontent-' + catId);
+      content.innerHTML = '<div style="padding:24px;text-align:center;color:var(--muted)">加载中…</div>';
+      try {
+        const txt = await readAny(handleOrFile);
+        const isFuzz = name.endsWith('.fuzz');
+        const isTxt = name.endsWith('.txt') || name.endsWith('.jsonl');
+        if (isFuzz) {
+          content.innerHTML = `<pre style="margin:0;border:none;border-radius:0;max-height:none;height:100%;min-height:400px"><code class="language-java">${escHtml(txt)}</code></pre>`;
+          setTimeout(() => { if (window.Prism) Prism.highlightAll(); }, 20);
+        } else if (isTxt || true) {
+          content.innerHTML = `<pre style="margin:0;padding:16px;font-family:monospace;font-size:12.5px;line-height:1.6;white-space:pre-wrap;word-break:break-word;color:var(--text);min-height:400px">${escHtml(txt)}</pre>`;
+        }
+      } catch (e) {
+        content.innerHTML = `<div style="padding:24px;color:var(--red);font-size:13px">读取失败: ${e.message}</div>`;
+      }
+    }
+
+    async function readAny(h) {
+      if (!h) return '(空)';
+      if (h instanceof File) return await h.text();
+      if (typeof h.getFile === 'function') return await (await h.getFile()).text();
+      if (typeof h.text === 'function') return await h.text();
+      return '(无法读取)';
+    }
+
+    function escHtml(s) {
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    // helpers
+    function parseManifest(txt) {
+      return txt.trim().split('\n').filter(l => l).map(l => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean);
+    }
+    function countManifest(m) {
+      const c = { SAFE: 0, FAILURE: 0, ERROR: 0, TIMED_OUT: 0, UNKNOWN: 0 };
+      (m || []).forEach(r => { const k = r.compile_result || 'UNKNOWN'; c[k] = (c[k] || 0) + 1; });
+      return c;
+    }
+    function numSort(a, b) {
+      const na = parseInt(a), nb = parseInt(b);
+      return (!isNaN(na) && !isNaN(nb)) ? na - nb : a.localeCompare(b);
+    }
+
+    // init prism
+    setTimeout(() => { if (window.Prism) Prism.highlightAll(); }, 300);
+  </script>
+</body>
+
+</html>

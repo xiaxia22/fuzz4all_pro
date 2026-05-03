@@ -96,6 +96,8 @@ class Target(object):
         self.base_prompt_score = None
         self.last_refresh_round = 0
         self.last_refresh_rule_signature = None
+        self.previous_failure_rule_signature = None
+        self.stale_feedback_rounds = 0
         self.enable_mutation = False
         self.mutation_budget_per_seed = 0
         self.mutation_profile = None
@@ -170,6 +172,41 @@ class Target(object):
         if len(parts) == 0:
             return f"{self.prompt_used['separator']}\n{self.prompt_used['begin']}"
         return self.wrap_prompt("\n\n".join(parts))
+
+    def _build_minimal_recovery_prompt(self) -> str:
+        target_api = self.prompt_used.get("target_api") or "the target API"
+        instruction = (
+            f"Write the simplest possible {self.language} program that uses {target_api}. "
+            "Use only 1-2 documented public API calls. Keep all helper objects local to the main function or the current method. "
+            "Use only standard public library types. Avoid helper classes, wrappers, and guessed method names. "
+            "If checked exceptions may be thrown, wrap the API calls in a single try { ... } catch (Exception e) { e.printStackTrace(); } block."
+        )
+        return self._build_handwritten_prompt(manual_prompt=instruction)
+
+    def _reset_to_minimal_prompt(self, reason: str) -> None:
+        self.base_prompt = self._build_minimal_recovery_prompt()
+        self.runtime_prompt = self.base_prompt
+        self.prompt = self.runtime_prompt
+        self.base_prompt_score = None
+        self.last_refresh_rule_signature = None
+        self.stale_feedback_rounds = 0
+        prompt_dir = os.path.join(self.folder, "prompts")
+        os.makedirs(prompt_dir, exist_ok=True)
+        with open(
+            os.path.join(prompt_dir, f"minimal_reset_round_{self.update_round}.txt"),
+            "w",
+            encoding="utf-8",
+        ) as f:
+            f.write(self.base_prompt)
+        self._write_refresh_status(
+            self.update_round,
+            "reset",
+            reason,
+        )
+        self.m_logger.logo(
+            f"Prompt reset to minimal recovery template: {reason}",
+            level=LEVEL.INFO,
+        )
 
     def write_back_file(self, code: str):
         raise NotImplementedError
@@ -905,10 +942,14 @@ class Target(object):
                 ):
                     syntax_failure_count += 1
 
+        # Heavily favour prompts that produce compilable programs (safe_count * 5).
+        # Structured failures (specific API errors rather than syntax noise) get a small
+        # bonus because they show the prompt at least generates recognisable API usage.
+        # Pure syntax failures are penalised more aggressively.
         score = (
-            safe_count * 3
+            safe_count * 5
             + structured_failure_count
-            - syntax_failure_count * 2
+            - syntax_failure_count * 3
         )
         return max(score, 0)
 
@@ -1155,8 +1196,24 @@ class Target(object):
         if feedback_rules:
             self.batch_feedback_window.extend(feedback_rules)
             self.feedback_history.extend(feedback_rules)
-            self.feedback_history = self.feedback_history[-self.max_feedback_rules :]
+            # Keep a generous history window (not capped at max_feedback_rules, which is
+            # the limit for the *active* rule set used in prompts, not for the record).
+            self.feedback_history = self.feedback_history[-50:]
             self._merge_failure_rules(feedback_rules)
+            current_signature = tuple(self.failure_rules)
+            if (
+                current_signature
+                and current_signature == self.previous_failure_rule_signature
+                and not new_safe_examples
+            ):
+                self.stale_feedback_rounds += 1
+            else:
+                self.stale_feedback_rounds = 0
+            self.previous_failure_rule_signature = current_signature
+            if self.stale_feedback_rounds >= 2:
+                self._reset_to_minimal_prompt(
+                    "failure-rule signature unchanged for consecutive rounds without new SAFE examples"
+                )
 
         for example in new_safe_examples:
             if example and example not in self.safe_examples:
@@ -1232,18 +1289,17 @@ class Target(object):
             self.v_logger.logo("{} is safe".format(file_name), LEVEL.VERBOSE)
         elif f_result == FResult.FAILURE:
             self.v_logger.logo(
-                "{} failed validation with error message: {}".format(
-                    file_name, message, LEVEL.VERBOSE
-                )
+                "{} failed validation with error message: {}".format(file_name, message),
+                LEVEL.VERBOSE,
             )
         elif f_result == FResult.ERROR:
             self.v_logger.logo(
-                "{} has potential error!\nerror message:\n{}".format(
-                    file_name, message, LEVEL.VERBOSE
-                )
+                "{} has potential error!\nerror message:\n{}".format(file_name, message),
+                LEVEL.VERBOSE,
             )
             self.m_logger.logo(
-                "{} has potential error!".format(file_name, message, LEVEL.INFO)
+                "{} has potential error!".format(file_name),
+                LEVEL.INFO,
             )
         elif f_result == FResult.TIMED_OUT:
             self.v_logger.logo("{} timed out".format(file_name), LEVEL.VERBOSE)

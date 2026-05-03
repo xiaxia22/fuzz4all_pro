@@ -207,11 +207,16 @@ PROFILE_CATALOG: Dict[str, Dict[str, Any]] = {
         ],
         "repair_rules": {"byte_literal_cast": True, "imports": []},
         "filter_rules": {
-            "reject_tokens": [],
+            "reject_tokens": [
+                "Thread.Priority",
+                "setDefaultPriority",
+            ],
             "reject_patterns": [
                 r"while\s*\(\s*true\s*\)",
                 r"for\s*\(\s*;;\s*\)",
                 r"Thread\.sleep\s*\(\s*Long\.MAX_VALUE",
+                r"new\s+Thread\s*\([^)]*,\s*\"[^\"]*\"\s*,\s*\d+\s*\)",
+                r"new\s+Thread\s*\([^)]*\)\s*\.\s*setPriority\s*\(",
             ],
         },
     },
@@ -227,6 +232,10 @@ PROFILE_CATALOG: Dict[str, Dict[str, Any]] = {
         "repair_rules": {
             "byte_literal_cast": True,
             "imports": [
+                "javax.crypto.NoSuchPaddingException;",
+                "java.security.NoSuchAlgorithmException;",
+                "javax.crypto.IllegalBlockSizeException;",
+                "javax.crypto.BadPaddingException;",
                 "java.security.InvalidKeyException;",
                 "java.security.InvalidAlgorithmParameterException;",
             ],
@@ -238,7 +247,12 @@ PROFILE_CATALOG: Dict[str, Dict[str, Any]] = {
                 "DECryption_MODE",
                 "ENcryption_MODE",
             ],
-            "reject_patterns": [],
+            "reject_patterns": [
+                # Reject key sizes that are always invalid for standard symmetric algorithms
+                # (e.g. new byte[4] as an AES key — AES requires 16/24/32 bytes).
+                r"new\s+byte\s*\[\s*[1-9]\s*\]\s*(?:;|\))",
+                r"new\s+byte\s*\[\s*[23]\s*\]\s*(?:;|\))",
+            ],
         },
     },
     "REFLECT": {
@@ -257,6 +271,7 @@ PROFILE_CATALOG: Dict[str, Dict[str, Any]] = {
                 "java.lang.reflect.Field;",
                 "java.lang.reflect.Constructor;",
                 "java.lang.reflect.InvocationTargetException;",
+                "java.lang.reflect.Modifier;",
                 "java.util.Map;",
                 "java.util.List;",
                 "java.util.Arrays;",
@@ -269,6 +284,8 @@ PROFILE_CATALOG: Dict[str, Dict[str, Any]] = {
                 r"@(?!Override|SuppressWarnings|Deprecated|FunctionalInterface|SafeVarargs|Serial)\b[A-Z][a-zA-Z]+\b",
                 r"\bdefault\s+(?:void|int|long|boolean|String|double|float)\s+\w+\s*\(",
                 r"public\s+\w+\s+\w+\s*<[A-Z]>\s*\(",
+                r"get(?:Declared)?Method\s*\([^)]*Object\.\.\.",
+                r"%s%s",
             ],
         },
     },
@@ -381,6 +398,10 @@ PROFILE_CATALOG: Dict[str, Dict[str, Any]] = {
                 # Generic plural/statistics-style getters frequently hallucinated on MXBean instances.
                 r"\bget[A-Z][a-zA-Z]*Compilations\b",
                 r"\bget[A-Z][a-zA-Z]*ThreadsCount\b",
+                r"\bget[A-Z][a-zA-Z]*Information\s*\(",
+                r"\bget[A-Z][a-zA-Z]*Threads\s*\(",
+                r"\bget[A-Z][a-zA-Z]*Count\s*\(",
+                r"\bget[A-Z][a-zA-Z]*Usage\s*\(\s*\"",
             ],
         },
     },
@@ -605,9 +626,12 @@ def _resolve_active_profiles(
         for profile_name in profile_definition.get("active_profiles", []):
             if profile_name in PROFILE_ORDER and profile_name not in ordered:
                 ordered.append(profile_name)
-    for profile_name in _ordered_profiles(primary_tag, all_tags):
-        if profile_name not in ordered:
-            ordered.append(profile_name)
+        if primary_tag in PROFILE_ORDER and primary_tag not in ordered:
+            ordered.insert(0, primary_tag)
+    else:
+        for profile_name in _ordered_profiles(primary_tag, all_tags):
+            if profile_name not in ordered:
+                ordered.append(profile_name)
     if not ordered:
         ordered.append(FALLBACK_PROFILE)
     return ordered

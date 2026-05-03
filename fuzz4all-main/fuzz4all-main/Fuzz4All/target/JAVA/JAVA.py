@@ -16,6 +16,25 @@ class JAVATarget(Target):
     FORCED_JAVA_VERSION = "21"
     FORCE_ENABLE_PREVIEW = True
 
+    @staticmethod
+    def _create_prompt_from_config(config_dict):
+        prompt_config = Target._create_prompt_from_config(config_dict)
+        target_api = prompt_config.get("target_api") or "the target API"
+        simplicity_prefix = (
+            f"Write the simplest possible Java program that uses {target_api}. "
+            "Use only 1-2 documented public API calls. Keep all helper objects local to the same method. "
+            "Use only standard JDK classes and avoid helper wrappers, proxy classes, or guessed method names. "
+            "If checked exceptions may be thrown, prefer a single try { ... } catch (Exception e) { e.printStackTrace(); } block around the API calls."
+        )
+        documentation = (prompt_config.get("docstring") or "").strip()
+        if documentation:
+            prompt_config["docstring"] = (
+                simplicity_prefix + "\n\nReference documentation:\n" + documentation
+            )
+        else:
+            prompt_config["docstring"] = simplicity_prefix
+        return prompt_config
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         if kwargs["template"] == "fuzzing_with_config_file":
@@ -96,6 +115,17 @@ class JAVATarget(Target):
             return False
         if normalized.endswith(("write(", "try {", "Buffered")):
             return False
+        # Reject code containing printf-style placeholders in method or variable names
+        # (e.g. getMethod("%s%s", ...) — a hallucination pattern seen in reflection category).
+        if re.search(r'(?:getMethod|getDeclaredMethod|getField)\s*\(\s*"[^"]*%[sd]', normalized):
+            return False
+        # Reject incomplete method call chains (trailing dot without identifier).
+        if re.search(r"\.\s*$", normalized):
+            return False
+        # Reject code truncated mid-argument-list (unbalanced parentheses is already caught
+        # by brace check, but trailing comma or open-paren signals truncation).
+        if normalized.endswith((",", "(")):
+            return False
         return True
 
     def extract_javac_error_categories(self, message: str) -> List[str]:
@@ -126,6 +156,11 @@ class JAVATarget(Target):
             categories.append("unchecked_ioexception")
         if "unreported exception FileNotFoundException" in normalized:
             categories.append("unchecked_ioexception")
+        # Detect any checked exception not caught or declared (covers crypto, reflection,
+        # management, and other domain-specific checked exceptions beyond IOException).
+        if re.search(r"unreported exception [A-Za-z]+Exception", normalized):
+            if "unchecked_ioexception" not in categories:
+                categories.append("unchecked_exception")
         if "possible lossy conversion" in normalized:
             categories.append("lossy_conversion")
         if "should be declared in a file named" in normalized:
@@ -256,6 +291,12 @@ class JAVATarget(Target):
             rules.append(
                 "Handle checked IOExceptions with try/catch or declare throws where required."
             )
+        if "unchecked_exception" in categories:
+            rules.append(
+                "Wrap all API method calls in a single "
+                "try { ... } catch (Exception e) { e.printStackTrace(); } block, "
+                "since they throw checked exceptions that must be caught or declared."
+            )
         if "lossy_conversion" in categories:
             rules.append(
                 "Use explicit byte casts when inserting int values into byte arrays."
@@ -343,6 +384,12 @@ class JAVATarget(Target):
             rules.append(
                 f"For {target_api}, keep thread/interleaving helpers syntactically isolated so concurrency scaffolding still compiles."
             )
+            rules.append(
+                f"For {target_api}, set thread priority only through documented instance calls such as setPriority(...) using standard Thread priority constants; do not invent nested priority enums or constructor arguments for priority."
+            )
+            rules.append(
+                f"For {target_api}, keep thread construction, configuration, and start/join/sleep coordination in separate statements, and place sleep/join/wait-style calls inside valid checked-exception handling."
+            )
             if "non_static_context" in categories:
                 rules.append(
                     f"For {target_api}, create thread instances as local variables in main(); "
@@ -356,6 +403,12 @@ class JAVATarget(Target):
         elif primary_tag == "REFLECT":
             rules.append(
                 f"For {target_api}, keep reflected member names, receiver objects, and accessibility changes consistent with the reflection API."
+            )
+            rules.append(
+                f"For {target_api}, when looking up methods or constructors reflectively, pass parameter type lists as documented Class objects or Class arrays; do not place Object... or other source-level varargs syntax directly in reflection signatures."
+            )
+            rules.append(
+                f"For {target_api}, keep helper and receiver types aligned with locally declared constructors, methods, and fields, and import standard reflection helper types such as Modifier when they are referenced."
             )
         elif primary_tag == "CALLBACK":
             rules.append(
@@ -393,6 +446,9 @@ class JAVATarget(Target):
             )
             rules.append(
                 f"For {target_api}, call documented query methods on concrete MXBean interfaces returned by ManagementFactory helpers; do not invent generic bean super-types or guessed statistics getters."
+            )
+            rules.append(
+                f"For {target_api}, only use documented getters and query methods defined on concrete MXBean interfaces such as runtime, thread, memory, class-loading, and compilation beans; do not guess extended names like *Information, *Threads, *Count, or string-argument *Usage overloads."
             )
             if "nonexistent_type" in categories:
                 rules.append(
