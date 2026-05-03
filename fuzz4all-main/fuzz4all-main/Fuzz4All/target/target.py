@@ -151,6 +151,71 @@ class Target(object):
         text = " ".join(text.split())
         return text[:limit]
 
+    def _summarize_prompt_issues(self, prompt: str) -> List[str]:
+        issues = []
+        text = prompt or ""
+        lowered = text.lower()
+
+        if "```" in text:
+            issues.append("contains fenced code block")
+        if re.search(r"^\s*import\s+java\.", text, re.MULTILINE):
+            issues.append("looks like Java source with imports")
+        if re.search(r"\bpublic\s+class\b", text):
+            issues.append("looks like full Java class")
+        if re.search(r"\bpublic\s+static\s+void\s+main\b", text):
+            issues.append("looks like executable Java sample")
+
+        if "non-existent" in lowered or "nonexistent" in lowered:
+            issues.append("encourages nonexistent APIs")
+        if "does not exist" in lowered:
+            issues.append("encourages invalid API exploration")
+        if "getnonexistent" in lowered:
+            issues.append("contains fabricated method examples")
+
+        numbered_lines = len(re.findall(r"^\s*\d+\.\s", text, re.MULTILINE))
+        if numbered_lines >= 5:
+            issues.append("looks like long numbered fuzz checklist")
+
+        if text.count("/*") >= 2 or text.count("*/") >= 2:
+            issues.append("contains nested comment-style prompt blocks")
+
+        if len(text) > 1800:
+            issues.append("prompt too long")
+
+        return issues
+
+    def _reject_prompt_candidate(self, prompt: str) -> bool:
+        issues = self._summarize_prompt_issues(prompt)
+        severe = {
+            "contains fenced code block",
+            "looks like Java source with imports",
+            "looks like full Java class",
+            "looks like executable Java sample",
+            "encourages nonexistent APIs",
+            "contains fabricated method examples",
+            "contains nested comment-style prompt blocks",
+        }
+        return any(issue in severe for issue in issues)
+
+    def _record_rejected_prompt_candidate(
+        self, name: str, prompt: str, issues: List[str], stage: str
+    ) -> None:
+        prompt_dir = os.path.join(self.folder, "prompts")
+        os.makedirs(prompt_dir, exist_ok=True)
+        with open(
+            os.path.join(prompt_dir, f"rejected_{stage}_{name}.txt"),
+            "w",
+            encoding="utf-8",
+        ) as f:
+            f.write(prompt or "")
+        with open(
+            os.path.join(prompt_dir, f"rejected_{stage}_{name}_reason.txt"),
+            "w",
+            encoding="utf-8",
+        ) as f:
+            for issue in issues:
+                f.write(issue + "\n")
+
     def summarize_feedback_message(self, result: FResult, message: str) -> List[str]:
         summary = self._sanitize_feedback(message)
         return [summary] if summary else []
@@ -991,17 +1056,44 @@ class Target(object):
                 )
                 scored_prompts = []
 
-                greedy_wrapped = self.wrap_prompt(greedy_prompt)
-                with open(
-                    self.folder + "/prompts/greedy_prompt.txt", "w", encoding="utf-8"
-                ) as f:
-                    f.write(greedy_wrapped)
-                greedy_score = self.validate_prompt(greedy_wrapped)
-                scored_prompts.append((greedy_score, greedy_wrapped, "greedy_prompt"))
+                greedy_issues = self._summarize_prompt_issues(greedy_prompt)
+                if self._reject_prompt_candidate(greedy_prompt):
+                    self._record_rejected_prompt_candidate(
+                        "greedy_prompt", greedy_prompt, greedy_issues, "autoprompt"
+                    )
+                    self.m_logger.logo(
+                        "Rejected greedy autoprompt candidate: "
+                        + ", ".join(greedy_issues),
+                        level=LEVEL.INFO,
+                    )
+                else:
+                    greedy_wrapped = self.wrap_prompt(greedy_prompt)
+                    with open(
+                        self.folder + "/prompts/greedy_prompt.txt",
+                        "w",
+                        encoding="utf-8",
+                    ) as f:
+                        f.write(greedy_wrapped)
+                    greedy_score = self.validate_prompt(greedy_wrapped)
+                    scored_prompts.append(
+                        (greedy_score, greedy_wrapped, "greedy_prompt")
+                    )
 
                 for index, summary in enumerate(
                     track(candidate_summaries, description="Generating prompts")
                 ):
+                    issues = self._summarize_prompt_issues(summary)
+                    if self._reject_prompt_candidate(summary):
+                        candidate_name = f"prompt_{index}"
+                        self._record_rejected_prompt_candidate(
+                            candidate_name, summary, issues, "autoprompt"
+                        )
+                        self.m_logger.logo(
+                            f"Rejected autoprompt candidate {candidate_name}: "
+                            + ", ".join(issues),
+                            level=LEVEL.INFO,
+                        )
+                        continue
                     wrapped_prompt = self.wrap_prompt(summary)
                     with open(
                         self.folder + f"/prompts/prompt_{index}.txt",
@@ -1011,6 +1103,11 @@ class Target(object):
                         f.write(wrapped_prompt)
                     score = self.validate_prompt(wrapped_prompt)
                     scored_prompts.append((score, wrapped_prompt, f"prompt_{index}"))
+
+                if not scored_prompts:
+                    raise ValueError(
+                        "All autoprompt candidates rejected by prompt-quality guard."
+                    )
 
                 best_score, best_prompt, best_prompt_name = max(
                     scored_prompts, key=lambda item: item[0]

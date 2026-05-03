@@ -9,7 +9,7 @@ fuzzing:
   otf: true
   resume: true
   evaluate: false
-  use_hand_written_prompt: false
+  use_hand_written_prompt: true
   no_input_prompt: false
   prompt_strategy: 2
   target_name: javac
@@ -31,7 +31,7 @@ target:
   path_example_code:
   trigger_to_generate_input: "/* Please create a very short Java program that uses java.lang.management.ManagementFactory in diverse and tricky ways. Use only standard JDK management and MXBean APIs. Focus on documented static factory/query entry points such as getMemoryMXBean, getThreadMXBean, getRuntimeMXBean, getClassLoadingMXBean, getCompilationMXBean, getPlatformMBeanServer, and valid ObjectName usage when required. Keep to public JDK management interfaces, handle checked exceptions around ObjectName or MXBean proxy creation, and avoid fabricated bean methods, generic MXBean placeholder types, non-JDK wrappers, or guessed management helpers. */"
   input_hint: "import java.lang.management.ManagementFactory;"
-  path_hand_written_prompt:
+  path_hand_written_prompt: config/prompts/java.management_java_lang_management_ManagementFactory_handwritten.txt
   target_string: "ManagementFactory"
 
 llm:

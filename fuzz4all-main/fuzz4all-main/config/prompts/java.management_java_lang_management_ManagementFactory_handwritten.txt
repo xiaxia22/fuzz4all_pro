@@ -1,0 +1,21 @@
+Write the simplest possible Java program that uses java.lang.management.ManagementFactory.
+
+Requirements:
+- Use only standard public JDK management and MXBean APIs.
+- Keep the program short and use only 1-2 documented API calls per example path.
+- Prefer direct static entry points such as:
+  - ManagementFactory.getMemoryMXBean()
+  - ManagementFactory.getThreadMXBean()
+  - ManagementFactory.getRuntimeMXBean()
+  - ManagementFactory.getClassLoadingMXBean()
+  - ManagementFactory.getCompilationMXBean()
+  - ManagementFactory.getPlatformMBeanServer()
+- If using ObjectName or newPlatformMXBeanProxy(...), use only valid standard JDK types and wrap calls in a single try { ... } catch (Exception e) { e.printStackTrace(); } block.
+- Keep all helper objects as local variables inside main.
+- Do not invent helper wrappers, proxy class names, bean container types, or undocumented getter names.
+- Do not generate remote JMX connection code, service URLs, connector factories, or non-JDK management helpers.
+
+Style:
+- Start from the simplest compilable structure.
+- Separate object creation, configuration, and API calls into distinct statements.
+- Prefer concrete MXBean interfaces over guessed generic bean supertypes.
