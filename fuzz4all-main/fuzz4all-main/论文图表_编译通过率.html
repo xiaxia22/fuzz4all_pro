@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>图3-2 各API类别编译通过率</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+body { font-family: -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; background: #fff; padding: 40px; }
+h3 { text-align: center; color: #1E293B; margin-bottom: 20px; font-size: 16px; }
+.wrap { max-width: 750px; margin: 0 auto; height: 380px; }
+</style>
+</head>
+<body>
+<h3>图3-2 各API类别编译通过率</h3>
+<div class="wrap"><canvas id="chart"></canvas></div>
+<script>
+const data = [
+  { name: 'Thread', rate: 70.0 },
+  { name: 'Duration', rate: 66.7 },
+  { name: 'URI', rate: 66.7 },
+  { name: 'ManagementFac.', rate: 65.0 },
+  { name: 'File', rate: 54.0 },
+  { name: 'Method', rate: 50.0 },
+  { name: 'Socket', rate: 50.0 },
+  { name: 'Cipher', rate: 46.0 },
+  { name: 'BufIS', rate: 40.0 },
+  { name: 'PCS', rate: 15.0 },
+];
+new Chart(document.getElementById('chart'), {
+  type: 'bar',
+  data: {
+    labels: data.map(d => d.name),
+    datasets: [{
+      data: data.map(d => d.rate),
+      backgroundColor: data.map(d => d.rate >= 50 ? '#16A34A' : d.rate >= 30 ? '#D97706' : '#DC2626'),
+      borderRadius: 4
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: c => c.parsed.x + '%' } }
+    },
+    scales: {
+      x: { max: 100, ticks: { callback: v => v + '%' }, grid: { color: 'rgba(226,232,240,.6)' } },
+      y: { ticks: { font: { size: 13 } }, grid: { display: false } }
+    }
+  }
+});
+</script>
+</body>
+</html>

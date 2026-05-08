@@ -9,7 +9,15 @@
       "Bash(iconv -f gbk -t utf-8)",
       "PowerShell(python -m py_compile \"D:/same-fuzz/fuzz4all-main/fuzz4all-main/Fuzz4All/mutation/profile_loader.py\" ; python -m py_compile \"D:/same-fuzz/fuzz4all-main/fuzz4all-main/Fuzz4All/target/target.py\" ; python -m py_compile \"D:/same-fuzz/fuzz4all-main/fuzz4all-main/Fuzz4All/target/JAVA/JAVA.py\" ; Write-Host \"All OK\")",
       "Bash(python3 *)",
-      "PowerShell(python -m py_compile \"D:/same-fuzz/fuzz4all-main/fuzz4all-main/Fuzz4All/mutation/profile_loader.py\"; python -m py_compile \"D:/same-fuzz/fuzz4all-main/fuzz4all-main/Fuzz4All/target/JAVA/JAVA.py\"; Write-Host \"All OK\")"
+      "PowerShell(python -m py_compile \"D:/same-fuzz/fuzz4all-main/fuzz4all-main/Fuzz4All/mutation/profile_loader.py\"; python -m py_compile \"D:/same-fuzz/fuzz4all-main/fuzz4all-main/Fuzz4All/target/JAVA/JAVA.py\"; Write-Host \"All OK\")",
+      "Bash(Select-String \"ManagementFactory|PropertyChangeSupport\")",
+      "Bash(npm create *)",
+      "Bash(npm install *)",
+      "Bash(npx vite *)",
+      "Bash(timeout 5)",
+      "Bash(pip show *)",
+      "Bash(antiword *)",
+      "Bash(python *)"
     ]
   }
 }

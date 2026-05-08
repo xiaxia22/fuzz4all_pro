@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>图3-3 测试结果总体分布</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+body { font-family: -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; background: #fff; padding: 40px; }
+h3 { text-align: center; color: #1E293B; margin-bottom: 20px; font-size: 16px; }
+.wrap { max-width: 400px; margin: 0 auto; height: 320px; position: relative; }
+.legend { text-align: center; margin-top: 16px; font-size: 13px; color: #64748B; }
+.legend span { margin: 0 10px; }
+.dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
+</style>
+</head>
+<body>
+<h3>图3-3 测试结果总体分布</h3>
+<div class="wrap"><canvas id="chart"></canvas></div>
+<div class="legend">
+  <span><i class="dot" style="background:#16A34A"></i>SAFE 297 (52.1%)</span>
+  <span><i class="dot" style="background:#DC2626"></i>FAILURE 268 (47.0%)</span>
+  <span><i class="dot" style="background:#D97706"></i>ERROR 5 (0.9%)</span>
+  <span><i class="dot" style="background:#F59E0B"></i>TIMEOUT 0 (0.0%)</span>
+</div>
+<script>
+new Chart(document.getElementById('chart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['SAFE', 'FAILURE', 'ERROR', 'TIMEOUT'],
+    datasets: [{
+      data: [297, 268, 5, 0],
+      backgroundColor: ['#16A34A', '#DC2626', '#D97706', '#F59E0B'],
+      borderWidth: 2, borderColor: '#fff', hoverOffset: 4
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false, cutout: '55%',
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: c => `${c.label}: ${c.parsed} (${(c.parsed/570*100).toFixed(1)}%)` } }
+    }
+  }
+});
+</script>
+</body>
+</html>

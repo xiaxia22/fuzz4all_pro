@@ -287,6 +287,19 @@ class JAVATarget(Target):
             rules.append(
                 f"Use only documented constructors and valid argument lists for {target_api}."
             )
+            # For CONCURRENT-tagged APIs, also inject positive constructor-pattern hints
+            # stored in the profile's repair_rules.api_positive_hints.  These provide
+            # concrete guidance on what TO do (preferred constructor forms) rather than
+            # only what to avoid, which is more effective for models that ignore negative
+            # rules.  The hints use {api} as a placeholder filled with the actual target_api.
+            if primary_tag == "CONCURRENT":
+                positive_hints = (
+                    (self.mutation_profile or {})
+                    .get("repair_rules", {})
+                    .get("api_positive_hints", [])
+                )
+                for hint in positive_hints:
+                    rules.append(hint.replace("{api}", target_api))
         if "unchecked_ioexception" in categories:
             rules.append(
                 "Handle checked IOExceptions with try/catch or declare throws where required."
@@ -483,6 +496,11 @@ class JAVATarget(Target):
             return rules
 
         summary = self._sanitize_feedback(message, limit=200)
+        if summary:
+            # Strip raw temp file paths before including in rules to avoid polluting prompts
+            summary = re.sub(r"/tmp/fuzz4all_java_\S+", "", summary)
+            summary = re.sub(r"[A-Za-z]:\\[^\s]+\.java:\d+:", "", summary)
+            summary = " ".join(summary.split())[:200]
         return [summary] if summary else []
 
     # If there exists a public class, ensure file name matches

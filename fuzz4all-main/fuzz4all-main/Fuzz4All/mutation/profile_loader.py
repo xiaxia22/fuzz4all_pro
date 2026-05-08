@@ -205,7 +205,20 @@ PROFILE_CATALOG: Dict[str, Dict[str, Any]] = {
             "concurrent_thread_wrapper_mutation",
             "concurrent_signal_sequence_mutation",
         ],
-        "repair_rules": {"byte_literal_cast": True, "imports": []},
+        "repair_rules": {
+            "byte_literal_cast": True,
+            "imports": [],
+            # Positive constructor-pattern hints, injected by map_error_categories_to_rules()
+            # when invalid_constructor errors are detected.  Uses {api} as a placeholder for
+            # the actual target API name at runtime — no individual API is hard-coded here.
+            "api_positive_hints": [
+                "Use the simplest documented constructor of {api}; "
+                "verify each parameter type carefully and do not pass a functional-interface "
+                "value where the constructor declares a concrete class parameter.",
+                "When a functional-interface argument is required by a {api} constructor, "
+                "assign it to a named variable of the exact declared type before passing it.",
+            ],
+        },
         "filter_rules": {
             "reject_tokens": [
                 "Thread.Priority",

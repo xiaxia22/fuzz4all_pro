@@ -69,11 +69,28 @@ class Target(object):
         self.m_logger = Logger(self.folder, "log.txt")
         # system messages for prompting
         self.SYSTEM_MESSAGE = None
-        self.AP_SYSTEM_MESSAGE = "You are an auto-prompting tool"
+        self.AP_SYSTEM_MESSAGE = (
+            "You are an auto-prompting tool. Your job is to write concise plain-English instructions "
+            "for a Java code-generation model. "
+            "STRICT FORMAT RULES — violating any rule causes your output to be discarded:\n"
+            "1. Write 2-4 sentences of plain English ONLY.\n"
+            "2. NEVER write Java, Python, or any other source code.\n"
+            "3. NEVER use markdown code fences (``` or `).\n"
+            "4. NEVER include import statements, class definitions, or method bodies.\n"
+            "5. NEVER use more than 4 numbered list items.\n"
+            "6. NEVER use comment delimiters (/* or */).\n"
+            "Output ONLY a plain-English paragraph. No preamble, no explanation, no code."
+        )
         self.AP_INSTRUCTION = (
-            "Please summarize the documentation into a short fuzzing prompt that teaches a code model "
-            "how to generate valid, diverse, and tricky inputs for the target. Focus on syntax, key "
-            "constructs, unusual combinations, and edge cases that are likely to stress the compiler."
+            "Summarize the documentation into a concise fuzzing prompt (2-4 sentences, plain English only). "
+            "Specify: which constructors or factory methods to call, what edge-case argument values to use "
+            "(e.g. null, 0, -1, empty arrays, boundary sizes), and what exception handling is needed. "
+            "Do NOT write any code, use code fences (```), or include import or class statements. "
+            "Output ONLY a plain-English paragraph. "
+            "CORRECT FORMAT EXAMPLE: "
+            "\"Construct the API object with valid and boundary-size arguments. "
+            "Call the primary read or write methods with sizes 0, 1, and 8192. "
+            "Wrap all calls in try { ... } catch (Exception e) { e.printStackTrace(); }.\""
         )
         # prompt based variables
         self.hw = kwargs["use_hw"]
@@ -197,6 +214,40 @@ class Target(object):
         }
         return any(issue in severe for issue in issues)
 
+    def _extract_prompt_inner_text(self, wrapped: str) -> str:
+        """Strip the /* ... */ comment wrapper from a wrapped prompt for guard re-validation."""
+        text = (wrapped or "").strip()
+        if text.startswith("/*"):
+            end = text.find("*/")
+            if end != -1:
+                return text[2:end].strip()
+        return text
+
+    def _try_sanitize_prompt_candidate(self, raw: str) -> str:
+        """
+        Attempt to salvage a fenced-code LLM response before hard guard rejection.
+        If the raw text is a single code fence wrapping plain prose, extract the prose.
+        Returns the (possibly cleaned) text; the guard still runs afterward.
+        """
+        text = (raw or "").strip()
+        # Strip a single code-fence wrapper: ```lang\ncontent\n```
+        fence_re = re.compile(r"^```[a-zA-Z]*\n([\s\S]*?)\n?```\s*$", re.DOTALL)
+        m = fence_re.match(text)
+        if m:
+            inner = m.group(1).strip()
+            # Only salvage if inner text is plain prose — no code signatures
+            has_code = re.search(
+                r"^\s*(def |class |import |public |private |void |```)",
+                inner,
+                re.MULTILINE,
+            )
+            if inner and not has_code and "```" not in inner:
+                return inner
+        # Strip stray leading/trailing fence markers (no full block)
+        text = re.sub(r"^```[a-zA-Z]*\s*\n?", "", text)
+        text = re.sub(r"\n?```\s*$", "", text)
+        return text.strip()
+
     def _record_rejected_prompt_candidate(
         self, name: str, prompt: str, issues: List[str], stage: str
     ) -> None:
@@ -238,14 +289,163 @@ class Target(object):
             return f"{self.prompt_used['separator']}\n{self.prompt_used['begin']}"
         return self.wrap_prompt("\n\n".join(parts))
 
+    # Domain-level hints for the minimal recovery prompt, keyed by primary_tag.
+    # Each hint names the characteristic entry-point pattern for that classification
+    # domain so the generated code still exercises meaningful state transitions, not
+    # just the most trivial usage.  No individual API class names are hard-coded.
+    _MINIMAL_RECOVERY_DOMAIN_HINTS: Dict[str, str] = {
+        # Security APIs: factory → key-material → operation → result.
+        # Cover algorithm-string boundary (valid name, wrong size, unknown provider).
+        "SECURITY": (
+            "Use the static getInstance(algorithmString) factory to obtain the API object. "
+            "Provide a fixed key or IV with a standard size (e.g. 16 bytes for AES). "
+            "Call the primary operation method (init / update / doFinal or equivalent) "
+            "and print the result length. "
+            "Also try at least one boundary value: an empty input, a null argument, "
+            "or an algorithm string that is valid but uncommon (e.g. \"AES/CBC/PKCS5Padding\"). "
+            "Wrap ALL calls in try { ... } catch (Exception e) { e.printStackTrace(); }."
+        ),
+        # Concurrent APIs: construction → lifecycle state changes → blocking coordination.
+        # Cover constructor arity, start/join/sleep boundary, interrupted-exception path.
+        "CONCURRENT": (
+            "Construct the API object using its documented constructor with exact parameter types. "
+            "Drive it through at least two lifecycle states "
+            "(e.g. created → started → finished, or submitted → done). "
+            "Include one blocking or waiting call (sleep, join, await, or equivalent) "
+            "and one state-query call (isAlive, isDone, getState, or equivalent). "
+            "Wrap blocking calls in "
+            "try { ... } catch (InterruptedException e) { e.printStackTrace(); }."
+        ),
+        # Reflection APIs: class-resolution → member-lookup → accessibility → invocation.
+        # Cover getDeclaredMethod/Field chain on a known JDK type.
+        "REFLECT": (
+            "Use Class.forName() or a .class literal to resolve a well-known JDK class. "
+            "Look up at least one method via getDeclaredMethod and one field via getDeclaredField. "
+            "Call setAccessible(true), then invoke the method or read the field. "
+            "Also test one boundary: a method name that exists and one that does not. "
+            "Wrap ALL reflective calls in try { ... } catch (Exception e) { e.printStackTrace(); }."
+        ),
+        # JVM management APIs: static MXBean accessors → documented query methods.
+        # The standard entry points are the getXxxMXBean() factory methods — retain them.
+        "JVM_MGMT": (
+            "Obtain at least two MXBean instances using the standard static accessor methods "
+            "(such as getMemoryMXBean, getThreadMXBean, getRuntimeMXBean, "
+            "getClassLoadingMXBean, or getCompilationMXBean). "
+            "Call one documented query getter on each "
+            "(e.g. getHeapMemoryUsage, getThreadCount, getUptime, getLoadedClassCount). "
+            "Print the results. "
+            "Wrap ALL calls in try { ... } catch (Exception e) { e.printStackTrace(); }."
+        ),
+        # Network APIs: endpoint creation → connect/bind state → I/O or query.
+        # Cover localhost address, timeout boundary, connection state query.
+        "NETWORK": (
+            "Create a network endpoint using a localhost address or a fixed URI/URL literal. "
+            "Perform at least one state-changing call "
+            "(connect, bind, open, or equivalent) "
+            "and one query call (isConnected, getPort, getScheme, getHost, or equivalent). "
+            "Also test one boundary: a zero timeout, an empty path, or a port at 0 or 65535. "
+            "Wrap ALL network calls in try { ... } catch (Exception e) { e.printStackTrace(); }."
+        ),
+        # File/path APIs: path construction → existence/state probe → content operation.
+        # Cover relative path, non-existent file, and a simple read or write.
+        "FILE": (
+            "Construct a path using a fixed relative string literal (e.g. \"test.txt\"). "
+            "Probe its state with at least two query methods "
+            "(exists, isDirectory, length, lastModified, or equivalent). "
+            "Perform one content operation (read, write, list, or createTempFile). "
+            "Also test one boundary path: an empty string, a deeply nested path, "
+            "or a path with special characters. "
+            "Wrap file operations in try { ... } catch (Exception e) { e.printStackTrace(); }."
+        ),
+        # Time APIs: factory construction → arithmetic → boundary query.
+        # Cover epoch-adjacent values, sign boundary, and overflow-safe arithmetic.
+        "TIME": (
+            "Construct at least two time objects using static factory methods "
+            "(e.g. ofSeconds, ofMinutes, parse, now, or equivalent) "
+            "with fixed numeric literals. "
+            "Chain one arithmetic operation (plus, minus, multipliedBy, or equivalent) "
+            "and call at least two boundary-query methods "
+            "(isNegative, isZero, compareTo, toMillis, or equivalent). "
+            "Include one epoch-adjacent value (0, Long.MIN_VALUE / Long.MAX_VALUE, "
+            "or a very large positive/negative literal). "
+            "Avoid arithmetic chains that overflow; check results with query methods."
+        ),
+        # Callback/listener APIs: source creation → listener registration → event dispatch
+        # → listener removal. Cover duplicate registration and null-event edge cases.
+        "CALLBACK": (
+            "Create the event-source object. "
+            "Register one listener implemented as an anonymous class that prints the event. "
+            "Fire at least one event to confirm the listener is called. "
+            "Then remove the listener and fire a second event to confirm it is no longer called. "
+            "Also register the same listener twice to test duplicate-registration behaviour. "
+            "Keep all code inside the main method; do not introduce extra classes."
+        ),
+        # Resource/stream APIs: open (try-with-resources) → read/write → boundary sizes.
+        # Cover zero-length, single-byte, and bulk transfer edge cases.
+        "RESOURCE": (
+            "Open the resource inside a try-with-resources block. "
+            "Perform three read or write calls with different sizes: "
+            "zero bytes, one byte, and a 16-byte array. "
+            "If the resource supports mark/reset, call mark(16), read some bytes, "
+            "then reset() and verify the position. "
+            "Check available() or remaining() before and after each operation. "
+            "Wrap any checked exception in try { ... } catch (Exception e) { e.printStackTrace(); }."
+        ),
+        # Buffer/byte-buffer APIs: allocation → put/get operations → limit/position boundary.
+        # Cover zero-capacity, flip, rewind, and compact sequences.
+        "BUFFER": (
+            "Allocate the buffer with several capacities: 0, 1, and 64 bytes. "
+            "Put at least one byte or value, then call flip() before reading. "
+            "Test get() at position 0 and at the limit, and call rewind() between sequences. "
+            "Also try compact() to verify the unfilled-region semantics. "
+            "Wrap ALL calls in try { ... } catch (Exception e) { e.printStackTrace(); }."
+        ),
+        # Batch-operation APIs: bulk read/write → count boundaries → partial-transfer detection.
+        # Cover empty arrays, large arrays, and offset-within-array edge cases.
+        "BATCH_OP": (
+            "Call the bulk read or write method with arrays of size 0, 1, and 1024. "
+            "Use non-zero offsets and lengths that reach the end of the array and one byte past it. "
+            "Check the return value (bytes transferred) after each call. "
+            "Wrap all operations in try { ... } catch (Exception e) { e.printStackTrace(); }."
+        ),
+        # Mark/reset APIs: mark → read → reset → verify re-read of same bytes.
+        # Cover mark limit, markSupported() guard, and reset-without-mark error path.
+        "MARK_SUPPORT": (
+            "Call markSupported() first; if true, call mark(8), read 4 bytes, then reset(). "
+            "Verify the same bytes can be read again. "
+            "Also test reset() before any mark() to confirm an IOException is thrown. "
+            "Wrap all stream operations in try { ... } catch (Exception e) { e.printStackTrace(); }."
+        ),
+        # Utility/helper APIs: static parse or format method → value extraction → comparison.
+        # Cover null input, empty string, and out-of-range numeric edge cases.
+        "UTILITY": (
+            "Call the primary static parse or factory method with a valid input and print the result. "
+            "Also call it with an empty string, null (inside a try block), "
+            "and a value at numeric boundary (Long.MAX_VALUE, -1, or 0). "
+            "Call at least one comparison or equality method on the returned objects. "
+            "Wrap all calls in try { ... } catch (Exception e) { e.printStackTrace(); }."
+        ),
+    }
+
     def _build_minimal_recovery_prompt(self) -> str:
         target_api = self.prompt_used.get("target_api") or "the target API"
-        instruction = (
+        primary_tag = (self.mutation_profile or {}).get("primary_tag", "")
+        domain_hint = self._MINIMAL_RECOVERY_DOMAIN_HINTS.get(primary_tag, "")
+        base = (
             f"Write the simplest possible {self.language} program that uses {target_api}. "
-            "Use only 1-2 documented public API calls. Keep all helper objects local to the main function or the current method. "
-            "Use only standard public library types. Avoid helper classes, wrappers, and guessed method names. "
-            "If checked exceptions may be thrown, wrap the API calls in a single try { ... } catch (Exception e) { e.printStackTrace(); } block."
+            "Use only 1-2 documented public API calls. "
+            "Keep all helper objects local to the main method. "
+            "Use only standard public library types. "
+            "Avoid helper classes, wrappers, and guessed method names."
         )
+        if domain_hint:
+            instruction = f"{base} {domain_hint}"
+        else:
+            instruction = (
+                f"{base} "
+                "If checked exceptions may be thrown, wrap the API calls in "
+                "try { ... } catch (Exception e) { e.printStackTrace(); }."
+            )
         return self._build_handwritten_prompt(manual_prompt=instruction)
 
     def _reset_to_minimal_prompt(self, reason: str) -> None:
@@ -306,7 +506,9 @@ class Target(object):
         target_api = self.prompt_used.get("target_api") or "the target language feature"
         instruction = (
             f"{self.AP_INSTRUCTION} Pay special attention to {target_api}. "
-            "Do not explain the documentation. Produce a concise prompt for code generation."
+            "Do not explain the documentation. "
+            "Output ONLY a plain-English paragraph — no code, no code fences (```), "
+            "no import statements, no comment delimiters (/* */)."
         )
         return create_chatgpt_docstring_template(
             system_message=self.AP_SYSTEM_MESSAGE,
@@ -322,7 +524,10 @@ class Target(object):
             "Please rewrite the fuzzing prompt so that a code model generates programs "
             f"for {target_api} that are more likely to compile successfully. "
             "Incorporate the observed successful patterns, and explicitly avoid the repeated compiler mistakes. "
-            "Do not explain the analysis. Produce only a concise improved prompt for code generation."
+            "Do not explain the analysis. "
+            "IMPORTANT FORMAT RULES: output ONLY a plain-English paragraph (2-4 sentences). "
+            "Do NOT write any Java code, use code fences (```), numbered lists with more than 4 items, "
+            "import statements, class definitions, or comment delimiters (/* */)."
         )
         return create_chatgpt_docstring_template(
             system_message=self.AP_SYSTEM_MESSAGE,
@@ -331,6 +536,49 @@ class Target(object):
             example=summary,
             first="",
         )
+
+    def _request_constrained_autoprompt(self, docstring: str) -> Union[str, None]:
+        """
+        Last-resort constrained single attempt with an ultra-simple format request.
+        Uses low temperature and an explicit one-sentence target to bypass LLM
+        tendencies to produce code-fenced or code-contaminated outputs.
+        """
+        target_api = self.prompt_used.get("target_api") or "the target API"
+        instruction = (
+            f"Write ONE to THREE plain-English sentences for a code-generation model "
+            f"explaining how to use {target_api}. "
+            "Mention specific method names, boundary argument values, and exception handling. "
+            "Do NOT write any code, use backticks, or use markdown. "
+            "Start with: 'Write a Java program that ...'"
+        )
+        messages = [
+            {
+                "role": "system",
+                "content": (
+                    "You write ultra-concise plain-English prompts for Java code generation. "
+                    "You NEVER write code or use markdown. Output only the prompt sentence(s)."
+                ),
+            },
+            {"role": "user", "content": instruction},
+        ]
+        try:
+            llm_config = getattr(self, "config_dict", {}).get("llm", {})
+            model_name = llm_config.get("autoprompt_model", "deepseek-chat")
+            max_tokens = min(llm_config.get("autoprompt_max_tokens", 256), 200)
+            greedy, _ = self._request_prompt_candidates_from_messages(
+                messages=messages,
+                model_name=model_name,
+                candidate_count=0,
+                greedy_temperature=0.1,
+                candidate_temperature=0.5,
+                max_tokens=max_tokens,
+            )
+            return greedy
+        except Exception as exc:
+            self.m_logger.logo(
+                f"Constrained autoprompt request failed: {exc}", level=LEVEL.INFO
+            )
+            return None
 
     def _create_feedback_prompt(
         self, safe_examples: List[str], failure_rules: List[str]
@@ -859,19 +1107,51 @@ class Target(object):
 
         scored_prompts = []
 
-        greedy_wrapped = self.wrap_prompt(greedy_prompt)
-        with open(
-            os.path.join(prompt_dir, f"refreshed_greedy_round_{round_id}.txt"),
-            "w",
-            encoding="utf-8",
-        ) as f:
-            f.write(greedy_wrapped)
-        greedy_score = self._score_prompt_for_refresh(
-            greedy_wrapped, refresh_eval_batch_size, refresh_eval_max_length
-        )
-        scored_prompts.append((greedy_score, greedy_wrapped, "greedy"))
+        # Pre-sanitize before guard check
+        greedy_prompt = self._try_sanitize_prompt_candidate(greedy_prompt)
+        greedy_issues = self._summarize_prompt_issues(greedy_prompt)
+        if self._reject_prompt_candidate(greedy_prompt):
+            self._record_rejected_prompt_candidate(
+                f"greedy_round_{round_id}",
+                greedy_prompt,
+                greedy_issues,
+                "refresh",
+            )
+            self.m_logger.logo(
+                "Rejected refreshed greedy prompt candidate: "
+                + ", ".join(greedy_issues),
+                level=LEVEL.INFO,
+            )
+        else:
+            greedy_wrapped = self.wrap_prompt(greedy_prompt)
+            with open(
+                os.path.join(prompt_dir, f"refreshed_greedy_round_{round_id}.txt"),
+                "w",
+                encoding="utf-8",
+            ) as f:
+                f.write(greedy_wrapped)
+            greedy_score = self._score_prompt_for_refresh(
+                greedy_wrapped, refresh_eval_batch_size, refresh_eval_max_length
+            )
+            scored_prompts.append((greedy_score, greedy_wrapped, "greedy"))
 
         for index, summary_candidate in enumerate(candidate_summaries):
+            # Pre-sanitize before guard check
+            summary_candidate = self._try_sanitize_prompt_candidate(summary_candidate)
+            issues = self._summarize_prompt_issues(summary_candidate)
+            if self._reject_prompt_candidate(summary_candidate):
+                self._record_rejected_prompt_candidate(
+                    f"candidate_{index}_round_{round_id}",
+                    summary_candidate,
+                    issues,
+                    "refresh",
+                )
+                self.m_logger.logo(
+                    f"Rejected refreshed prompt candidate_{index}: "
+                    + ", ".join(issues),
+                    level=LEVEL.INFO,
+                )
+                continue
             wrapped_prompt = self.wrap_prompt(summary_candidate)
             with open(
                 os.path.join(prompt_dir, f"refreshed_prompt_round_{round_id}_{index}.txt"),
@@ -883,6 +1163,18 @@ class Target(object):
                 wrapped_prompt, refresh_eval_batch_size, refresh_eval_max_length
             )
             scored_prompts.append((score, wrapped_prompt, f"candidate_{index}"))
+
+        if not scored_prompts:
+            self.m_logger.logo(
+                "All refreshed prompt candidates rejected by prompt-quality guard.",
+                level=LEVEL.INFO,
+            )
+            self._write_refresh_status(
+                round_id,
+                "rejected",
+                "all refreshed prompt candidates rejected by prompt-quality guard",
+            )
+            return None
 
         best_score, best_prompt, best_name = max(scored_prompts, key=lambda item: item[0])
         with open(
@@ -1021,13 +1313,31 @@ class Target(object):
     def auto_prompt(self, **kwargs) -> str:
         os.makedirs(self.folder + "/prompts", exist_ok=True)
 
-        # if we have already done auto-prompting, just return the best prompt
+        # if we have already done auto-prompting, validate and return the best prompt
         if os.path.exists(self.folder + "/prompts/best_prompt.txt"):
-            self.m_logger.logo("Use existing prompt ... ", level=LEVEL.INFO)
             with open(
                 self.folder + "/prompts/best_prompt.txt", "r", encoding="utf-8"
             ) as f:
-                return f.read()
+                existing = f.read()
+            inner = self._extract_prompt_inner_text(existing)
+            if not self._reject_prompt_candidate(inner):
+                self.m_logger.logo(
+                    "Use existing prompt (guard-validated OK).", level=LEVEL.INFO
+                )
+                return existing
+            issues = self._summarize_prompt_issues(inner)
+            self.m_logger.logo(
+                "Existing best_prompt.txt failed guard ("
+                + ", ".join(issues)
+                + "); archiving and regenerating.",
+                level=LEVEL.INFO,
+            )
+            import shutil as _shutil
+            stale_dest = self.folder + "/prompts/best_prompt_stale.txt"
+            try:
+                _shutil.move(self.folder + "/prompts/best_prompt.txt", stale_dest)
+            except Exception:
+                pass
         if kwargs["no_input_prompt"]:
             self.m_logger.logo("Without any input prompt ... ", level=LEVEL.INFO)
             best_prompt = (
@@ -1056,6 +1366,8 @@ class Target(object):
                 )
                 scored_prompts = []
 
+                # Pre-sanitize greedy candidate before guard check
+                greedy_prompt = self._try_sanitize_prompt_candidate(greedy_prompt)
                 greedy_issues = self._summarize_prompt_issues(greedy_prompt)
                 if self._reject_prompt_candidate(greedy_prompt):
                     self._record_rejected_prompt_candidate(
@@ -1082,6 +1394,8 @@ class Target(object):
                 for index, summary in enumerate(
                     track(candidate_summaries, description="Generating prompts")
                 ):
+                    # Pre-sanitize candidate before guard check
+                    summary = self._try_sanitize_prompt_candidate(summary)
                     issues = self._summarize_prompt_issues(summary)
                     if self._reject_prompt_candidate(summary):
                         candidate_name = f"prompt_{index}"
@@ -1105,6 +1419,42 @@ class Target(object):
                     scored_prompts.append((score, wrapped_prompt, f"prompt_{index}"))
 
                 if not scored_prompts:
+                    # All standard candidates failed — try a constrained single-shot
+                    # request with explicit format enforcement before giving up.
+                    self.m_logger.logo(
+                        "All initial autoprompt candidates rejected by guard; "
+                        "retrying with constrained format request.",
+                        level=LEVEL.INFO,
+                    )
+                    constrained_raw = self._request_constrained_autoprompt(
+                        kwargs["message"]
+                    )
+                    if constrained_raw:
+                        constrained_sanitized = self._try_sanitize_prompt_candidate(
+                            constrained_raw
+                        )
+                        if not self._reject_prompt_candidate(constrained_sanitized):
+                            c_wrapped = self.wrap_prompt(constrained_sanitized)
+                            with open(
+                                self.folder + "/prompts/constrained_retry_prompt.txt",
+                                "w",
+                                encoding="utf-8",
+                            ) as f:
+                                f.write(c_wrapped)
+                            c_score = self.validate_prompt(c_wrapped)
+                            scored_prompts.append((c_score, c_wrapped, "constrained_retry"))
+                            self.m_logger.logo(
+                                f"Constrained retry prompt accepted (score={c_score}).",
+                                level=LEVEL.INFO,
+                            )
+                        else:
+                            retry_issues = self._summarize_prompt_issues(constrained_sanitized)
+                            self.m_logger.logo(
+                                "Constrained retry prompt also rejected by guard: "
+                                + ", ".join(retry_issues),
+                                level=LEVEL.INFO,
+                            )
+                if not scored_prompts:
                     raise ValueError(
                         "All autoprompt candidates rejected by prompt-quality guard."
                     )
@@ -1124,16 +1474,34 @@ class Target(object):
                     level=LEVEL.INFO,
                 )
             except Exception as exc:
-                self.m_logger.logo(
-                    f"Auto-prompt request failed, fallback to documentation prompt: {exc}",
-                    level=LEVEL.INFO,
-                )
-                best_prompt = self._build_handwritten_prompt()
+                # Distinguish guard rejection (all candidates structurally bad) from
+                # network/API errors.  Only in the guard-rejection case do we use the
+                # minimal recovery template — a lighter, classification-aware prompt that
+                # avoids docstring bloat.  For genuine request failures we still fall back
+                # to the documentation prompt, which may carry useful context.
+                guard_rejected = "rejected by prompt-quality guard" in str(exc)
+                if guard_rejected:
+                    self.m_logger.logo(
+                        "All autoprompt candidates rejected by guard; "
+                        "using classification-aware minimal recovery template.",
+                        level=LEVEL.INFO,
+                    )
+                    best_prompt = self._build_minimal_recovery_prompt()
+                    self.m_logger.logo(
+                        "Prompt source: minimal recovery template (guard fallback).",
+                        level=LEVEL.INFO,
+                    )
+                else:
+                    self.m_logger.logo(
+                        f"Auto-prompt request failed, fallback to documentation prompt: {exc}",
+                        level=LEVEL.INFO,
+                    )
+                    best_prompt = self._build_handwritten_prompt()
+                    self.m_logger.logo(
+                        "Prompt source: fallback documentation/examples prompt.",
+                        level=LEVEL.INFO,
+                    )
                 self.base_prompt_score = None
-                self.m_logger.logo(
-                    "Prompt source: fallback documentation/examples prompt.",
-                    level=LEVEL.INFO,
-                )
 
         # dump best prompt
         with open(self.folder + "/prompts/best_prompt.txt", "w", encoding="utf-8") as f:

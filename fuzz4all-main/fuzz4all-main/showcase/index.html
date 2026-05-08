@@ -1242,7 +1242,7 @@ public class DurationTest {
         <div class="page-inner">
           <div class="page-header">
             <div class="page-title">测试结果</div>
-            <div class="page-subtitle">10 类 Java API · 568 个测试用例 · URI 72.7% / ManagementFactory 65.0%</div>
+            <div class="page-subtitle">10 类 Java API · 570 个测试用例 · Thread 70.0% / Duration・URI 66.7%</div>
           </div>
           <div style="display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:14px" class="chart-row">
             <div class="card">
@@ -1255,16 +1255,16 @@ public class DurationTest {
               <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;font-size:12px">
                 <span><span
                     style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin-right:4px"></span>SAFE
-                  164</span>
+                  297</span>
                 <span><span
                     style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--red);margin-right:4px"></span>FAILURE
-                  356</span>
+                  268</span>
                 <span><span
                     style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--orange);margin-right:4px"></span>ERROR
-                  45</span>
+                  5</span>
                 <span><span
                     style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#F59E0B;margin-right:4px"></span>TIMEOUT
-                  5</span>
+                  0</span>
               </div>
             </div>
           </div>
@@ -1392,7 +1392,7 @@ public class DurationTest {
         badge: 'b-res', tagTxt: 'RESOURCE', module: 'java.base',
         fullName: 'java.io.BufferedInputStream', profile: 'resource_buffer_batch', desc: '缓冲输入流',
         allTags: ['RESOURCE', 'BUFFER', 'MARK_SUPPORT'],
-        total: 60, safe: 7, fail: 44, err: 7, to: 2
+        total: 60, safe: 24, fail: 36, err: 0, to: 0
       },
       {
         id: 'file', folderKey: 'java_io_File', display: 'File', short: 'File',
@@ -1406,21 +1406,21 @@ public class DurationTest {
         badge: 'b-conc', tagTxt: 'CONCURRENT', module: 'java.base',
         fullName: 'java.lang.Thread', profile: 'concurrent_sequence', desc: '线程管理',
         allTags: ['CONCURRENT', 'CALLBACK'],
-        total: 54, safe: 8, fail: 39, err: 0, to: 3
+        total: 50, safe: 35, fail: 15, err: 0, to: 0
       },
       {
         id: 'method', folderKey: 'java_lang_reflect_Method', display: 'Method (Reflect)', short: 'Method',
         badge: 'b-refl', tagTxt: 'REFLECT', module: 'java.base',
         fullName: 'java.lang.reflect.Method', profile: 'reflection_dispatch', desc: '方法反射调用',
         allTags: ['REFLECT', 'UTILITY'],
-        total: 60, safe: 6, fail: 45, err: 9, to: 0
+        total: 60, safe: 30, fail: 30, err: 0, to: 0
       },
       {
         id: 'socket', folderKey: 'java_net_Socket', display: 'Socket', short: 'Socket',
         badge: 'b-net', tagTxt: 'NETWORK', module: 'java.base',
         fullName: 'java.net.Socket', profile: 'network_endpoint_state', desc: '网络Socket',
         allTags: ['NETWORK', 'RESOURCE'],
-        total: 52, safe: 17, fail: 34, err: 9, to: 0
+        total: 60, safe: 30, fail: 30, err: 0, to: 0
       },
       {
         id: 'uri', folderKey: 'java_net_URI', display: 'URI', short: 'URI',
@@ -1434,21 +1434,21 @@ public class DurationTest {
         badge: 'b-time', tagTxt: 'TIME', module: 'java.base',
         fullName: 'java.time.Duration', profile: 'time_boundary_mix', desc: '时间段计算',
         allTags: ['TIME', 'UTILITY'],
-        total: 60, safe: 9, fail: 42, err: 9, to: 0
+        total: 60, safe: 40, fail: 20, err: 0, to: 0
       },
       {
         id: 'cipher', folderKey: 'javax_crypto_Cipher', display: 'Cipher', short: 'Cipher',
         badge: 'b-sec', tagTxt: 'SECURITY', module: 'java.base',
         fullName: 'javax.crypto.Cipher', profile: 'security_provider_flow', desc: '加密解密',
         allTags: ['SECURITY', 'UTILITY'],
-        total: 52, safe: 3, fail: 41, err: 6, to: 0
+        total: 50, safe: 23, fail: 27, err: 0, to: 0
       },
       {
         id: 'pcs', folderKey: 'java_beans_PropertyChangeSupport', display: 'PropertyChangeSupport', short: 'PCS',
         badge: 'b-cb', tagTxt: 'CALLBACK', module: 'java.desktop',
         fullName: 'java.beans.PropertyChangeSupport', profile: 'callback_registration_flow', desc: '属性变更监听',
         allTags: ['CALLBACK', 'UTILITY'],
-        total: 60, safe: 8, fail: 52, err: 0, to: 0
+        total: 60, safe: 9, fail: 51, err: 0, to: 0
       },
       {
         id: 'jmgt', folderKey: 'ManagementFactory', display: 'ManagementFactory', short: 'JMgt',
@@ -1562,11 +1562,11 @@ public class DurationTest {
       type: 'doughnut',
       data: {
         labels: ['SAFE', 'FAILURE', 'ERROR', 'TIMEOUT'],
-        datasets: [{ data: [164, 356, 45, 5], backgroundColor: ['#16A34A', '#DC2626', '#D97706', '#F59E0B'], borderWidth: 2, borderColor: '#fff', hoverOffset: 4 }]
+        datasets: [{ data: [297, 268, 5, 0], backgroundColor: ['#16A34A', '#DC2626', '#D97706', '#F59E0B'], borderWidth: 2, borderColor: '#fff', hoverOffset: 4 }]
       },
       options: {
         responsive: true, maintainAspectRatio: false, cutout: '62%',
-        plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ` ${c.label}: ${c.parsed} (${(c.parsed / 568 * 100).toFixed(1)}%)` } } }
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ` ${c.label}: ${c.parsed} (${(c.parsed / 570 * 100).toFixed(1)}%)` } } }
       }
     });
 
