@@ -190,14 +190,37 @@ pre[class*=language-] {
 .info-orange { background: var(--orange-l); border: 1px solid #FDE68A; color: #92400E }
 
 /* ── FILE BROWSER ─────────────────────── */
-.fb-wrap { display: flex; gap: 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--surface); min-height: 500px }
-.fb-tree { width: 220px; flex-shrink: 0; border-right: 1px solid var(--border); overflow-y: auto; background: var(--surface2); padding: 8px 0 }
+.fb-wrap {
+  display: flex;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--surface);
+  min-height: 560px;
+  height: clamp(560px, 72vh, 900px);
+}
+.fb-tree {
+  width: 220px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--border);
+  overflow-y: scroll;
+  background: var(--surface2);
+  padding: 8px 0;
+}
 .fb-view { flex: 1; overflow: auto; display: flex; flex-direction: column; min-width: 0 }
 .fb-view-header {
   padding: 8px 14px; border-bottom: 1px solid var(--border); font-size: 12px; color: var(--muted);
   background: var(--surface2); display: flex; align-items: center; gap: 8px; flex-shrink: 0
 }
 .fb-view-content { flex: 1; overflow: auto; padding: 0 }
+
+@media (max-width: 900px) {
+  .fb-wrap {
+    height: 70vh;
+    min-height: 520px;
+  }
+}
 
 /* tree items */
 .tree-folder {
