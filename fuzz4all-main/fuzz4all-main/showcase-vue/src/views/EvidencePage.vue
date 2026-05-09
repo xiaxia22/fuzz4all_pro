@@ -43,17 +43,10 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class CipherTest {
   public static void main(String[] args) {
-
-    // ❌ 所有Cipher方法抛受检异常，但代码无 try-catch
     Cipher c = Cipher.getInstance("AES/ECB/PKCS5Padding");
-    // ^ error: unreported exception NoSuchPaddingException
-
     SecretKeySpec ks = new SecretKeySpec(new byte[16], "AES");
     c.init(Cipher.ENCRYPT_MODE, ks);
-    // ^ error: unreported exception InvalidKeyException
-
     byte[] out = c.doFinal("Hello".getBytes());
-    // ^ error: unreported exception IllegalBlockSizeException
   }
 }`
 
@@ -64,8 +57,8 @@ public class DurationTest {
     Duration d1 = Duration.ofMinutes(10);
     Duration d2 = Duration.ofSeconds(30);
     Duration total = d1.plus(d2);
-    System.out.println(total.toSeconds()); // 630
-    System.out.println(total.isNegative()); // false
+    System.out.println(total.toSeconds());
+    System.out.println(total.isNegative());
     System.out.println(total.abs());
   }
 }`
@@ -74,14 +67,13 @@ const mutCode = `import java.time.Duration;
 
 public class DurationTest {
   public static void main(String[] args) {
-    // ← 注入负值边界（time_duration_sign_mutation）
+    // 注入负值边界（time_duration_sign_mutation）
     Duration d1 = Duration.ofMinutes(-1L);
-    // ← 极端边界（time_epoch_boundary_mutation）
+    // 极端边界（time_epoch_boundary_mutation）
     Duration d2 = Duration.ofSeconds(Long.MIN_VALUE);
     Duration total = d1.plus(d2);
     System.out.println(total.toSeconds());
     System.out.println(total.isNegative());
-    // ← 额外epoch边界测试
     Duration epoch = Duration.ofSeconds(0L);
     System.out.println(epoch.isZero());
   }
@@ -102,36 +94,23 @@ public class DurationTest {
       <button class="tab-btn" :class="{ active: activeTab === 'ev-mut' }" @click="switchTab('ev-mut')">变异示例</button>
     </div>
 
-    <!-- 代码对比 -->
     <div v-show="activeTab === 'ev-code'">
       <div class="g2">
         <div>
-          <CodeBlock
-            title="java.net.URI — 编译通过样本"
-            badge-cls="b-safe"
-            badge-text="SAFE"
-            :code="safeCode"
-          />
+          <CodeBlock title="java.net.URI — 编译通过样本" badge-cls="b-safe" badge-text="SAFE" :code="safeCode" />
           <div class="info-box info-green" style="margin-top:10px">
-            ✅ 所有 URI 操作正确包裹在 try-catch 中，符合API使用规范
+            URI 操作被完整包裹在 try-catch 中，符合标准 JDK API 的使用约束。
           </div>
         </div>
         <div>
-          <CodeBlock
-            title="javax.crypto.Cipher — 典型失败（已修复）"
-            badge-cls="b-fail"
-            badge-text="FAILURE"
-            :code="failCode"
-          />
+          <CodeBlock title="javax.crypto.Cipher — 典型失败（已修复）" badge-cls="b-fail" badge-text="FAILURE" :code="failCode" />
           <div class="info-box info-orange" style="margin-top:10px">
-            ⚠️ 根本原因：旧版系统仅检测 IOException，无法识别 Cipher 的受检异常，
-            反馈规则无法生成。整改后通用受检异常检测修复此问题。
+            旧版本系统只能稳定识别少量受检异常，导致 Cipher 这类 API 的反馈规则生成不足。补全通用受检异常检测后，这类失败会被进一步归类并写回下一轮 prompt。
           </div>
         </div>
       </div>
     </div>
 
-    <!-- 规则学习 -->
     <div v-show="activeTab === 'ev-rules'">
       <div class="g2" style="margin-bottom:16px">
         <div class="card">
@@ -145,12 +124,12 @@ public class DurationTest {
           </ul>
         </div>
         <div class="card">
-          <div class="card-title">ManagementFactory — 自动学习规则</div>
+          <div class="card-title">MemoryMXBean — 自动学习规则</div>
           <ul class="rule-list">
-            <li>Call documented query methods on concrete MXBean interfaces; do not invent generic bean super-types.</li>
-            <li>Prefer static factory methods that return standard MXBeans or MBeanServer handles.</li>
-            <li>Handle checked exceptions for ObjectName construction with try/catch.</li>
-            <li>Use only standard javax.management types; do not invent proxy class names.</li>
+            <li>Call documented MemoryMXBean methods such as getHeapMemoryUsage, getNonHeapMemoryUsage, isVerbose, setVerbose, gc, and getObjectPendingFinalizationCount.</li>
+            <li>Use ManagementFactory.getMemoryMXBean() as the standard entry point and keep helper objects local to main.</li>
+            <li>Use concrete return types correctly: MemoryUsage for heap/non-heap queries and int/boolean for counters and flags.</li>
+            <li>Do not invent short-form getters like getHeapUsage or getMemoryCount, and avoid ObjectName/proxy/remote JMX paths.</li>
           </ul>
         </div>
       </div>
@@ -159,25 +138,24 @@ public class DurationTest {
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;font-size:12.5px">
           <div style="padding:10px;background:var(--primary-xl);border-radius:7px;border-left:3px solid var(--primary)">
             <div style="font-weight:600;color:var(--primary);margin-bottom:3px">① 捕获错误</div>
-            <div style="color:var(--muted)">javac输出 → extract_javac_error_categories() → 识别25+种错误类别</div>
+            <div style="color:var(--muted)">javac 输出 → extract_javac_error_categories() → 识别 25+ 种错误类别</div>
           </div>
           <div style="padding:10px;background:var(--primary-xl);border-radius:7px;border-left:3px solid var(--primary)">
             <div style="font-weight:600;color:var(--primary);margin-bottom:3px">② 生成规则</div>
-            <div style="color:var(--muted)">map_error_categories_to_rules() → 结合API名称和领域标签生成自然语言规则</div>
+            <div style="color:var(--muted)">map_error_categories_to_rules() → 结合 API 名称和领域标签生成自然语言规则</div>
           </div>
           <div style="padding:10px;background:var(--primary-xl);border-radius:7px;border-left:3px solid var(--primary)">
             <div style="font-weight:600;color:var(--primary);margin-bottom:3px">③ 频次排序</div>
-            <div style="color:var(--muted)">_merge_failure_rules() → 按频次排序保留 Top-5 规则</div>
+            <div style="color:var(--muted)">_merge_failure_rules() → 按频率保留当前最重要的 Top-N 规则</div>
           </div>
           <div style="padding:10px;background:var(--primary-xl);border-radius:7px;border-left:3px solid var(--primary)">
             <div style="font-weight:600;color:var(--primary);margin-bottom:3px">④ 注入提示词</div>
-            <div style="color:var(--muted)">"Avoid these known compiler mistakes" 注入下一轮提示词</div>
+            <div style="color:var(--muted)">将“避免这些已知错误”写回下一轮 prompt，驱动闭环收敛</div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- 提示词演化 -->
     <div v-show="activeTab === 'ev-prompt'">
       <div class="g2">
         <div class="card">
@@ -198,7 +176,7 @@ public class DurationTest {
 import java.net.URI;</pre>
         </div>
         <div class="card">
-          <div class="card-title">运行时刷新后提示词（含反馈规则）</div>
+          <div class="card-title">运行时刷新后的提示词（含反馈规则）</div>
           <pre style="background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:12px;
             font-size:12px;color:var(--text);white-space:pre-wrap;max-height:280px;overflow:auto;font-family:monospace">/* [Base Prompt] Please create a short Java
    program using java.net.URI. */
@@ -212,22 +190,18 @@ import java.net.URI;</pre>
 
 /* Recent valid examples to imitate:
    Example 1:
-   ```java
    try {
      URI u = new URI("http://example.com");
      System.out.println(u.normalize());
    } catch (Exception e) { e.printStackTrace(); }
-   ``` */
-
-import java.net.URI;</pre>
+*/</pre>
         </div>
       </div>
       <div class="info-box info-green" style="margin-top:12px">
-        URI 类别提示词评分：初始 <strong>8 分</strong> → 两轮刷新后 <strong>12 分</strong>，编译通过率达 <strong>72.7%</strong>（10 类最高）
+        提示词不是一次性固定的，而是会根据编译结果和 SAFE 样例动态更新，逐轮收敛到更稳定的生成方向。
       </div>
     </div>
 
-    <!-- 变异示例 -->
     <div v-show="activeTab === 'ev-mut'">
       <div class="g2">
         <div class="card">
@@ -238,8 +212,7 @@ import java.net.URI;</pre>
           <div class="card-title">变异后（time_duration_sign_mutation 算子）</div>
           <CodeBlock :code="mutCode" />
           <div style="color:var(--muted);font-size:12px;margin-top:8px">
-            算子 <code>time_duration_sign_mutation</code> 注入了负值时长和 <code>Long.MIN_VALUE</code> 极端边界，测试 Duration
-            对边界输入的处理
+            算子 <code>time_duration_sign_mutation</code> 注入了负值与极端边界，用来测试 Duration 对边界输入的处理。
           </div>
         </div>
       </div>

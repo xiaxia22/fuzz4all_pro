@@ -322,6 +322,14 @@ class JAVATarget(Target):
             rules.append(
                 "Avoid ambiguous imports or duplicate type references; keep imports minimal and consistent."
             )
+            if primary_tag == "FILE":
+                positive_hints = (
+                    (self.mutation_profile or {})
+                    .get("repair_rules", {})
+                    .get("api_positive_hints", [])
+                )
+                for hint in positive_hints:
+                    rules.append(hint.replace("{api}", target_api))
         if "incomplete_structure" in categories:
             rules.append(
                 "Generate complete Java syntax with balanced braces, closed methods, and closed classes."
@@ -393,6 +401,12 @@ class JAVATarget(Target):
             rules.append(
                 f"For {target_api}, keep file/path objects and lifecycle state transitions explicit and type-correct."
             )
+            rules.append(
+                f"For {target_api}, use empty-string, relative-path, absolute-path, or parent/child string arguments for constructors; do not pass bare null to File-like path constructors."
+            )
+            rules.append(
+                f"For {target_api}, treat the API as a path/state object and avoid invented size-style constructor arguments or unrelated file-size logic."
+            )
         elif primary_tag == "CONCURRENT":
             rules.append(
                 f"For {target_api}, keep thread/interleaving helpers syntactically isolated so concurrency scaffolding still compiles."
@@ -463,10 +477,24 @@ class JAVATarget(Target):
             rules.append(
                 f"For {target_api}, only use documented getters and query methods defined on concrete MXBean interfaces such as runtime, thread, memory, class-loading, and compilation beans; do not guess extended names like *Information, *Threads, *Count, or string-argument *Usage overloads."
             )
+            rules.append(
+                f"For {target_api}, use MXBean interfaces from java.lang.management and support types from javax.management; do not invent javax.lang.management package names."
+            )
+            rules.append(
+                f"For {target_api}, when using newPlatformMXBeanProxy(...), pass an MBeanServerConnection and an MXBean name String together with a concrete MXBean interface Class; do not substitute ObjectName where the API expects a String."
+            )
             if "nonexistent_type" in categories:
                 rules.append(
                     f"For {target_api}, use only standard javax.management and java.lang.management types; do not invent management proxy, wrapper, or bean container class names."
                 )
+            if "nonexistent_method" in categories:
+                positive_hints = (
+                    (self.mutation_profile or {})
+                    .get("repair_rules", {})
+                    .get("api_positive_hints", [])
+                )
+                for hint in positive_hints:
+                    rules.append(hint.replace("{api}", target_api))
         elif primary_tag == "MARK_SUPPORT":
             rules.append(
                 f"For {target_api}, keep mark/reset usage tied to the documented stream or reader lifecycle."

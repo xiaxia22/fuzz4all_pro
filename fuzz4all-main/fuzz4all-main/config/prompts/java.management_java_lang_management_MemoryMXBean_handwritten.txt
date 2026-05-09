@@ -1,0 +1,28 @@
+Write the simplest possible Java program that uses java.lang.management.MemoryMXBean.
+
+Requirements:
+- Use only standard public JDK management and MXBean APIs.
+- Keep the program short and use only 1-2 documented API paths per example.
+- Prefer the direct standard entry point `ManagementFactory.getMemoryMXBean()`.
+- Prefer documented MemoryMXBean methods such as:
+  - `getHeapMemoryUsage()`
+  - `getNonHeapMemoryUsage()`
+  - `getObjectPendingFinalizationCount()`
+  - `isVerbose()`
+  - `setVerbose(boolean)`
+  - `gc()`
+- If reading `MemoryUsage`, keep to documented getters such as:
+  - `getUsed()`
+  - `getCommitted()`
+  - `getInit()`
+  - `getMax()`
+- Keep all helper objects as local variables inside `main`.
+- Wrap mutating or management calls in a single `try { ... } catch (Exception e) { e.printStackTrace(); }` block.
+- Do not invent helper wrappers, proxy class names, bean container types, or undocumented getter names.
+- Do not generate remote JMX connection code, `ObjectName`, platform MBean server proxy code, or non-JDK management helpers.
+- Do not guess short forms like `getHeapUsage()`, `getMemoryCount()`, or string-argument overloads.
+
+Style:
+- Start from the simplest compilable structure.
+- Separate bean lookup, usage reads, and optional state-changing calls into distinct statements.
+- Prefer concrete return types: `MemoryUsage` for heap/non-heap usage and `int`/`boolean` for documented counters and flags.

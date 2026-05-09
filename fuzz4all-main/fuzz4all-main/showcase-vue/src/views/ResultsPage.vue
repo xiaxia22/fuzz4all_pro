@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref, nextTick } from 'vue'
+import { computed } from 'vue'
 import { Bar, Doughnut } from 'vue-chartjs'
 import {
   Chart as ChartJS, CategoryScale, LinearScale, BarElement,
@@ -17,7 +17,7 @@ const barData = computed(() => ({
     { label: 'SAFE', data: sorted.map(d => +(d.safe / d.total * 100).toFixed(1)), backgroundColor: '#16A34A', borderRadius: 3 },
     { label: 'ERROR', data: sorted.map(d => +(d.err / d.total * 100).toFixed(1)), backgroundColor: '#D97706', borderRadius: 3 },
     { label: 'TIMEOUT', data: sorted.map(d => +(d.to / d.total * 100).toFixed(1)), backgroundColor: '#F59E0B', borderRadius: 3 },
-    { label: 'FAILURE', data: sorted.map(d => +(d.fail / d.total * 100).toFixed(1)), backgroundColor: '#DC2626', borderRadius: 3 },
+    { label: 'FAILURE', data: sorted.map(d => +(d.fail / d.total * 100).toFixed(1)), backgroundColor: '#DC2626', borderRadius: 3 }
   ]
 }))
 
@@ -35,12 +35,12 @@ const barOpts = {
 
 const pieData = {
   labels: ['SAFE', 'FAILURE', 'ERROR', 'TIMEOUT'],
-  datasets: [{ data: [297, 268, 5, 0], backgroundColor: ['#16A34A', '#DC2626', '#D97706', '#F59E0B'], borderWidth: 2, borderColor: '#fff', hoverOffset: 4 }]
+  datasets: [{ data: [886, 389, 5, 0], backgroundColor: ['#16A34A', '#DC2626', '#D97706', '#F59E0B'], borderWidth: 2, borderColor: '#fff', hoverOffset: 4 }]
 }
 
 const pieOpts = {
   responsive: true, maintainAspectRatio: false, cutout: '62%',
-  plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ` ${c.label}: ${c.parsed} (${(c.parsed / 570 * 100).toFixed(1)}%)` } } }
+  plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ` ${c.label}: ${c.parsed} (${(c.parsed / 1280 * 100).toFixed(1)}%)` } } }
 }
 
 function rateColor (r) {
@@ -52,19 +52,19 @@ function rateColor (r) {
   <div class="page-inner">
     <div class="page-header">
       <div class="page-title">测试结果</div>
-      <div class="page-subtitle">10 类 Java API · 570 个测试用例 · Thread 70.0% / Duration・URI 66.7%</div>
+      <div class="page-subtitle">10 类 Java API · 1280 个测试用例 · MemoryMXBean 92.5% / File 86.5% / Duration 74.5%</div>
     </div>
     <div style="display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:14px">
       <div class="card">
-        <div class="card-title">各API类别编译通过率</div>
+        <div class="card-title">各 API 类别编译通过率</div>
         <div class="chart-wrap"><Bar :data="barData" :options="barOpts" /></div>
       </div>
       <div class="card">
         <div class="card-title">结果总体分布</div>
         <div class="chart-sm"><Doughnut :data="pieData" :options="pieOpts" /></div>
         <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;font-size:12px">
-          <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin-right:4px"></span>SAFE 297</span>
-          <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--red);margin-right:4px"></span>FAILURE 268</span>
+          <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin-right:4px"></span>SAFE 886</span>
+          <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--red);margin-right:4px"></span>FAILURE 389</span>
           <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--orange);margin-right:4px"></span>ERROR 5</span>
           <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#F59E0B;margin-right:4px"></span>TIMEOUT 0</span>
         </div>

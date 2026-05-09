@@ -168,6 +168,28 @@ class Target(object):
         text = " ".join(text.split())
         return text[:limit]
 
+    def _compact_reference_notes(
+        self, text: str, max_chars: int = 1600, max_lines: int = 18
+    ) -> str:
+        text = (text or "").strip()
+        if text == "":
+            return ""
+        cleaned_lines = []
+        total_chars = 0
+        for raw_line in text.splitlines():
+            line = raw_line.strip()
+            if not line or line.startswith("```"):
+                continue
+            if line in {"/*", "*/"}:
+                continue
+            if total_chars + len(line) > max_chars:
+                break
+            cleaned_lines.append(line)
+            total_chars += len(line) + 1
+            if len(cleaned_lines) >= max_lines:
+                break
+        return "\n".join(cleaned_lines).strip()
+
     def _summarize_prompt_issues(self, prompt: str) -> List[str]:
         issues = []
         text = prompt or ""
@@ -271,7 +293,12 @@ class Target(object):
         summary = self._sanitize_feedback(message)
         return [summary] if summary else []
 
-    def _build_handwritten_prompt(self, manual_prompt: str = None) -> str:
+    def _build_handwritten_prompt(
+        self,
+        manual_prompt: str = None,
+        include_docstring: bool = True,
+        compact_docstring: bool = True,
+    ) -> str:
         parts = []
         if manual_prompt:
             parts.append(manual_prompt.strip())
@@ -280,11 +307,15 @@ class Target(object):
                 "Use the following example style and structural patterns as guidance:\n"
                 f"```{self.language}\n{self.prompt_used['example_code'].strip()}\n```"
             )
-        if self.prompt_used.get("docstring"):
-            parts.append(
-                "Use the following reference notes about the target language or feature:\n"
-                f"{self.prompt_used['docstring'].strip()}"
-            )
+        if include_docstring and self.prompt_used.get("docstring"):
+            doc_notes = self.prompt_used["docstring"].strip()
+            if compact_docstring:
+                doc_notes = self._compact_reference_notes(doc_notes)
+            if doc_notes:
+                parts.append(
+                    "Use the following reference notes about the target language or feature:\n"
+                    f"{doc_notes}"
+                )
         if len(parts) == 0:
             return f"{self.prompt_used['separator']}\n{self.prompt_used['begin']}"
         return self.wrap_prompt("\n\n".join(parts))
@@ -446,7 +477,10 @@ class Target(object):
                 "If checked exceptions may be thrown, wrap the API calls in "
                 "try { ... } catch (Exception e) { e.printStackTrace(); }."
             )
-        return self._build_handwritten_prompt(manual_prompt=instruction)
+        return self._build_handwritten_prompt(
+            manual_prompt=instruction,
+            include_docstring=False,
+        )
 
     def _reset_to_minimal_prompt(self, reason: str) -> None:
         self.base_prompt = self._build_minimal_recovery_prompt()

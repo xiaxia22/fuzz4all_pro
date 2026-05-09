@@ -34,20 +34,20 @@ target:
   target_string: "Method"
 
 llm:
-  temperature: 1
+  temperature: 0.9
   batch_size: 30
   device: cuda
   model_name: Qwen/Qwen2.5-Coder-7B-Instruct
   max_length: 1024
   autoprompt_model: deepseek-chat
-  autoprompt_candidates: 3
-  autoprompt_temperature: 0.9
+  autoprompt_candidates: 4
+  autoprompt_temperature: 0.7
   autoprompt_greedy_temperature: 0.2
   autoprompt_max_tokens: 256
-  autoprompt_validation_batch_size: 6
+  autoprompt_validation_batch_size: 10
   autoprompt_validation_max_length: 448
   runtime_autoprompt_model: deepseek-chat
-  runtime_autoprompt_temperature: 0.7
+  runtime_autoprompt_temperature: 0.6
   runtime_autoprompt_max_tokens: 256
-  runtime_refresh_validation_batch_size: 3
+  runtime_refresh_validation_batch_size: 5
   runtime_refresh_validation_max_length: 320

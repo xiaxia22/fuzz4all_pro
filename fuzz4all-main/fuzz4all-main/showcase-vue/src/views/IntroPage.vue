@@ -3,44 +3,42 @@ import StatCard from '../components/StatCard.vue'
 import WorkflowDiagram from '../components/WorkflowDiagram.vue'
 
 const phase1 = [
-  { icon: '📖', title: '读取API文档', desc: '逐API提取标准库文档内容' },
-  { icon: '🏷️', title: '规则匹配分类', desc: '关键词+评分为每个API打领域标签' },
-  { icon: '🗂️', title: '生成分类表', desc: '输出JSON，记录类别与变异策略' }
+  { icon: '📚', title: '读取 API 文档', desc: '抽取标准库 API 的文档与接口信息' },
+  { icon: '🏷️', title: '离线分类', desc: '根据规则与语义为 API 分配领域标签' },
+  { icon: '🗂️', title: '生成分类表', desc: '输出 JSON，记录分类结果与变异策略映射' }
 ]
 
 const phase2 = [
-  { icon: '🔍', title: '查询分类 加载策略', desc: '查分类表，加载领域变异策略' },
-  { icon: '✍️', title: 'Auto-Prompting', desc: '大模型读文档，生成并评分候选提示词' },
-  { icon: '🤖', title: '生成 Seed', desc: '代码模型基于提示词批量生成测试程序' },
-  { icon: '🔀', title: '定向变异', desc: '按领域策略对seed变异生成mutation' },
-  { icon: '⚙️', title: '编译与验证', desc: 'javac编译+运行，分SAFE/FAIL/ERROR' },
-  { icon: '🔄', title: '反馈写回闭环', desc: '规则归类+成功样例写回提示词，迭代优化' }
+  { icon: '🔎', title: '查询分类并加载策略', desc: '按分类表选择对应 mutation profile 与算子' },
+  { icon: '✨', title: 'Auto-Prompting', desc: '文档驱动生成候选 prompt 并自动评分选择' },
+  { icon: '🌱', title: '生成 Seed', desc: '代码模型批量生成初始测试样本' },
+  { icon: '🧪', title: '定向变异', desc: '按类别策略对 seed 进行 mutation 扩展' },
+  { icon: '⚙️', title: '编译与验证', desc: 'javac 编译 + 运行验证，区分 SAFE / FAILURE / ERROR' },
+  { icon: '🔁', title: '反馈闭环', desc: '归类错误、提炼规则并回写 prompt 继续迭代' }
 ]
 </script>
 
 <template>
   <div class="page-inner">
     <div class="hero-band">
-      <h1>基于Fuzz4All的JVM大模型测试</h1>
+      <h1>基于 Fuzz4All 的 JVM 大模型测试</h1>
       <p>
-        基于文档驱动与分类策略的API自动化测试框架。
-        该框架首先通过离线分析构建API分类体系，并在运行时动态加载适配的变异策略。
-        在核心生成阶段，系统利用大语言模型解析文档生成初始种子代码，并结合定向变异策略扩展测试用例。
-        此外，系统建立了一个自适应的反馈闭环机制：通过对编译与运行结果的智能归因分析，将失败约束与成功范例动态融入提示词工程，
-        驱动模型进行多轮迭代优化，从而实现测试用例生成的持续进化与质量提升。
+        该系统面向 Java 标准库 API 的自动化测试，从 API 文档出发完成离线分类、候选 prompt 生成、
+        seed 生成、分类感知 mutation、编译运行验证以及反馈闭环。当前展示结果使用每个代表 API 的历史最佳成绩，
+        重点体现不同类别在分类驱动和反馈收敛后的可达上限。
       </p>
       <div class="hero-meta">
-        <span> 陕西科技大学</span>
-        <span> 夏文静</span>
-        <span> 2026</span>
-        <span> Fuzz4All · Qwen2.5-Coder-7B · Java 21</span>
+        <span>陕西科技大学</span>
+        <span>夏文静</span>
+        <span>2026</span>
+        <span>Fuzz4All · Qwen2.5-Coder-7B · Java 21</span>
       </div>
     </div>
 
     <div class="g4" style="margin-bottom:20px">
       <StatCard :value="10" label="测试 API 类别" />
-      <StatCard :value="568" label="总生成测试用例" />
-      <StatCard :value="'164'" label="编译通过 (SAFE)" color="var(--green)" />
+      <StatCard :value="1280" label="总生成测试用例" />
+      <StatCard :value="'886'" label="编译通过 (SAFE)" color="var(--green)" />
       <StatCard :value="'38+'" label="领域变异算子" />
     </div>
 
@@ -62,17 +60,17 @@ const phase2 = [
       <div class="card card-sm">
         <div class="card-title">代码生成模型</div>
         <div style="font-weight:600;color:var(--primary)">Qwen2.5-Coder-7B</div>
-        <div style="color:var(--muted);font-size:12px;margin-top:3px">Ollama本地 · 温度1.0 · 批量30</div>
+        <div style="color:var(--muted);font-size:12px;margin-top:3px">Ollama 本地部署 · 温度 0.9~1.0 · 批量 30</div>
       </div>
       <div class="card card-sm">
         <div class="card-title">Auto-Prompting</div>
         <div style="font-weight:600;color:var(--primary)">DeepSeek / Ollama</div>
-        <div style="color:var(--muted);font-size:12px;margin-top:3px">候选生成·贪心+采样·评分筛选</div>
+        <div style="color:var(--muted);font-size:12px;margin-top:3px">候选生成 · 评分选择 · 运行期 refresh</div>
       </div>
       <div class="card card-sm">
         <div class="card-title">验证环境</div>
         <div style="font-weight:600;color:var(--primary)">Java 21 + --enable-preview</div>
-        <div style="color:var(--muted);font-size:12px;margin-top:3px">javac编译 · java运行 · 5秒超时</div>
+        <div style="color:var(--muted);font-size:12px;margin-top:3px">javac 编译 · java 运行 · 5 秒超时</div>
       </div>
     </div>
   </div>

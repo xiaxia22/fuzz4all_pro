@@ -187,11 +187,20 @@ PROFILE_CATALOG: Dict[str, Dict[str, Any]] = {
                 "java.nio.file.Paths;",
                 "java.nio.file.Files;",
             ],
+            "api_positive_hints": [
+                "Use the simplest documented {api} constructors with empty-string, "
+                "relative-path, absolute-path, or parent/child string arguments; do not "
+                "pass bare null to path constructors.",
+                "Prefer straightforward path-state calls such as exists(), isFile(), "
+                "isDirectory(), getName(), and toPath() over invented size-style constructor "
+                "arguments or unrelated file-size logic.",
+            ],
         },
         "filter_rules": {
             "reject_tokens": [],
             "reject_patterns": [
                 r"\\x[0-9A-Fa-f]{2}",
+                r"new\s+File\s*\(\s*null\s*\)",
                 r"new\s+File\s*\(\s*null\s*,",
             ],
         },
@@ -393,6 +402,17 @@ PROFILE_CATALOG: Dict[str, Dict[str, Any]] = {
                 "javax.management.MBeanServer;",
                 "javax.management.MBeanServerConnection;",
                 "javax.management.ObjectName;",
+            ],
+            "api_positive_hints": [
+                "Use MXBean interfaces from java.lang.management and JMX support types from "
+                "javax.management; do not invent javax.lang.management package names.",
+                "Prefer documented getters on concrete MXBean interfaces such as "
+                "getThreadCount(), getPeakThreadCount(), getHeapMemoryUsage(), "
+                "getLoadedClassCount(), getVmName(), and getName(); avoid guessed short forms "
+                "like getCount() or getName(id).",
+                "When calling newPlatformMXBeanProxy(...), pass an MBeanServerConnection, "
+                "an MXBean name String, and the concrete MXBean interface Class; do not "
+                "substitute ObjectName where a String is required.",
             ],
         },
         "filter_rules": {

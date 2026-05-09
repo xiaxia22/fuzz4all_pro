@@ -2,73 +2,73 @@ export const CATS = [
   {
     id: 'bufis', folderKey: 'BufferedInputStream', display: 'BufferedInputStream', short: 'BufIS',
     badge: 'b-res', tagTxt: 'RESOURCE', module: 'java.base',
-    fullName: 'java.io.BufferedInputStream', profile: 'resource_buffer_batch', desc: '缓冲输入流',
+    fullName: 'java.io.BufferedInputStream', profile: 'resource_buffer_batch', desc: '缓冲输入流与资源状态',
     allTags: ['RESOURCE', 'BUFFER', 'MARK_SUPPORT'],
-    total: 60, safe: 24, fail: 36, err: 0, to: 0
+    total: 200, safe: 128, fail: 72, err: 0, to: 0
   },
   {
     id: 'file', folderKey: 'java_io_File', display: 'File', short: 'File',
     badge: 'b-file', tagTxt: 'FILE', module: 'java.base',
-    fullName: 'java.io.File', profile: 'file_path_state', desc: '文件系统操作',
+    fullName: 'java.io.File', profile: 'file_path_state', desc: '文件与路径状态操作',
     allTags: ['FILE', 'RESOURCE'],
-    total: 50, safe: 27, fail: 23, err: 0, to: 0
+    total: 200, safe: 173, fail: 27, err: 0, to: 0
   },
   {
     id: 'thread', folderKey: 'java_lang_Thread', display: 'Thread', short: 'Thread',
     badge: 'b-conc', tagTxt: 'CONCURRENT', module: 'java.base',
-    fullName: 'java.lang.Thread', profile: 'concurrent_sequence', desc: '线程管理',
+    fullName: 'java.lang.Thread', profile: 'concurrent_sequence', desc: '线程生命周期管理',
     allTags: ['CONCURRENT', 'CALLBACK'],
     total: 50, safe: 35, fail: 15, err: 0, to: 0
   },
   {
     id: 'method', folderKey: 'java_lang_reflect_Method', display: 'Method (Reflect)', short: 'Method',
     badge: 'b-refl', tagTxt: 'REFLECT', module: 'java.base',
-    fullName: 'java.lang.reflect.Method', profile: 'reflection_dispatch', desc: '方法反射调用',
+    fullName: 'java.lang.reflect.Method', profile: 'reflection_dispatch', desc: '反射方法查询与调用',
     allTags: ['REFLECT', 'UTILITY'],
     total: 60, safe: 30, fail: 30, err: 0, to: 0
   },
   {
     id: 'socket', folderKey: 'java_net_Socket', display: 'Socket', short: 'Socket',
     badge: 'b-net', tagTxt: 'NETWORK', module: 'java.base',
-    fullName: 'java.net.Socket', profile: 'network_endpoint_state', desc: '网络Socket',
+    fullName: 'java.net.Socket', profile: 'network_endpoint_state', desc: '网络端点与连接状态',
     allTags: ['NETWORK', 'RESOURCE'],
     total: 60, safe: 30, fail: 30, err: 0, to: 0
   },
   {
     id: 'uri', folderKey: 'java_net_URI', display: 'URI', short: 'URI',
     badge: 'b-net', tagTxt: 'NETWORK', module: 'java.base',
-    fullName: 'java.net.URI', profile: 'network_endpoint_state', desc: 'URI解析操作',
+    fullName: 'java.net.URI', profile: 'network_endpoint_state', desc: 'URI 解析与组合',
     allTags: ['NETWORK', 'UTILITY'],
     total: 60, safe: 40, fail: 15, err: 5, to: 0
   },
   {
     id: 'dur', folderKey: 'java_time_Duration', display: 'Duration', short: 'Duration',
     badge: 'b-time', tagTxt: 'TIME', module: 'java.base',
-    fullName: 'java.time.Duration', profile: 'time_boundary_mix', desc: '时间段计算',
+    fullName: 'java.time.Duration', profile: 'time_boundary_mix', desc: '时间跨度边界与运算',
     allTags: ['TIME', 'UTILITY'],
-    total: 60, safe: 40, fail: 20, err: 0, to: 0
+    total: 200, safe: 149, fail: 51, err: 0, to: 0
   },
   {
     id: 'cipher', folderKey: 'javax_crypto_Cipher', display: 'Cipher', short: 'Cipher',
     badge: 'b-sec', tagTxt: 'SECURITY', module: 'java.base',
-    fullName: 'javax.crypto.Cipher', profile: 'security_provider_flow', desc: '加密解密',
+    fullName: 'javax.crypto.Cipher', profile: 'security_provider_flow', desc: '加密解密与 provider 流程',
     allTags: ['SECURITY', 'UTILITY'],
     total: 50, safe: 23, fail: 27, err: 0, to: 0
   },
   {
     id: 'pcs', folderKey: 'java_beans_PropertyChangeSupport', display: 'PropertyChangeSupport', short: 'PCS',
     badge: 'b-cb', tagTxt: 'CALLBACK', module: 'java.desktop',
-    fullName: 'java.beans.PropertyChangeSupport', profile: 'callback_registration_flow', desc: '属性变更监听',
+    fullName: 'java.beans.PropertyChangeSupport', profile: 'callback_registration_flow', desc: '回调监听注册与触发',
     allTags: ['CALLBACK', 'UTILITY'],
-    total: 60, safe: 9, fail: 51, err: 0, to: 0
+    total: 200, safe: 93, fail: 107, err: 0, to: 0
   },
   {
-    id: 'jmgt', folderKey: 'ManagementFactory', display: 'ManagementFactory', short: 'JMgt',
+    id: 'jmgt', folderKey: 'MemoryMXBean', display: 'MemoryMXBean', short: 'MemMX',
     badge: 'b-jvm', tagTxt: 'JVM_MGMT', module: 'java.management',
-    fullName: 'java.lang.management.ManagementFactory', profile: 'jvm_mgmt_runtime_state', desc: 'JVM运行时管理',
+    fullName: 'java.lang.management.MemoryMXBean', profile: 'jvm_mgmt_runtime_state', desc: 'JVM 内存管理与监控',
     allTags: ['JVM_MGMT', 'UTILITY'],
-    total: 60, safe: 39, fail: 21, err: 0, to: 0
-  },
+    total: 200, safe: 185, fail: 15, err: 0, to: 0
+  }
 ]
 
 export function tagColor (t) {
